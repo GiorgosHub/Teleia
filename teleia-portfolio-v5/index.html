@@ -1,0 +1,640 @@
+<!doctype html>
+<html lang="el">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title data-t="metaTitle">teleia. — Ιστοσελίδες μέχρι την τελευταία τελεία · Γιώργος Σαμπάνης &amp; Αστέρης Πήτας</title>
+<meta name="description" data-ta="content:metaDesc" content="Το portfolio του Γιώργου Σαμπάνη και του Αστέρη Πήτα: ιστοσελίδες και web εφαρμογές από τη Λάρισα. Δείτε το Giannotas Premium Auto Salon και το PROJECT 7ο.">
+<meta name="theme-color" content="#F5F0E6">
+<link rel="icon" href="assets/img/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:title" data-ta="content:ogTitle" content="teleia. — Ιστοσελίδες μέχρι την τελευταία τελεία">
+<meta property="og:description" data-ta="content:ogDesc" content="Ιστοσελίδες και web εφαρμογές από τη Λάρισα. Δείτε τα έργα.">
+<meta property="og:image" content="assets/img/og.png">
+<link rel="preload" href="assets/fonts/Inter-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/css/site.css">
+<script src="assets/js/boot.js"></script>
+<script src="assets/js/i18n.js" defer></script>
+<script src="assets/js/site.js" defer></script>
+</head>
+<body>
+<!-- the first seconds: a line draws itself and ends in a full stop (once per visit; a click skips it) -->
+<div class="intro" id="intro" aria-hidden="true">
+  <svg viewBox="0 0 600 200"><path class="intro-line" pathLength="1" d="M40 140c60-90 120-100 160-30s100 70 150-20 110-60 140 10"/><circle class="intro-dot" cx="520" cy="96" r="22"/></svg>
+  <p class="intro-word">teleia<b>.</b></p>
+</div>
+<div class="progress" aria-hidden="true"><i></i></div>
+<div class="cur" aria-hidden="true"><i class="cur-dot"></i><i class="cur-ring"><span class="cur-t"></span></i></div>
+<canvas class="sparks" aria-hidden="true"></canvas>
+<a class="skip" href="#main" data-t="skip">Μετάβαση στο περιεχόμενο</a>
+
+<header class="hdr" id="hdr">
+  <div class="hdr-in">
+    <a class="brand" href="#top" data-ta="aria-label:brandAria" aria-label="teleia. — στην αρχή">
+      <svg class="brand-mark" viewBox="0 0 40 40" aria-hidden="true"><rect x="1.5" y="1.5" width="37" height="37" rx="11"/><path class="d" pathLength="1" d="M7 27c5-12 9-13 12-5s6 6 9-4"/><circle class="dot-end" cx="30.5" cy="15" r="3.6"/></svg>
+      <span class="brand-t">teleia<b>.</b></span>
+    </a>
+    <nav class="nav" id="nav" data-ta="aria-label:navAria" aria-label="Κύριο μενού">
+      <a href="#work" data-t="navWork" data-scramble>Έργα</a>
+      <a href="#giannotas" data-scramble>Giannotas</a>
+      <a href="#project7" data-scramble>PROJECT 7ο</a>
+      <a href="#lab" data-t="navLab" data-scramble>Εργαστήριο</a>
+      <a href="#team" data-t="navTeam" data-scramble>Εμείς</a>
+      <a href="#contact" data-t="navContact" data-scramble>Επικοινωνία</a>
+    </nav>
+    <div class="hdr-act">
+      <button class="theme" type="button" id="theme" data-ta="aria-label:themeAria" aria-label="Αλλαγή σε σκούρο θέμα" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path class="moon" d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z"/><g class="sun"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></g></svg></button>
+      <div class="lang" role="group" data-ta="aria-label:langAria" aria-label="Γλώσσα">
+        <button type="button" data-lang="el" aria-pressed="true">ΕΛ</button><button type="button" data-lang="en" aria-pressed="false">EN</button>
+      </div>
+      <button class="menu-btn" type="button" aria-expanded="false" aria-controls="nav" data-ta="aria-label:menu" aria-label="Μενού"><i></i><i></i></button>
+    </div>
+  </div>
+</header>
+
+<!-- dots on the side: where you are on the page (computers) -->
+<nav class="sdots" data-ta="aria-label:sdotsAria" aria-label="Ενότητες της σελίδας">
+  <a href="#top" data-t="sdTop">Αρχή</a><a href="#numbers" data-t="sdNumbers">Αριθμοί</a><a href="#work" data-t="navWork">Έργα</a><a href="#giannotas">Giannotas</a><a href="#project7">PROJECT 7ο</a><a href="#sketch" data-t="sdSketch">Σκίτσο</a><a href="#lab" data-t="navLab">Εργαστήριο</a><a href="#team" data-t="navTeam">Εμείς</a><a href="#story" data-t="sdStory">Ιστορία</a><a href="#faq" data-t="sdFaq">Ερωτήσεις</a><a href="#contact" data-t="navContact">Επικοινωνία</a>
+</nav>
+
+<main id="main">
+  <svg class="thread" aria-hidden="true"><path class="thread-bg"/><g class="thread-fg"></g></svg><i class="thread-dot" aria-hidden="true"></i>
+
+  <!-- ============ hero ============ -->
+  <section class="hero" id="top" aria-labelledby="heroTitle">
+    <div class="blobs" aria-hidden="true"><i></i><i></i><i></i></div>
+    <div class="doodles" aria-hidden="true"><svg class="dd dd1" data-speed=".25" viewBox="0 0 80 80"><path d="M40 6l9 22 24 2-18 15 6 24-21-13-21 13 6-24L7 30l24-2z"/></svg><svg class="dd dd2" data-speed="-.18" viewBox="0 0 80 80"><circle cx="40" cy="40" r="30"/><circle cx="40" cy="40" r="12"/></svg><svg class="dd dd3" data-speed=".4" viewBox="0 0 120 40"><path d="M4 30c14-22 26-22 36 0s24 22 36 0 24-22 40 0"/></svg><svg class="dd dd4" data-speed="-.3" viewBox="0 0 60 60"><path d="M10 10h40v40H10z"/></svg></div>
+    <svg class="hero-lines" viewBox="0 0 1440 760" preserveAspectRatio="none" aria-hidden="true">
+      <path class="hl1" pathLength="1" d="M-20 610C180 520 300 700 520 620S860 430 1040 520 1300 640 1460 540"/>
+      <path class="hl2" pathLength="1" d="M-20 680C220 610 360 760 600 690S960 560 1140 620 1340 700 1460 650"/>
+      <path class="hl3" pathLength="1" d="M760 80c120-40 260 10 330 90s210 120 360 40"/>
+    </svg>
+    <div class="wrap hero-grid">
+      <div class="hero-copy">
+        <div class="hero-meta">
+          <p class="pill"><span class="live-dot" aria-hidden="true"></span><span data-t="heroPill">Λάρισα, Ελλάδα</span> · <time class="clock" id="clock">--:--</time></p>
+          <p class="duo"><span class="duo-av" aria-hidden="true"><i data-t="georgeIni">ΓΣ</i><i data-t="asterisIni">ΑΠ</i></span><span data-t="duoTxt">Μια ομάδα, δύο άτομα</span></p>
+        </div>
+        <h1 id="heroTitle" class="hero-h1">
+          <span class="h1-a"><span class="rot-mask"><span class="rot" id="rot" data-t="rot0">Ιστοσελίδες</span></span></span>
+          <span class="h1-b"><span data-t="heroB">μέχρι την τελευταία τελεία.</span><svg class="under" viewBox="0 0 520 40" preserveAspectRatio="none" aria-hidden="true"><path class="d" pathLength="1" d="M6 28C90 12 200 10 300 18s170 14 210 4"/><path class="d d2" pathLength="1" d="M60 36c90-10 220-12 330-4"/></svg></span>
+        </h1>
+        <div class="hero-btns">
+          <a class="btn" href="#work" data-t="seeWork" data-cursor="cGo">Δείτε τα έργα</a>
+          <a class="btn btn-line" href="#lab" data-t="playLab" data-cursor="cPlay">Παίξτε στο εργαστήριο</a>
+        </div>
+        <ul class="hero-ticks">
+          <li data-t="hk1">Πρώτα για κινητό</li><li data-t="hk2">Ελληνικά &amp; αγγλικά</li><li data-t="hk3">Κώδικας ελεγμένος από εμάς</li>
+        </ul>
+      </div>
+      <div class="stack" aria-hidden="true">
+        <figure class="frame f-back" data-tilt><div class="bar"><i></i><i></i><i></i><span>giannotaspremiumautosalon.gr</span></div><img src="assets/img/work/giannotas.webp" alt="" width="1200" height="750"></figure>
+        <figure class="frame f-front" data-tilt><div class="bar"><i></i><i></i><i></i><span>7o-epal-project.vercel.app</span></div><img src="assets/img/work/project7.webp" alt="" width="1200" height="750"></figure>
+        <figure class="phone"><img src="assets/img/work/giannotas-phone.webp" alt="" width="360" height="779"></figure>
+        <svg class="scribble s-arrow" viewBox="0 0 160 120"><path class="d" pathLength="1" d="M10 20c40-14 90-6 110 30s10 50-6 56"/><path class="d d2" pathLength="1" d="M100 94l16 14 10-22"/></svg>
+        <span class="stk stk1" data-speed=".12" data-t="stk1">Αληθινά έργα</span><span class="stk stk2" data-speed="-.1" data-t="stk2">Made in Λάρισα</span><span class="stk stk3" data-speed=".2" data-t="stk3">8 γλώσσες</span><span class="stk stk4" data-speed="-.16" data-t="stk4">25 εκδόσεις</span>
+      </div>
+    </div>
+    <a class="scroll-hint" href="#numbers" aria-hidden="true" tabindex="-1"><span data-t="scrollHint">κατεβείτε</span><i></i></a>
+  </section>
+
+  <div class="marquee mq-red" aria-hidden="true"><div class="mq-track">
+    <span data-t="mq1">Ιστοσελίδες</span><b>●</b><span data-t="mq2">Web εφαρμογές</span><b>●</b><span data-t="mq3">Βοηθοί AI</span><b>●</b><span data-t="mq4">Ελληνικά &amp; αγγλικά</span><b>●</b><span data-t="mq5">Πρώτα για κινητό</span><b>●</b><span data-t="mq6">Ζωντανά δεδομένα</span><b>●</b><span data-t="mq7">Λάρισα</span><b>●</b>
+  </div></div>
+
+  <!-- ============ the team in one sentence: the words light up as you scroll ============ -->
+  <section class="sec manifesto" id="manifesto" aria-labelledby="manTitle">
+    <div class="wrap">
+      <h2 class="sr" id="manTitle" data-t="manTitle">Η ομάδα μας</h2>
+      <p class="man-text" id="manText" data-t="manText">Δύο άτομα, μία ομάδα. Ο Αστέρης οργανώνει τι φτιάχνεται και πότε. Ο Γιώργος το σχεδιάζει και γράφει τον κώδικα. Το ελέγχουμε σε κινητά και υπολογιστές, και το τελειώνουμε μέχρι την τελευταία τελεία.</p>
+      <p class="man-sign" aria-hidden="true"><span class="man-av" data-t="georgeIni">ΓΣ</span><span class="man-plus">+</span><span class="man-av alt" data-t="asterisIni">ΑΠ</span><span class="man-eq">=</span><span class="man-dot">teleia<b>.</b></span></p>
+    </div>
+  </section>
+
+  <!-- ============ numbers ============ -->
+  <section class="sec numbers" id="numbers" aria-labelledby="numTitle">
+    <div class="wrap">
+      <h2 class="sr" id="numTitle" data-t="numTitle">Με αριθμούς</h2>
+      <ul class="nums">
+        <li data-tilt><b data-count="2">2</b><span data-t="n1">αληθινά έργα, και τα δύο online</span></li>
+        <li data-tilt><b data-count="8">8</b><span data-t="n2">γλώσσες στο PROJECT 7ο, μαζί με περσικά και εβραϊκά που γράφονται από δεξιά</span></li>
+        <li data-tilt><b data-count="25">25</b><span data-t="n3">εκδόσεις του Giannotas μέχρι να είναι όπως πρέπει</span></li>
+        <li data-tilt><b data-count="54">54</b><span data-t="n4">αυτόματοι έλεγχοι τρέχουν πριν από κάθε παράδοση του Giannotas</span></li>
+        <li data-tilt><b data-count="60">60</b><span data-t="n5">καρέ το δευτερόλεπτο στο scroll του Giannotas, μετρημένα, όχι υποσχόμενα</span></li>
+        <li data-tilt><b data-count="0">0</b><span data-t="n6">σφάλματα στην κονσόλα σε όλες τις σελίδες του Giannotas</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ ad break 1 ============ -->
+  <aside class="ad ad-tv" id="ad1" data-ta="aria-label:adAria" aria-label="Διαφήμιση">
+    <div class="wrap ad-in">
+      <p class="ad-tag"><span data-t="adTag">Διαφήμιση</span><i></i><span data-t="adOwn">για δικό μας έργο</span></p>
+      <div class="tv" data-tilt>
+        <div class="tv-screen"><img src="assets/img/work/giannotas.webp" alt="" width="1200" height="750" loading="lazy"><i class="tv-scan"></i><span class="tv-rec">● REC</span></div>
+        <div class="tv-knobs" aria-hidden="true"><i></i><i></i></div>
+      </div>
+      <div class="ad-copy">
+        <p class="ad-kicker" data-t="ad1k">Τώρα online</p>
+        <h2 class="ad-h" data-t="ad1h">Giannotas Premium Auto Salon. Ματ μαύρο, ζωντανά δεδομένα, κοντέρ που ανάβει στην είσοδο.</h2>
+        <p data-t="ad1p">Αυτοκίνητα και ανταλλακτικά από τις αγγελίες του car.gr, ένα αυτοκίνητο σε ακτινογραφία για να βρίσκεις το ανταλλακτικό και 25 εκδόσεις μέχρι την τελευταία λεπτομέρεια.</p>
+        <p class="ad-btns"><a class="btn btn-ink" href="https://www.giannotaspremiumautosalon.gr/" target="_blank" rel="noopener" data-cursor="cOpen"><span data-t="openSite">Ανοίξτε την ιστοσελίδα</span> ↗</a><a class="btn btn-yel" href="#giannotas" data-t="ad1b" data-cursor="cGo">Δείτε πώς φτιάχτηκε</a></p>
+      </div>
+      <span class="ad-burst" aria-hidden="true"><b data-t="adBurst">ΝΕΟ!</b></span>
+    </div>
+  </aside>
+
+  <!-- ============ what we build ============ -->
+  <section class="sec" id="what" aria-labelledby="whatTitle">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="num" aria-hidden="true">01</span>
+        <h2 id="whatTitle" class="split" data-t="whatTitle">Τι φτιάχνουμε</h2>
+        <svg class="under" viewBox="0 0 300 24" preserveAspectRatio="none" aria-hidden="true"><path class="d" pathLength="1" d="M4 14C80 6 200 20 296 10"/></svg>
+        <p class="sub" data-t="whatSub">Περάστε το ποντίκι ή πατήστε μια κάρτα: πίσω της είναι το έργο όπου το κάναμε.</p>
+      </div>
+      <div class="flips">
+        <button class="flip c-red" type="button" aria-pressed="false"><span class="flip-in"><span class="flip-f"><svg class="ic" viewBox="0 0 48 48" aria-hidden="true"><rect x="5" y="9" width="38" height="28" rx="4"/><path d="M5 17h38M17 43h14M24 37v6"/></svg><b data-t="w1">Ιστοσελίδες</b><span data-t="w1t">Γρήγορες, καθαρές, πρώτα για κινητό.</span></span><span class="flip-b"><small data-t="where">Το κάναμε στο</small><b>Giannotas</b><span data-t="w1b">Αρχική, αυτοκίνητα, ανταλλακτικά, σελίδα για κάθε αγγελία.</span></span></span></button>
+        <button class="flip c-yel" type="button" aria-pressed="false"><span class="flip-in"><span class="flip-f"><svg class="ic" viewBox="0 0 48 48" aria-hidden="true"><path d="M26 4L10 27h12l-2 17 18-25H26z"/></svg><b data-t="w2">Web εφαρμογές</b><span data-t="w2t">Ζωντανό πρόγραμμα, αναζήτηση, εργαλεία.</span></span><span class="flip-b"><small data-t="where">Το κάναμε στο</small><b>PROJECT 7ο</b><span data-t="w2b">Κουδούνια σε πραγματικό χρόνο, βρες το τμήμα σου, εργαστήριο μαθητή.</span></span></span></button>
+        <button class="flip c-grn" type="button" aria-pressed="false"><span class="flip-in"><span class="flip-f"><svg class="ic" viewBox="0 0 48 48" aria-hidden="true"><rect x="9" y="14" width="30" height="24" rx="8"/><circle cx="19" cy="26" r="3"/><circle cx="29" cy="26" r="3"/><path d="M24 14V7M20 7h8"/></svg><b data-t="w3">Βοηθοί AI</b><span data-t="w3t">Απαντούν μέσα στην ίδια τη σελίδα.</span></span><span class="flip-b"><small data-t="where">Το κάναμε στο</small><b>PROJECT 7ο</b><span data-t="w3b">Βοηθός για ερωτήσεις και ασκήσεις, με το κλειδί κρυμμένο στον server.</span></span></span></button>
+        <button class="flip c-ink" type="button" aria-pressed="false"><span class="flip-in"><span class="flip-f"><svg class="ic" viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="18"/><path d="M6 24h36M24 6c7 8 7 28 0 36M24 6c-7 8-7 28 0 36"/></svg><b data-t="w4">Πολλές γλώσσες</b><span data-t="w4t">Ελληνικά, αγγλικά και όσες χρειαστούν.</span></span><span class="flip-b"><small data-t="where">Το κάναμε στο</small><b>PROJECT 7ο</b><span data-t="w4b">8 γλώσσες, και από δεξιά προς τα αριστερά.</span></span></span></button>
+        <button class="flip c-red" type="button" aria-pressed="false"><span class="flip-in"><span class="flip-f"><svg class="ic" viewBox="0 0 48 48" aria-hidden="true"><path d="M8 34l10-12 8 8 14-18"/><path d="M32 12h8v8"/></svg><b data-t="w5">Ζωντανά δεδομένα</b><span data-t="w5t">Ό,τι αλλάζει αλλού, αλλάζει και εδώ.</span></span><span class="flip-b"><small data-t="where">Το κάναμε στο</small><b>Giannotas</b><span data-t="w5b">Οι αγγελίες του car.gr: ό,τι πουλιέται, φεύγει μόνο του.</span></span></span></button>
+        <button class="flip c-yel" type="button" aria-pressed="false"><span class="flip-in"><span class="flip-f"><svg class="ic" viewBox="0 0 48 48" aria-hidden="true"><path d="M24 4l16 6v12c0 10-7 18-16 22C15 40 8 32 8 22V10z"/><path d="M17 24l5 5 9-10"/></svg><b data-t="w6">Ασφάλεια &amp; ταχύτητα</b><span data-t="w6t">HTTPS, αυστηρή πολιτική, 60 καρέ.</span></span><span class="flip-b"><small data-t="where">Το κάναμε και στα</small><b data-t="both">δύο έργα</b><span data-t="w6b">Κανένα κρυφό εργαλείο παρακολούθησης, κανένα κλειδί στον browser.</span></span></span></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ work ============ -->
+  <section class="sec" id="work" aria-labelledby="workTitle">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="num" aria-hidden="true">02</span>
+        <h2 id="workTitle" class="split" data-t="workTitle">Έργα</h2>
+        <svg class="under" viewBox="0 0 300 24" preserveAspectRatio="none" aria-hidden="true"><path class="d" pathLength="1" d="M4 16C70 6 160 6 296 12"/></svg>
+        <p class="sub" data-t="workSub">Πραγματικά έργα, όχι πρότυπα. Πατήστε για τη λεπτομερή ματιά.</p>
+      </div>
+      <div class="projs">
+        <a class="proj c-ink" href="#giannotas" data-cursor="cLook" data-tilt>
+          <span class="proj-pic"><img src="assets/img/work/giannotas.webp" data-ta="alt:gAlt" alt="Η αρχική σελίδα του Giannotas Premium Auto Salon" width="1200" height="750" loading="lazy"><img class="proj-phone" src="assets/img/work/giannotas-phone.webp" alt="" width="360" height="779" loading="lazy"></span>
+          <span class="proj-txt"><span class="status live"><i class="dot" aria-hidden="true"></i><span data-t="statusLive">Online</span></span><b class="proj-name">Giannotas Premium Auto Salon</b><span data-t="gShort">Έκθεση αυτοκινήτων και ανταλλακτικά στη Λάρισα, ζωντανά από το car.gr.</span><span class="tags"><i data-t="tagCargr">Ζωντανά από το car.gr</i><i data-t="tagXray">Αυτοκίνητο σε ακτινογραφία</i><i data-t="tagGauge">Κοντέρ στην είσοδο</i></span><span class="go"><span data-t="lookClose">Δείτε από κοντά</span> <i aria-hidden="true">↓</i></span></span>
+        </a>
+        <a class="proj c-yel" href="#project7" data-cursor="cLook" data-tilt>
+          <span class="proj-pic"><img src="assets/img/work/project7.webp" data-ta="alt:p7Alt" alt="Η αρχική σελίδα του PROJECT 7ο" width="1200" height="750" loading="lazy"><img class="proj-phone" src="assets/img/work/project7-phone.webp" alt="" width="360" height="779" loading="lazy"></span>
+          <span class="proj-txt"><span class="status live"><i class="dot" aria-hidden="true"></i><span data-t="statusLive">Online</span></span><b class="proj-name">PROJECT 7ο</b><span data-t="p7Short">Ανεπίσημη ιστοσελίδα για το 7ο ΕΠΑΛ Λάρισας: πρόγραμμα, κουδούνια, βοηθός AI, 8 γλώσσες.</span><span class="tags"><i data-t="tag8">8 γλώσσες</i><i data-t="tagAI">Βοηθός AI</i><i data-t="tag3d">Το σχολείο σε 3D</i></span><span class="go"><span data-t="lookClose">Δείτε από κοντά</span> <i aria-hidden="true">↓</i></span></span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ case: Giannotas ============ -->
+  <section class="sec case case-dark" id="giannotas" aria-labelledby="gTitle">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="num" aria-hidden="true">03</span>
+        <p class="kicker"><span class="status live"><i class="dot" aria-hidden="true"></i><span data-t="statusLive">Online</span></span> <span data-t="gKick">Λεπτομερής ματιά</span></p>
+        <h2 id="gTitle" class="split">Giannotas Premium Auto Salon</h2>
+        <svg class="under" viewBox="0 0 300 24" preserveAspectRatio="none" aria-hidden="true"><path class="d" pathLength="1" d="M4 12C90 22 200 4 296 12"/></svg>
+        <p class="sub" data-t="gSub">Ιστοσελίδα για έκθεση αυτοκινήτων και κατάστημα ανταλλακτικών στη Λάρισα. Ο πελάτης ανεβάζει τις αγγελίες του στο car.gr, και η ιστοσελίδα τις δείχνει μόνη της.</p>
+        <a class="btn" href="https://www.giannotaspremiumautosalon.gr/" target="_blank" rel="noopener" data-cursor="cOpen"><span data-t="openSite">Ανοίξτε την ιστοσελίδα</span> ↗</a>
+      </div>
+
+      <div class="shots" data-shots>
+        <div class="browser" data-tilt>
+          <div class="bar"><i></i><i></i><i></i><span class="shot-url">giannotaspremiumautosalon.gr</span></div>
+          <div class="shot-stage">
+            <img class="on" src="assets/img/work/giannotas.webp" data-ta="alt:gS1" alt="Η αρχική: το λογότυπο ως κοντέρ" width="1200" height="750" loading="lazy">
+            <img src="assets/img/work/g-xray.webp" data-ta="alt:gS2" alt="Το αυτοκίνητο σε ακτινογραφία για τα ανταλλακτικά" width="1200" height="750" loading="lazy">
+            <img class="contain" src="assets/img/work/g-stats.webp" data-ta="alt:gS3" alt="Ζωντανοί αριθμοί και ταινία με τα μοντέλα" width="1200" height="350" loading="lazy">
+            <img class="contain" src="assets/img/work/g-codes.webp" data-ta="alt:gS4" alt="Ανταλλακτικά με τον κωδικό του αυτοκινήτου" width="1200" height="392" loading="lazy">
+            <img class="contain" src="assets/img/work/g-footer.webp" data-ta="alt:gS5" alt="Το τέλος κάθε σελίδας: κλήση και οδηγίες" width="1200" height="442" loading="lazy">
+          </div>
+        </div>
+        <ol class="shot-list">
+          <li><button type="button" aria-pressed="true"><b data-t="gS1t">Το κοντέρ</b><span data-t="gS1">Η αρχική: το λογότυπο ως κοντέρ</span><i class="bar-p"></i></button></li>
+          <li><button type="button" aria-pressed="false"><b data-t="gS2t">Ακτινογραφία</b><span data-t="gS2">Το αυτοκίνητο σε ακτινογραφία για τα ανταλλακτικά</span><i class="bar-p"></i></button></li>
+          <li><button type="button" aria-pressed="false"><b data-t="gS3t">Ζωντανοί αριθμοί</b><span data-t="gS3">Ζωντανοί αριθμοί και ταινία με τα μοντέλα</span><i class="bar-p"></i></button></li>
+          <li><button type="button" aria-pressed="false"><b data-t="gS4t">Κωδικός πλαισίου</b><span data-t="gS4">Ανταλλακτικά με τον κωδικό του αυτοκινήτου</span><i class="bar-p"></i></button></li>
+          <li><button type="button" aria-pressed="false"><b data-t="gS5t">Τέλος σελίδας</b><span data-t="gS5">Το τέλος κάθε σελίδας: κλήση και οδηγίες</span><i class="bar-p"></i></button></li>
+        </ol>
+      </div>
+
+      <div class="ba-wrap">
+        <div class="ba-copy"><h3 data-t="baTitle">Πριν και μετά</h3><p data-t="baSub">Σύρετε τη λαβή. Αριστερά μια παλιότερη έκδοση με φωτεινή επιγραφή, δεξιά η σημερινή: το αληθινό λογότυπο, ματ μαύρο, γράμματα που διαβάζονται.</p></div>
+        <div class="ba" id="ba" data-cursor="cDrag">
+          <img src="assets/img/work/giannotas.webp" data-ta="alt:baAfter" alt="Η σημερινή έκδοση" width="1200" height="750" loading="lazy">
+          <div class="ba-before"><img src="assets/img/work/g-before.webp" data-ta="alt:baBefore" alt="Μια παλιότερη έκδοση" width="1200" height="750" loading="lazy"></div>
+          <span class="ba-l" data-t="before">Πριν</span><span class="ba-r" data-t="after">Μετά</span>
+          <input class="ba-range" type="range" min="0" max="100" value="50" data-ta="aria-label:baAria" aria-label="Σύγκριση πριν και μετά">
+          <span class="ba-handle" aria-hidden="true"><i></i></span>
+        </div>
+      </div>
+
+      <figure class="gauge">
+        <img src="assets/img/work/g-ignition.webp" data-ta="alt:gaugeAlt" alt="Πέντε στιγμές της εισόδου: η βελόνα σαρώνει και οι γραμμές ανάβουν μαζί της" width="1400" height="230" loading="lazy">
+        <figcaption data-t="gaugeCap">Η είσοδος σε πέντε καρέ: η βελόνα του λογότυπου σαρώνει και κάθε γραμμή του κοντέρ ανάβει τη στιγμή που περνά από πάνω της.</figcaption>
+      </figure>
+
+      <ul class="feats">
+        <li data-tilt><b data-t="gf1">Ζωντανά από το car.gr</b><span data-t="gf1t">Ό,τι πουλιέται και κατεβαίνει από τις αγγελίες, φεύγει και από την ιστοσελίδα, μόνο του.</span></li>
+        <li data-tilt><b data-t="gf2">Αυτοκίνητο σε ακτινογραφία</b><span data-t="gf2t">Πατάτε πάνω στο σύστημα, στα φρένα ή στο εσωτερικό, και βλέπετε τα ανταλλακτικά του.</span></li>
+        <li data-tilt><b data-t="gf3">Με τον κωδικό πλαισίου</b><span data-t="gf3t">E90, F10, R56: η αναζήτηση καταλαβαίνει και ελληνικά και λατινικά γράμματα.</span></li>
+        <li data-tilt><b data-t="gf4">Το αληθινό λογότυπο</b><span data-t="gf4t">Ψηφιοποιημένο από φωτογραφία σε καθαρές γραμμές, με τη βελόνα να κινείται σαν κοντέρ.</span></li>
+        <li data-tilt><b data-t="gf5">Κλήση με επιλογή</b><span data-t="gf5t">Σταθερό ή κινητό, με το ωράριο δίπλα, και φόρμα για ραντεβού ή δοκιμή.</span></li>
+        <li data-tilt><b data-t="gf6">Έτοιμο για Google και Viber</b><span data-t="gf6t">Κάθε αυτοκίνητο έχει δικό του τίτλο, φωτογραφία προεπισκόπησης και θέση στο sitemap.</span></li>
+        <li data-tilt><b data-t="gf7">Αυστηρή ασφάλεια</b><span data-t="gf7t">Content-Security-Policy, HTTPS, έλεγχος κάθε αιτήματος πριν φτάσει στο car.gr.</span></li>
+        <li data-tilt><b data-t="gf8">Ελεγμένο</b><span data-t="gf8t">54 αυτόματοι έλεγχοι, μεγέθη από 320 έως 1920 pixels, μετρημένη ομαλότητα.</span></li>
+      </ul>
+
+      <div class="versions" aria-labelledby="verTitle">
+        <h3 id="verTitle" data-t="verTitle">25 εκδόσεις σε μια γραμμή</h3>
+        <div class="ver-track" data-cursor="cDrag" tabindex="0" data-ta="aria-label:verAria" aria-label="Οι εκδόσεις του Giannotas, κύλιση προς τα πλάγια">
+          <ol>
+            <li><b>v6–v12</b><span data-t="v1">Η αρχιτεκτονική: σελίδες, σύνδεση με το car.gr, αναζήτηση.</span></li>
+            <li><b>v13</b><span data-t="v2">Πρώτη μεγάλη αλλαγή σχεδίου, κουμπί κλήσης με σταθερό και κινητό.</span></li>
+            <li><b>v14</b><span data-t="v3">Πιο ομαλές κινήσεις, νέος τίτλος.</span></li>
+            <li><b>v19–v21</b><span data-t="v4">Το αληθινό λογότυπο παντού, η βελόνα κινείται, υψηλή ανάλυση.</span></li>
+            <li><b>v22</b><span data-t="v5">Εμπορικό σχέδιο, ανοιχτές και σκούρες επιφάνειες.</span></li>
+            <li><b>v23</b><span data-t="v6">Ματ μαύρο, κοντέρ στην είσοδο, ζωντανοί αριθμοί, χωρίς 3D.</span></li>
+            <li><b>v25</b><span data-t="v7">Inter παντού, ακίνητο λογότυπο: όπως το ήθελε ο πελάτης.</span></li>
+          </ol>
+        </div>
+      </div>
+      <p class="stack-line"><span data-t="builtWith">Φτιαγμένο με</span> <i>HTML</i><i>CSS</i><i>JavaScript</i><i>Vercel Functions</i><i>Playwright</i><i>Python</i></p>
+    </div>
+  </section>
+
+  <!-- ============ case: PROJECT 7 ============ -->
+  <section class="sec case" id="project7" aria-labelledby="p7Title">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="num" aria-hidden="true">04</span>
+        <p class="kicker"><span class="status live"><i class="dot" aria-hidden="true"></i><span data-t="statusLive">Online</span></span> <span data-t="gKick">Λεπτομερής ματιά</span></p>
+        <h2 id="p7Title" class="split">PROJECT 7ο</h2>
+        <svg class="under" viewBox="0 0 300 24" preserveAspectRatio="none" aria-hidden="true"><path class="d" pathLength="1" d="M4 10C100 22 200 4 296 14"/></svg>
+        <p class="sub" data-t="p7Sub">Ανεπίσημη ιστοσελίδα για το 7ο ΕΠΑΛ Λάρισας, το σχολείο μας. Ό,τι χρειάζεται ένας μαθητής μέσα στη μέρα, σε ένα μέρος.</p>
+        <a class="btn" href="https://7o-epal-project.vercel.app/" target="_blank" rel="noopener" data-cursor="cOpen"><span data-t="openSite">Ανοίξτε την ιστοσελίδα</span> ↗</a>
+      </div>
+
+      <div class="shots" data-shots>
+        <div class="browser" data-tilt>
+          <div class="bar"><i></i><i></i><i></i><span class="shot-url">7o-epal-project.vercel.app</span></div>
+          <div class="shot-stage">
+            <img class="on" src="assets/img/work/project7.webp" data-ta="alt:pS1" alt="Η αρχική με ζωντανό ρολόι και κουδούνια" width="1200" height="750" loading="lazy">
+            <img src="assets/img/work/p7-hub.webp" data-ta="alt:pS2" alt="Ο χώρος του μαθητή για σήμερα" width="1200" height="750" loading="lazy">
+            <img src="assets/img/work/p7-schedule.webp" data-ta="alt:pS3" alt="Το πρόγραμμα κάθε τμήματος" width="1200" height="750" loading="lazy">
+            <img src="assets/img/work/p7-3d.webp" data-ta="alt:pS4" alt="Το σχολείο σε 3D" width="1200" height="750" loading="lazy">
+            <img src="assets/img/work/p7-holidays.webp" data-ta="alt:pS5" alt="Ημερολόγιο αργιών" width="1200" height="750" loading="lazy">
+            <img src="assets/img/work/p7-lab.webp" data-ta="alt:pS6" alt="Εργαστήριο μαθητή με χρονόμετρο μελέτης" width="1200" height="750" loading="lazy">
+          </div>
+        </div>
+        <ol class="shot-list">
+          <li><button type="button" aria-pressed="true"><b data-t="pS1t">Ζωντανό ρολόι</b><span data-t="pS1">Η αρχική με ζωντανό ρολόι και κουδούνια</span><i class="bar-p"></i></button></li>
+          <li><button type="button" aria-pressed="false"><b data-t="pS2t">Ο χώρος σου</b><span data-t="pS2">Ο χώρος του μαθητή για σήμερα</span><i class="bar-p"></i></button></li>
+          <li><button type="button" aria-pressed="false"><b data-t="pS3t">Πρόγραμμα</b><span data-t="pS3">Το πρόγραμμα κάθε τμήματος</span><i class="bar-p"></i></button></li>
+          <li><button type="button" aria-pressed="false"><b data-t="pS4t">Σχολείο σε 3D</b><span data-t="pS4">Το σχολείο σε 3D</span><i class="bar-p"></i></button></li>
+          <li><button type="button" aria-pressed="false"><b data-t="pS5t">Αργίες</b><span data-t="pS5">Ημερολόγιο αργιών</span><i class="bar-p"></i></button></li>
+          <li><button type="button" aria-pressed="false"><b data-t="pS6t">Εργαστήριο</b><span data-t="pS6">Εργαστήριο μαθητή με χρονόμετρο μελέτης</span><i class="bar-p"></i></button></li>
+        </ol>
+      </div>
+
+      <div class="langs">
+        <div class="langs-copy"><h3 data-t="lgTitle">8 γλώσσες, μία ιστοσελίδα</h3><p data-t="lgSub">Ελληνικά, αγγλικά, γερμανικά, ισπανικά, ρωσικά, αλβανικά, περσικά και εβραϊκά. Οι δύο τελευταίες γράφονται από δεξιά προς τα αριστερά, και η σελίδα γυρίζει ολόκληρη.</p></div>
+        <div class="hello" aria-hidden="true"><span class="hello-w" id="hello">Καλώς ήρθατε</span><span class="hello-l" id="helloL">ΕΛ</span></div>
+      </div>
+
+      <ul class="feats">
+        <li data-tilt><b data-t="pf1">Κουδούνια σε πραγματικό χρόνο</b><span data-t="pf1t">Ποια ώρα είναι τώρα, πότε χτυπάει το επόμενο κουδούνι, με γραμμή που γεμίζει.</span></li>
+        <li data-tilt><b data-t="pf2">Βρες το τμήμα σου</b><span data-t="pf2t">Γράφεις το τμήμα και βλέπεις τι μάθημα έχεις τώρα και όλη την εβδομάδα.</span></li>
+        <li data-tilt><b data-t="pf3">Βοηθός AI</b><span data-t="pf3t">Για ερωτήσεις και ασκήσεις. Το κλειδί του μένει στον server, όχι στον browser.</span></li>
+        <li data-tilt><b data-t="pf4">Το σχολείο σε 3D</b><span data-t="pf4t">Γυρίστε και εξερευνήστε την είσοδο, την αυλή και τα κτίρια.</span></li>
+        <li data-tilt><b data-t="pf5">Λειτουργεί και offline</b><span data-t="pf5t">Εγκαθίσταται σαν εφαρμογή στο κινητό και ανοίγει χωρίς ίντερνετ.</span></li>
+        <li data-tilt><b data-t="pf6">Παράδοση εργασιών</b><span data-t="pf6t">Σύνδεσμοι για τους χώρους του PBworks, προστατευμένοι με κωδικό.</span></li>
+        <li data-tilt><b data-t="pf7">Εργαστήριο μαθητή</b><span data-t="pf7t">Χρονόμετρο μελέτης, στόχος ημέρας, κάρτες μελέτης, μέσος όρος.</span></li>
+        <li data-tilt><b data-t="pf8">Αναφορά λάθους</b><span data-t="pf8t">Ένα κουμπί για να μας πει κάποιος τι δεν δουλεύει, και αφίσα με QR για τους διαδρόμους.</span></li>
+      </ul>
+
+      <div class="poster">
+        <figure class="poster-img" data-tilt><img src="assets/img/work/p7-poster.webp" data-ta="alt:posterAlt" alt="Η αφίσα A4 του PROJECT 7ο με κωδικό QR" width="700" height="990" loading="lazy"></figure>
+        <div><h3 data-t="posterTitle">Και μια αφίσα για τους διαδρόμους</h3><p data-t="posterSub">Μια αφίσα A4 με κωδικό QR, για να ανοίγει κανείς την ιστοσελίδα με την κάμερα του κινητού του.</p><a class="link" href="https://7o-epal-project.vercel.app/" target="_blank" rel="noopener" data-cursor="cOpen"><span data-t="visit">Επίσκεψη</span> ↗</a></div>
+      </div>
+      <p class="stack-line"><span data-t="builtWith">Φτιαγμένο με</span> <i>HTML</i><i>CSS</i><i>JavaScript</i><i>WebGL</i><i>Service Worker</i><i>Vercel Functions</i></p>
+    </div>
+  </section>
+
+  <div class="marquee mq-outline" aria-hidden="true"><div class="mq-track mq-rev">
+    <span data-t="mo1">Σκίτσο</span><b>→</b><span data-t="mo2">Σχέδιο</span><b>→</b><span data-t="mo3">Κώδικας</span><b>→</b><span data-t="mo4">Debug</span><b>→</b><span data-t="mo5">Online</span><b>.</b>
+  </div></div>
+
+  <!-- ============ sketch → website ============ -->
+  <section class="sec sketch" id="sketch" aria-labelledby="sketchTitle">
+    <div class="sketch-pin">
+      <div class="wrap sketch-grid">
+        <div class="sec-head">
+          <span class="num" aria-hidden="true">05</span>
+          <h2 id="sketchTitle" class="split" data-t="skTitle">Από μια γραμμή σε ιστοσελίδα</h2>
+          <svg class="under" viewBox="0 0 300 24" preserveAspectRatio="none" aria-hidden="true"><path class="d" pathLength="1" d="M4 14C80 6 200 20 296 10"/></svg>
+          <p class="sub" data-t="skSub">Κάθε ιστοσελίδα ξεκινά από ένα σκίτσο. Συνεχίστε να κατεβαίνετε και δείτε το να γίνεται αληθινό.</p>
+          <ol class="sk-steps">
+            <li data-k="0"><b data-t="sk1">Σκίτσο</b><span data-t="sk1t">Πού μπαίνει τι: μενού, τίτλος, κουμπιά, φωτογραφίες.</span></li>
+            <li data-k="1"><b data-t="sk2">Σχέδιο</b><span data-t="sk2t">Χρώματα, γράμματα και κινήσεις που ταιριάζουν στο περιεχόμενο.</span></li>
+            <li data-k="2"><b data-t="sk3">Ιστοσελίδα</b><span data-t="sk3t">Ο κώδικας, δοκιμασμένος σε κινητά και υπολογιστές.</span></li>
+          </ol>
+        </div>
+        <div class="sk-stage" aria-hidden="true">
+          <div class="sk-frame">
+            <img class="sk-gray" src="assets/img/work/project7.webp" alt="" width="1200" height="750" loading="lazy"><img class="sk-real" src="assets/img/work/project7.webp" alt="" width="1200" height="750" loading="lazy">
+            <svg class="sk-draw" viewBox="0 0 600 375" preserveAspectRatio="none">
+              <path pathLength="1" d="M18 16h564v343H18z"/>
+              <path pathLength="1" d="M40 44h40v14H40zM250 51h40M310 51h40M370 51h40M430 51h40M500 42h62v18h-62z"/>
+              <path pathLength="1" d="M60 120h220M60 150h250M60 180h180"/>
+              <path pathLength="1" d="M60 214h170M60 230h150"/>
+              <path pathLength="1" d="M60 262h90v26H60zM164 262h90v26h-90z"/>
+              <path pathLength="1" d="M360 96h180v170H360zM360 96l180 170M540 96L360 266"/>
+              <path pathLength="1" d="M60 318h480"/>
+            </svg>
+          </div>
+          <p class="sk-label"><span class="sk-l0" data-t="skL0">σκίτσο</span><span class="sk-l1" data-t="skL1">σχέδιο</span><span class="sk-l2" data-t="skL2">online ✓</span></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ lab ============ -->
+  <section class="sec lab" id="lab" aria-labelledby="labTitle">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="num" aria-hidden="true">06</span>
+        <h2 id="labTitle" class="split" data-t="labTitle">Εργαστήριο</h2>
+        <svg class="under" viewBox="0 0 300 24" preserveAspectRatio="none" aria-hidden="true"><path class="d" pathLength="1" d="M4 12C100 20 200 4 296 14"/></svg>
+        <p class="sub" data-t="labSub">Τέσσερα μικρά πράγματα για να παίξετε. Και να δείτε πώς δουλεύουμε.</p>
+      </div>
+      <div class="lab-grid">
+        <!-- bug hunt -->
+        <article class="card bugs" aria-labelledby="bugTitle">
+          <header><h3 id="bugTitle" data-t="bugTitle">Βρείτε τα 3 λάθη</h3><p class="bug-score" aria-live="polite"><b id="bugN">0</b>/3</p></header>
+          <p class="card-sub" data-t="bugSub">Ο κώδικας θέλει να προσθέσει τιμές, αλλά δεν δουλεύει. Πατήστε τις γραμμές που φταίνε.</p>
+          <ol class="code" id="bugCode">
+            <li><code>function total(prices) {</code></li>
+            <li data-bug="1" data-fix="  let sum = 0;"><button type="button"><code>  let sum = "0";</code></button></li>
+            <li data-bug="2" data-fix="  for (let i = 0; i &lt; prices.length; i++) {"><button type="button"><code>  for (let i = 0; i &lt;= prices.length; i++) {</code></button></li>
+            <li><code>    sum += prices[i];</code></li>
+            <li><code>  }</code></li>
+            <li data-bug="3" data-fix="  return sum;"><button type="button"><code>  return sun;</code></button></li>
+            <li><code>}</code></li>
+          </ol>
+          <p class="bug-why" id="bugWhy" aria-live="polite" data-t="bugHint">Συμβουλή: κοιτάξτε τα εισαγωγικά, το &lt;= και τα γράμματα.</p>
+          <button class="btn btn-sm btn-line" type="button" id="bugReset" data-t="again">Ξανά</button>
+        </article>
+        <!-- draw -->
+        <article class="card draw" aria-labelledby="drawTitle">
+          <header><h3 id="drawTitle" data-t="drawTitle">Τραβήξτε μια γραμμή</h3></header>
+          <p class="card-sub" data-t="drawSub">Κάθε έργο ξεκινά από μια γραμμή. Ζωγραφίστε μία: θα την ξαναζωγραφίσει μόνη της και θα βάλει τελεία.</p>
+          <div class="pad" data-cursor="cDraw"><canvas id="pad" data-ta="aria-label:padAria" aria-label="Πίνακας ζωγραφικής" role="img"></canvas><span class="pad-hint" data-t="padHint">ζωγραφίστε εδώ</span></div>
+          <button class="btn btn-sm btn-line" type="button" id="padClear" data-t="clear">Καθαρισμός</button>
+        </article>
+        <!-- terminal -->
+        <article class="card term" aria-labelledby="termTitle">
+          <header><h3 id="termTitle" data-t="termTitle">Πριν από κάθε παράδοση</h3></header>
+          <p class="card-sub" data-t="termSub">Οι αληθινές εντολές που τρέχουν πριν φύγει μια έκδοση του Giannotas.</p>
+          <pre class="tty" aria-hidden="true"><code id="tty"></code><i class="caret"></i></pre>
+          <p class="sr" data-t="termSr">Οι εντολές: έλεγχος των συναρτήσεων (20 στους 20 πέτυχαν), έλεγχοι στον browser (34 στους 34), έλεγχος συνδέσμων (κανένας χαλασμένος).</p>
+        </article>
+        <!-- live measurement of this very page -->
+        <article class="card meter" aria-labelledby="meterTitle">
+          <header><h3 id="meterTitle" data-t="meterTitle">Αυτή η σελίδα, τώρα</h3><span class="live-pill"><i class="live-dot" aria-hidden="true"></i><span data-t="liveWord">ζωντανά</span></span></header>
+          <p class="card-sub" data-t="meterSub">Μετρημένα αυτή τη στιγμή στη δική σας συσκευή, όχι γραμμένα από πριν.</p>
+          <ul class="meter-list">
+            <li class="m-fps"><b id="mFps">–</b><span data-t="mFps">καρέ το δευτερόλεπτο</span><canvas class="m-spark" id="mSpark" aria-hidden="true"></canvas></li>
+            <li><b id="mLoad">–</b><span data-t="mLoad">ms μέχρι να φορτώσει</span></li>
+            <li><b id="mKb">–</b><span data-t="mKb">KB όλα τα αρχεία</span></li>
+            <li><b id="mReq">–</b><span data-t="mReq">αρχεία φορτώθηκαν</span></li>
+          </ul>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ ad break 2 ============ -->
+  <aside class="ad ad-bill" id="ad2" data-ta="aria-label:adAria" aria-label="Διαφήμιση">
+    <div class="wrap">
+      <p class="ad-tag"><span data-t="adTag">Διαφήμιση</span><i></i><span data-t="adOwn">για δικό μας έργο</span></p>
+      <div class="bill">
+        <div class="bill-a" data-tilt>
+          <p class="ad-kicker">PROJECT 7ο</p>
+          <h2 class="ad-h" data-t="ad2h">Το σχολείο σου, στο κινητό σου.</h2>
+          <p data-t="ad2p">Πρόγραμμα, κουδούνια, ανακοινώσεις και βοηθός AI, σε 8 γλώσσες. Ανοίγει και χωρίς ίντερνετ.</p>
+          <a class="btn" href="https://7o-epal-project.vercel.app/" target="_blank" rel="noopener" data-cursor="cOpen"><span data-t="ad2b">Ανοίξτε το</span> ↗</a>
+          <img class="bill-phone" src="assets/img/work/project7-phone.webp" alt="" width="360" height="779" loading="lazy">
+        </div>
+        <div class="bill-b" data-tilt>
+          <p class="ad-kicker">teleia.</p>
+          <h2 class="ad-h" data-t="ad3h">Έχετε ιδέα για ιστοσελίδα;</h2>
+          <p data-t="ad3p">Γράψτε μας τι σκέφτεστε. Ένα μήνυμα αρκεί.</p>
+          <a class="btn btn-ink" href="#contact" data-t="ad3b" data-cursor="cWrite">Γράψτε μας</a>
+          <span class="bill-dot" aria-hidden="true"></span>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ============ team ============ -->
+  <section class="sec" id="team" aria-labelledby="teamTitle">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="num" aria-hidden="true">07</span>
+        <h2 id="teamTitle" class="split" data-t="teamTitle">Ποιοι είμαστε</h2>
+        <svg class="under" viewBox="0 0 300 24" preserveAspectRatio="none" aria-hidden="true"><path class="d" pathLength="1" d="M4 14C80 20 180 4 296 12"/></svg>
+        <p class="sub" data-t="teamSub">Ο Γιώργος γράφει τον κώδικα, ο Αστέρης οργανώνει τα έργα. Πατήστε μια κάρτα για να τη γυρίσετε.</p>
+      </div>
+      <div class="team">
+        <svg class="team-link" viewBox="0 0 120 80" aria-hidden="true"><path class="d" pathLength="1" d="M4 40c20-30 40-30 56 0s36 30 56 0"/></svg>
+        <button class="person flip c-red" type="button" aria-pressed="false"><span class="flip-in">
+          <span class="flip-f"><span class="avatar" aria-hidden="true" data-t="georgeIni">ΓΣ</span><b data-t="georgeName">Γιώργος Σαμπάνης</b><span class="role">Lead AI-Assisted Engineer</span><span data-t="georgeF">Σχεδιάζει και γράφει τον κώδικα, από την πρώτη ιδέα μέχρι να ανέβει online.</span></span>
+          <span class="flip-b"><ul><li data-t="g1">Κάνει debug μόνος του: βρίσκει και διορθώνει τα λάθη στον κώδικα.</li><li data-t="g2">Χρησιμοποιεί το AI ως εργαλείο, όχι για να κάνει τη δουλειά μόνο του.</li><li data-t="g3">Ελέγχει κάθε σελίδα σε κινητά και υπολογιστές.</li><li data-t="g4">Αγαπά τους υπολογιστές και τους servers.</li></ul></span>
+        </span></button>
+        <button class="person flip c-yel" type="button" aria-pressed="false"><span class="flip-in">
+          <span class="flip-f"><span class="avatar alt" aria-hidden="true" data-t="asterisIni">ΑΠ</span><b data-t="asterisName">Αστέρης Πήτας</b><span class="role">Product Manager</span><span data-t="asterisF">Οργανώνει τα έργα: τι φτιάχνεται και πότε.</span></span>
+          <span class="flip-b"><ul><li data-t="a1">Βάζει σε σειρά τι χρειάζεται κάθε έργο.</li><li data-t="a2">Φροντίζει να ολοκληρώνεται ό,τι σχεδιάστηκε.</li><li data-t="a3">Μαζί φτιάξαμε το PROJECT 7ο για το σχολείο μας.</li></ul></span>
+        </span></button>
+      </div>
+      <div class="flow">
+        <h3 data-t="flowTitle">Πώς δουλεύουμε μαζί</h3>
+        <div class="flow-rail" aria-hidden="true"><i class="flow-run"><b></b></i></div>
+        <ol class="flow-steps">
+          <li><span class="fs-n" aria-hidden="true">1</span><b data-t="fl1">Οργάνωση</b><span data-t="fl1t">Τι χρειάζεται το έργο, με ποια σειρά και πότε.</span><em class="who who-a" data-t="asterisFirst">Αστέρης</em></li>
+          <li><span class="fs-n" aria-hidden="true">2</span><b data-t="fl2">Σχεδίαση</b><span data-t="fl2t">Χρώματα, γράμματα, κινήσεις: πώς θα δείχνει.</span><em class="who who-g" data-t="georgeFirst">Γιώργος</em></li>
+          <li><span class="fs-n" aria-hidden="true">3</span><b data-t="fl3">Κώδικας</b><span data-t="fl3t">Γραμμένος και διορθωμένος από εμάς, με το AI ως εργαλείο.</span><em class="who who-g" data-t="georgeFirst">Γιώργος</em></li>
+          <li><span class="fs-n" aria-hidden="true">4</span><b data-t="fl4">Έλεγχος</b><span data-t="fl4t">Κινητά, υπολογιστές, αυτόματοι έλεγχοι, ξανά αν χρειαστεί.</span><em class="who who-b" data-t="together">Μαζί</em></li>
+          <li><span class="fs-n" aria-hidden="true">5</span><b data-t="fl5">Online</b><span data-t="fl5t">Ανεβαίνει, και η επόμενη έκδοση ξεκινά από εδώ.</span><em class="who who-b" data-t="together">Μαζί</em></li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ story ============ -->
+  <section class="sec" id="story" aria-labelledby="storyTitle">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="num" aria-hidden="true">08</span>
+        <h2 id="storyTitle" class="split" data-t="stTitle">Η ιστορία μας</h2>
+        <svg class="under" viewBox="0 0 300 24" preserveAspectRatio="none" aria-hidden="true"><path class="d" pathLength="1" d="M4 10C100 22 200 4 296 14"/></svg>
+        <p class="sub" data-t="stSub">Μικρή ακόμα, αλλά κάθε κομμάτι της είναι αληθινό.</p>
+      </div>
+      <div class="story">
+        <svg class="story-line" aria-hidden="true"><path class="story-bg"/><path class="story-fg" pathLength="1"/></svg>
+        <ol class="milestones">
+          <li><span class="ms-dot" aria-hidden="true"></span><p class="ms-when">2026</p><h3 data-t="m1">PROJECT 7ο</h3><p data-t="m1t">Η πρώτη μας μεγάλη ιστοσελίδα, για το σχολείο μας: πρόγραμμα, ανακοινώσεις, βοηθός AI, 8 γλώσσες, το σχολείο σε 3D.</p></li>
+          <li><span class="ms-dot" aria-hidden="true"></span><p class="ms-when">2026</p><h3>Giannotas Premium Auto Salon</h3><p data-t="m2t">Ιστοσελίδα για έκθεση αυτοκινήτων στη Λάρισα: αυτοκίνητα και ανταλλακτικά ζωντανά από το car.gr, 25 εκδόσεις. Online από τον Οκτώβριο 2026.</p></li>
+          <li><span class="ms-dot" aria-hidden="true"></span><p class="ms-when" data-t="m3w">Οκτώβριος 2026</p><h3>teleia.</h3><p data-t="m3t">Δίνουμε όνομα σε αυτό που ήδη κάνουμε: ιστοσελίδες, μέχρι την τελευταία τελεία.</p></li>
+          <li><span class="ms-dot" aria-hidden="true"></span><p class="ms-when" data-t="m4w">Επόμενο</p><h3 data-t="m4">Το επόμενο έργο</h3><p data-t="m4t">Εδώ θα μπει η επόμενη γραμμή.</p></li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ tools ============ -->
+  <section class="sec" id="tools" aria-labelledby="toolsTitle">
+    <div class="wrap tools-grid">
+      <div class="sec-head">
+        <span class="num" aria-hidden="true">09</span>
+        <h2 id="toolsTitle" class="split" data-t="toolsTitle">Με τι δουλεύουμε</h2>
+        <svg class="under" viewBox="0 0 300 24" preserveAspectRatio="none" aria-hidden="true"><path class="d" pathLength="1" d="M4 12C100 20 200 4 296 14"/></svg>
+        <p class="sub" data-t="toolsSub">Σύγχρονα, δοκιμασμένα εργαλεία. Το AI μάς βοηθάει να δουλεύουμε γρηγορότερα· τον κώδικα τον ελέγχουμε και τον διορθώνουμε εμείς.</p>
+      </div>
+      <div class="orbit" aria-hidden="true">
+        <span class="orbit-core">teleia<b>.</b></span>
+        <div class="ring r1"><i><span>HTML</span></i><i><span>CSS</span></i><i><span>JavaScript</span></i><i><span>SVG</span></i></div>
+        <div class="ring r2"><i><span>Node.js</span></i><i><span>Vercel</span></i><i><span>GitHub</span></i><i><span>PWA</span></i><i><span>WebGL</span></i></div>
+        <div class="ring r3"><i><span>Python</span></i><i><span>Playwright</span></i><i><span data-t="tAI">Εργαλεία AI</span></i><i><span data-t="tApi">Σύνδεση με API</span></i></div>
+      </div>
+      <ul class="sr">
+        <li>HTML</li><li>CSS</li><li>JavaScript</li><li>SVG</li><li>Node.js</li><li>Vercel</li><li>GitHub</li><li>PWA</li><li>WebGL</li><li>Python</li><li>Playwright</li><li data-t="tAI">Εργαλεία AI</li><li data-t="tApi">Σύνδεση με API</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ faq ============ -->
+  <section class="sec" id="faq" aria-labelledby="faqTitle">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="num" aria-hidden="true">10</span>
+        <h2 id="faqTitle" class="split" data-t="faqTitle">Ερωτήσεις</h2>
+        <svg class="under" viewBox="0 0 300 24" preserveAspectRatio="none" aria-hidden="true"><path class="d" pathLength="1" d="M4 14C80 6 200 20 296 10"/></svg>
+      </div>
+      <div class="faq-grid">
+      <div class="faq">
+        <details><summary data-t="q1">Ποιοι είστε;</summary><p data-t="a1x">Ο Γιώργος Σαμπάνης, που γράφει τον κώδικα, και ο Αστέρης Πήτας, που οργανώνει τα έργα. Είμαστε από τη Λάρισα.</p></details>
+        <details><summary data-t="q2">Τα φτιάχνει όλα το AI;</summary><p data-t="a2x">Όχι. Το AI είναι εργαλείο που μας κάνει γρηγορότερους. Τον κώδικα τον ελέγχουμε εμείς: κάνουμε debug, βρίσκουμε τα λάθη και τα διορθώνουμε, και δοκιμάζουμε κάθε σελίδα σε κινητά και υπολογιστές.</p></details>
+        <details><summary data-t="q3">Σε ποιες γλώσσες;</summary><p data-t="a3x">Ελληνικά και αγγλικά, όπως αυτή η σελίδα, και όσες ακόμα χρειάζονται: το PROJECT 7ο έχει 8.</p></details>
+        <details><summary data-t="q4">Δουλεύουν στο κινητό;</summary><p data-t="a4x">Πρώτα στο κινητό. Κάθε σελίδα ελέγχεται από τα μικρότερα κινητά, 320 pixels, μέχρι τις μεγάλες οθόνες.</p></details>
+        <details><summary data-t="q5">Είναι ασφαλής αυτή η σελίδα;</summary><p data-t="a5x">Ναι. Ανοίγει μόνο με HTTPS, έχει αυστηρή πολιτική ασφαλείας, δεν έχει διαφημίσεις τρίτων ούτε εργαλεία παρακολούθησης, και η φόρμα δεν αποθηκεύει τίποτα.</p></details>
+        <details><summary data-t="q6">Γιατί «teleia.»;</summary><p data-t="a6x">Γιατί τελειώνουμε κάθε έργο μέχρι την τελευταία τελεία. Και γιατί κάθε γραμμή σε αυτή τη σελίδα τελειώνει με μία.</p></details>
+      </div>
+      <aside class="faq-side" aria-labelledby="askTitle">
+        <span class="qmark" aria-hidden="true">?</span>
+        <div class="chat" aria-hidden="true"><p class="bub b1" data-t="bub1">Έχω μια ερώτηση…</p><p class="bub b2"><i></i><i></i><i></i></p></div>
+        <h3 id="askTitle" data-t="askTitle">Δεν βρήκατε την απάντηση;</h3>
+        <p data-t="askSub">Ρωτήστε μας απευθείας, με ένα μήνυμα.</p>
+        <a class="btn btn-yel" href="#contact" data-t="askBtn" data-cursor="cWrite">Ρωτήστε μας</a>
+      </aside>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta" aria-labelledby="ctaTitle">
+    <span class="stk stk1" data-speed=".1" data-t="ctaS1">Πείτε γεια</span><span class="stk stk2" data-speed="-.12" data-t="ctaS2">Χωρίς πίεση</span>
+    <h2 id="ctaTitle" class="split" data-t="ctaTitle">Έχετε ιδέα; Ας τη φτιάξουμε.</h2>
+    <a class="btn btn-ink" href="#contact" data-t="ctaBtn" data-cursor="cWrite">Γράψτε μας</a>
+  </section>
+
+  <!-- ============ contact ============ -->
+  <section class="sec dark" id="contact" aria-labelledby="contactTitle">
+    <div class="wrap contact-grid">
+      <div class="contact-copy">
+        <span class="num" aria-hidden="true">11</span>
+        <h2 id="contactTitle" class="split" data-t="contactTitle">Επικοινωνία</h2>
+        <svg class="under" viewBox="0 0 300 24" preserveAspectRatio="none" aria-hidden="true"><path class="d" pathLength="1" d="M4 12C90 22 200 4 296 12"/></svg>
+        <p class="sub" data-t="contactSub">Θέλετε να πείτε κάτι για κάποιο από τα έργα μας, ή απλώς ένα γεια; Γράψτε μας.</p>
+        <p class="direct"><span data-t="orEmail">Ή γράψτε μας απευθείας:</span><br>
+          <a class="mail" href="mailto:tipsandgreeks@gmail.com" data-cursor="cWrite">tipsandgreeks@gmail.com</a>
+          <button class="copy" type="button" data-copy="tipsandgreeks@gmail.com" data-t="copy">Αντιγραφή</button></p>
+        <ol class="next-steps">
+          <li><b data-t="ns1">Γράφετε</b><span data-t="ns1t">Τι έχετε στο μυαλό σας, με δικά σας λόγια.</span></li>
+          <li><b data-t="ns2">Το διαβάζουμε</b><span data-t="ns2t">Σας απαντάμε στο email που μας δώσατε.</span></li>
+          <li><b data-t="ns3">Το συζητάμε</b><span data-t="ns3t">Αν θέλετε, μιλάμε για την ιδέα σας.</span></li>
+        </ol>
+        <div class="plane-box" aria-hidden="true"><svg class="plane-path" viewBox="0 0 420 150"><path d="M10 120C70 30 150 20 200 70s120 60 210-40"/></svg><svg class="plane" viewBox="0 0 40 40"><path d="M3 19L37 4 28 36 19 25z"/><path d="M19 25l18-21"/></svg></div>
+      </div>
+      <form class="form" id="form" novalidate>
+        <div class="field">
+          <label for="f-name" data-t="fName">Όνομα</label>
+          <input id="f-name" name="name" autocomplete="name" required>
+          <p class="err" id="e-name" data-t="eName">Γράψτε το όνομά σας.</p>
+        </div>
+        <div class="field">
+          <label for="f-email" data-t="fEmail">Email</label>
+          <input id="f-email" name="email" type="email" autocomplete="email" inputmode="email" required>
+          <p class="err" id="e-email" data-t="eEmail">Γράψτε ένα email όπως onoma@example.gr, για να σας απαντήσουμε.</p>
+        </div>
+        <div class="field">
+          <label for="f-msg" data-t="fMsg">Μήνυμα</label>
+          <textarea id="f-msg" name="msg" rows="5" required></textarea>
+          <p class="err" id="e-msg" data-t="eMsg">Γράψτε ένα σύντομο μήνυμα.</p>
+        </div>
+        <button class="btn btn-full" type="submit" data-cursor="cWrite"><span data-t="send">Αποστολή μηνύματος</span></button>
+        <p class="form-note" data-t="formNote">Μετά διαλέγετε από πού θα φύγει: Gmail, Outlook ή η εφαρμογή email σας. Η σελίδα δεν αποθηκεύει τίποτα.</p>
+        <div class="ways" id="ways" hidden tabindex="-1">
+          <p class="ways-t" data-t="waysT">Το μήνυμα είναι έτοιμο. Από πού θέλετε να το στείλετε;</p>
+          <div class="ways-btns">
+            <a class="way w-gmail" id="wGmail" href="https://mail.google.com/" target="_blank" rel="noopener"><i aria-hidden="true">G</i><span>Gmail</span></a>
+            <a class="way w-outlook" id="wOutlook" href="https://outlook.live.com/" target="_blank" rel="noopener"><i aria-hidden="true">O</i><span>Outlook</span></a>
+            <a class="way w-app" id="wApp" href="mailto:tipsandgreeks@gmail.com"><i aria-hidden="true">@</i><span data-t="wApp">Εφαρμογή email</span></a>
+            <button class="way w-copy" type="button" id="copyMsg"><i aria-hidden="true">⧉</i><span data-t="copyMsg">Αντιγραφή μηνύματος</span></button>
+          </div>
+          <p class="ways-note" data-t="waysNote">Πηγαίνει στο tipsandgreeks@gmail.com. Αν αντιγράψετε το μήνυμα, το επικολλάτε σε όποιο email θέλετε.</p>
+        </div>
+      </form>
+    </div>
+  </section>
+</main>
+
+<footer class="ftr">
+  <div class="marquee mq-ftr" aria-hidden="true"><div class="mq-track">
+    <span>teleia.</span><b>●</b><span data-t="mf1">μέχρι την τελευταία τελεία</span><b>●</b><span>teleia.</span><b>●</b><span data-t="mf2">φτιαγμένο στη Λάρισα</span><b>●</b>
+  </div></div>
+  <div class="wrap">
+    <div class="ftr-top">
+      <p class="ftr-word" aria-hidden="true">teleia<b>.</b><svg viewBox="0 0 600 60" preserveAspectRatio="none"><path class="d" pathLength="1" d="M6 40C120 10 220 60 320 34s200-26 274 2"/></svg></p>
+      <div class="ftr-card">
+        <span class="duo-av" aria-hidden="true"><i data-t="georgeIni">ΓΣ</i><i data-t="asterisIni">ΑΠ</i></span>
+        <b data-t="ftrDuo">Γιώργος &amp; Αστέρης</b>
+        <p><span class="live-dot" aria-hidden="true"></span><span data-t="heroPill">Λάρισα, Ελλάδα</span> · <time class="clock">--:--</time></p>
+      </div>
+    </div>
+    <div class="ftr-cols">
+      <div><h2 data-t="fcPages">Σελίδα</h2><ul><li><a href="#work" data-t="navWork">Έργα</a></li><li><a href="#lab" data-t="navLab">Εργαστήριο</a></li><li><a href="#team" data-t="navTeam">Εμείς</a></li><li><a href="#faq" data-t="sdFaq">Ερωτήσεις</a></li></ul></div>
+      <div><h2 data-t="fcWork">Έργα</h2><ul><li><a href="https://www.giannotaspremiumautosalon.gr/" target="_blank" rel="noopener">Giannotas Premium Auto Salon ↗</a></li><li><a href="https://7o-epal-project.vercel.app/" target="_blank" rel="noopener">PROJECT 7ο ↗</a></li></ul></div>
+      <div><h2 data-t="fcContact">Επικοινωνία</h2><ul><li><a href="mailto:tipsandgreeks@gmail.com">tipsandgreeks@gmail.com</a></li><li data-t="ftrCity">Λάρισα, Ελλάδα</li></ul></div>
+    </div>
+    <div class="ftr-in">
+      <p data-t="ftrName">teleia. · Γιώργος Σαμπάνης &amp; Αστέρης Πήτας · Λάρισα</p>
+      <p data-t="ftrMade">Φτιαγμένο με κώδικα, όχι με πρότυπο. Χωρίς cookies, χωρίς παρακολούθηση.</p>
+      <p><a href="#top" data-t="toTop">Επάνω</a></p>
+    </div>
+  </div>
+</footer>
+
+<a class="totop" href="#top" data-ta="aria-label:toTop" aria-label="Επάνω"><svg viewBox="0 0 48 48" aria-hidden="true"><circle class="ring-bg" cx="24" cy="24" r="21"/><circle class="ring" cx="24" cy="24" r="21" pathLength="1"/><path d="M24 31V17m-6 6 6-6 6 6"/></svg></a>
+
+<!-- a small ad for our newest project, once per visit, halfway down -->
+<aside class="pop" id="pop" hidden data-ta="aria-label:popAria" aria-label="Νέο έργο">
+  <span class="pop-tag" data-t="adTag">Διαφήμιση</span>
+  <a class="pop-pic" href="https://www.giannotaspremiumautosalon.gr/" target="_blank" rel="noopener" tabindex="-1" aria-hidden="true"><img src="assets/img/work/giannotas.webp" alt="" width="1200" height="750" loading="lazy"><b class="pop-new" data-t="adBurst">ΝΕΟ!</b></a>
+  <div class="pop-txt"><b data-t="popT">Νέο: το Giannotas είναι online</b><span data-t="popS">Ματ μαύρο, κοντέρ στην είσοδο, Inter παντού.</span><a class="btn btn-sm" href="https://www.giannotaspremiumautosalon.gr/" target="_blank" rel="noopener"><span data-t="ad2b">Ανοίξτε το</span> ↗</a></div>
+  <button type="button" class="pop-x" data-ta="aria-label:close" aria-label="Κλείσιμο">×</button>
+  <i class="pop-time" aria-hidden="true"></i>
+</aside>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+</body>
+</html>
