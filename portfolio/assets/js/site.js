@@ -348,10 +348,10 @@
       const nudge = (t) => { const k = Math.min(1, (t - t0) / 1600); r.value = 50 + Math.sin(k * Math.PI * 2) * 22 * (1 - k); set(); if (k < 1) requestAnimationFrame(nudge); }; requestAnimationFrame(nudge); }, { threshold: .6 }).observe(ba);
   }
 
-  /* ================= PROJECT 7o: welcome in its 8 languages ================= */
-  const HELLO = [["el", "Καλώς ήρθατε"], ["en", "Welcome"], ["de", "Willkommen"], ["es", "Bienvenidos"], ["ru", "Добро пожаловать"], ["sq", "Mirë se vini"], ["fa", "خوش آمدید"], ["he", "ברוכים הבאים"]];
+  /* ================= PROJECT 7o: welcome in its 15 languages ================= */
+  const HELLO = [["el", "Καλώς ήρθατε"], ["en", "Welcome"], ["de", "Willkommen"], ["es", "Bienvenidos"], ["ru", "Добро пожаловать"], ["sq", "Mirë se vini"], ["fa", "خوش آمدید"], ["he", "ברוכים הבאים"], ["fr", "Bienvenue"], ["zh", "欢迎"], ["hi", "स्वागत है"], ["ar", "أهلًا وسهلًا"], ["bn", "স্বাগতম"], ["pt", "Bem-vindos"], ["id", "Selamat datang"]];
   const hw = $("#hello"), hl = $("#helloL"); let hi = 0;
-  const setHello = () => { const [code, word] = HELLO[hi]; hw.textContent = word; hw.lang = code; hw.dir = code === "fa" || code === "he" ? "rtl" : "ltr"; hl.textContent = T("langNames")[code]; };
+  const setHello = () => { const [code, word] = HELLO[hi]; hw.textContent = word; hw.lang = code; hw.dir = code === "fa" || code === "he" || code === "ar" ? "rtl" : "ltr"; hl.textContent = T("langNames")[code]; };
   setHello();
   if (!reduce) setInterval(() => { if (document.hidden) return; hw.classList.add("swap"); setTimeout(() => { hi = (hi + 1) % HELLO.length; setHello(); hw.classList.remove("swap"); }, 320); }, 1900);
 

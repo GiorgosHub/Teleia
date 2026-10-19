@@ -18,7 +18,7 @@
     duoTxt: "One team, two people",
     seeWork: "See the projects", playLab: "Play in the lab",
     hk1: "Phone first", hk2: "Greek & English", hk3: "Code checked by us",
-    stk1: "Real projects", stk2: "Made in Larissa", stk3: "8 languages", stk4: "25 versions", scrollHint: "scroll down",
+    stk1: "Real projects", stk2: "Made in Larissa", stk3: "15 languages", stk4: "25 versions", scrollHint: "scroll down",
 
     mq1: "Websites", mq2: "Web apps", mq3: "AI assistants", mq4: "Greek & English", mq5: "Phone first", mq6: "Live data", mq7: "Larissa",
 
@@ -38,7 +38,7 @@
     ad1h: "Giannotas Premium Auto Salon. Matte black, live data, a speedometer that lights up as you arrive.",
     ad1p: "Cars and parts straight from its car.gr listings, a car in X-ray to find the right part, and 25 versions down to the last detail.",
     ad1b: "See how it was made",
-    ad2h: "Your school, on your phone.", ad2p: "Timetable, bells, announcements and an AI assistant, in 8 languages. It even opens without internet.", ad2b: "Open it",
+    ad2h: "Your school, on your phone.", ad2p: "Timetable, bells, announcements and an AI assistant, in 15 languages. It even opens without internet.", ad2b: "Open it",
     ad3h: "Got an idea for a website?", ad3p: "Write to us about what you have in mind. One message is enough.", ad3b: "Write to us",
 
     whatTitle: "What we build", whatSub: "Hover over a card or tap it: on the back is the project where we did it.",
@@ -46,7 +46,7 @@
     w1: "Websites", w1t: "Fast, clean, phone first.", w1b: "Home page, cars, parts, a page for every listing.",
     w2: "Web apps", w2t: "Live timetables, search, tools.", w2b: "Real-time bells, find your class, a student lab.",
     w3: "AI assistants", w3t: "They answer right inside the page.", w3b: "An assistant for questions and exercises, with its key hidden on the server.",
-    w4: "Many languages", w4t: "Greek, English and as many as needed.", w4b: "8 languages, right-to-left included.",
+    w4: "Many languages", w4t: "Greek, English and as many as needed.", w4b: "15 languages, right-to-left included.",
     w5: "Live data", w5t: "What changes elsewhere changes here too.", w5b: "The car.gr listings: whatever sells disappears by itself.",
     w6: "Security & speed", w6t: "HTTPS, a strict policy, 60 frames.", w6b: "No hidden tracking tools, no keys in the browser.",
 
@@ -55,8 +55,8 @@
     statusWip: "In progress", statusLive: "Live",
     gShort: "A car showroom and parts shop in Larissa, live from car.gr.",
     tagCargr: "Live from car.gr", tagXray: "Car in X-ray", tagGauge: "Speedometer intro",
-    p7Short: "An unofficial website for the 7th Vocational High School of Larissa: timetable, bells, AI assistant, 8 languages.",
-    tag8: "8 languages", tagAI: "AI assistant", tag3d: "The school in 3D", lookClose: "Take a closer look",
+    p7Short: "An unofficial website for the 7th Vocational High School of Larissa: timetable, bells, AI assistant, 15 languages.",
+    tag8: "15 languages", tagAI: "AI assistant", tag3d: "The school in 3D", lookClose: "Take a closer look",
 
     gKick: "A detailed look",
     gSub: "A website for a car showroom and parts shop in Larissa. The owner posts his listings on car.gr, and the website shows them by itself.",
@@ -95,8 +95,8 @@
     pS4t: "School in 3D", pS4: "The school in 3D",
     pS5t: "Holidays", pS5: "The holiday calendar",
     pS6t: "Lab", pS6: "The student lab with a study timer",
-    lgTitle: "8 languages, one website",
-    lgSub: "Greek, English, German, Spanish, Russian, Albanian, Persian and Hebrew. The last two are written right to left, and the whole page flips.",
+    lgTitle: "15 languages, one website",
+    lgSub: "Greek, English, German, Spanish, Russian, Albanian, Persian, Hebrew, French, Chinese, Hindi, Arabic, Bengali, Portuguese and Indonesian: all ten of the world's most spoken languages. Persian, Hebrew and Arabic are written right to left, and the whole page flips.",
     pf1: "Real-time bells", pf1t: "Which period it is now and when the next bell rings, with a bar that fills up.",
     pf2: "Find your class", pf2t: "Type your class and see which lesson you have now and all week.",
     pf3: "AI assistant", pf3t: "For questions and exercises. Its key stays on the server, not in the browser.",
@@ -141,7 +141,7 @@
     asterisFirst: "Asteris", georgeFirst: "George", together: "Together",
 
     stTitle: "Our story", stSub: "Still short, but every part of it is real.",
-    m1: "PROJECT 7o", m1t: "Our first big website, for our school: timetable, announcements, an AI assistant, 8 languages, the school in 3D.",
+    m1: "PROJECT 7o", m1t: "Our first big website, for our school: timetable, announcements, an AI assistant, 15 languages, the school in 3D.",
     m2t: "A website for a car showroom in Larissa: cars and parts live from car.gr, 25 versions. Live since October 2026.",
     m3w: "October 2026", m3t: "We give a name to what we already do: websites, down to the last dot.",
     m4w: "Next", m4: "The next project", m4t: "This is where the next line goes.",
@@ -194,7 +194,7 @@
       bugNo: "Αυτή η γραμμή είναι σωστή. Ψάξτε αλλού.",
       drawDone: "Και μια τελεία στο τέλος.",
       mailOpening: "Ανοίγει σε νέα καρτέλα· πατήστε «Αποστολή» εκεί.",
-      langNames: { el: "ΕΛ", en: "EN", de: "DE", es: "ES", ru: "RU", sq: "SQ", fa: "FA", he: "HE" },
+      langNames: { el: "ΕΛ", en: "EN", de: "DE", es: "ES", ru: "RU", sq: "SQ", fa: "FA", he: "HE", fr: "FR", zh: "ZH", hi: "HI", ar: "AR", bn: "BN", pt: "PT", id: "ID" },
     },
     en: {
       rot: ["Websites", "Web apps", "AI assistants"],
@@ -209,7 +209,7 @@
       bugNo: "This line is fine. Look elsewhere.",
       drawDone: "And a dot at the end.",
       mailOpening: "Opening in a new tab; press “Send” there.",
-      langNames: { el: "EL", en: "EN", de: "DE", es: "ES", ru: "RU", sq: "SQ", fa: "FA", he: "HE" },
+      langNames: { el: "EL", en: "EN", de: "DE", es: "ES", ru: "RU", sq: "SQ", fa: "FA", he: "HE", fr: "FR", zh: "ZH", hi: "HI", ar: "AR", bn: "BN", pt: "PT", id: "ID" },
     },
   };
 
