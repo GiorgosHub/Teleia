@@ -1,0 +1,49 @@
+/* ==========================================================================
+   base: reset, the page, type, focus, utilities
+   ========================================================================== */
+*,*::before,*::after{box-sizing:border-box}
+[hidden]{display:none!important}
+html{-webkit-text-size-adjust:100%;scroll-padding-top:calc(var(--hdr) + 24px);background:var(--paper)}
+@media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
+body{margin:0;min-height:100svh;color:var(--ink);font:400 var(--t-md)/1.6 var(--font);font-feature-settings:"ss01","cv11";
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;overflow-x:clip;
+  /* dotted paper: the page's own background, so it scrolls with the page and costs nothing */
+  background:var(--paper) radial-gradient(rgba(20,20,20,.045) 1px,transparent 1.3px) 0 0/24px 24px}
+:root[data-theme=dark] body{background-image:radial-gradient(rgba(245,240,230,.035) 1px,transparent 1.3px)}
+main,footer{position:relative;z-index:1}
+img,svg,canvas,video{display:block;max-width:100%}
+img{height:auto}
+a{color:inherit;text-decoration-thickness:.08em;text-underline-offset:.18em}
+button,input,textarea,select{font:inherit;color:inherit}
+button{cursor:pointer}
+h1,h2,h3,h4,p,figure,blockquote,dl,dd{margin:0}
+ul,ol{margin:0;padding:0;list-style:none}
+:focus-visible{outline:3px solid var(--red-t);outline-offset:3px;border-radius:8px}
+::selection{background:var(--yel);color:#141414}
+
+/* type */
+.h1{font-size:var(--t-h1);font-weight:900;line-height:.9;letter-spacing:var(--track-display)}
+.h2{font-size:var(--t-h2);font-weight:900;line-height:.94;letter-spacing:var(--track-display);text-wrap:balance}
+.h3{font-size:var(--t-h3);font-weight:800;line-height:1.15;letter-spacing:-.02em}
+.lead{font-size:var(--t-lg);line-height:1.5;color:var(--ink-2);max-width:38ch;text-wrap:pretty}
+.small{font-size:var(--t-sm);color:var(--mute)}
+.num{font-variant-numeric:tabular-nums}
+p{text-wrap:pretty}
+
+/* layout */
+.wrap{width:var(--wrap);margin-inline:auto}
+.sec{position:relative;padding-block:var(--sec)}
+.sec-head{display:grid;gap:var(--s5);margin-bottom:clamp(40px,6vw,88px)}
+.sec-head .lead{max-width:46ch}
+@media (min-width:960px){.sec-head{grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);align-items:end}}
+
+/* the full stop that ends every heading: a place the travelling dot lands on */
+.stop{display:inline-block;width:.19em;height:.19em;margin-inline-start:.05em;border-radius:50%;background:var(--red);vertical-align:baseline;
+  transform-origin:50% 50%}
+
+/* utilities */
+.sr{position:absolute!important;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.skip{position:fixed;left:12px;top:-80px;z-index:600;padding:12px 18px;border:2px solid var(--line);border-radius:12px;background:var(--yel);color:#141414;font-weight:800;text-decoration:none;box-shadow:var(--sh)}
+.skip:focus{top:12px}
+/* English chosen: the page waits a moment for the English texts, so the Greek never flashes */
+.i18n-wait body{visibility:hidden}
