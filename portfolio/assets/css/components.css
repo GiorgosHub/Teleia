@@ -38,7 +38,7 @@
 /* ---------- frames: a browser window and a phone ---------- */
 .frame{position:relative;margin:0;border:2px solid var(--line);border-radius:var(--r);background:var(--card);box-shadow:var(--sh-lg);overflow:hidden}
 .frame img{width:100%;aspect-ratio:16/10;object-fit:cover;object-position:top}
-.hero-clip{width:100%;height:auto;aspect-ratio:16/10;object-fit:cover;object-position:center;background:var(--paper-2)}
+.hero-clip{width:100%;height:auto;aspect-ratio:16/10;object-fit:cover;object-position:center;background:var(--paper-2);filter:saturate(1.05) contrast(1.03)}
 .frame-bar{display:flex;align-items:center;gap:6px;height:30px;padding:0 12px;border-bottom:2px solid var(--line);background:var(--paper-2);font-size:.72rem;font-weight:600;color:var(--mute);white-space:nowrap;overflow:hidden}
 .frame-bar i{flex:none;width:9px;height:9px;border-radius:50%;border:1.5px solid var(--line)}
 .frame-bar i:nth-child(1){background:var(--red)} .frame-bar i:nth-child(2){background:var(--yel)} .frame-bar i:nth-child(3){background:#2BC46E}
