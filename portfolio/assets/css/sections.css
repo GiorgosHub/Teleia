@@ -277,6 +277,10 @@
   .pin .proc-visual{gap:var(--s2);min-height:0}
   .pin .proc-phases{flex-wrap:wrap;gap:4px}
 }
+@media (max-width:599px){
+  /* Keep the active caption anchored to the full row while the step fades in. */
+  .pin .steps .step.rv{translate:none}
+}
 @media (min-width:600px) and (max-width:959px){
   .pin .proc-grid{grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);grid-template-rows:1fr;gap:var(--s4)}
   .pin .steps{display:grid;grid-template-columns:1fr;grid-template-rows:none;min-height:0;gap:var(--s1)}
