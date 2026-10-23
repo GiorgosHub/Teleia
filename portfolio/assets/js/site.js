@@ -370,22 +370,27 @@ function initReveal() {
 
 
 function initHeroVideo() {
+  const hero = $(".hero");
+  const background = $(".hero-background-video");
   const film = $(".hero-clip");
-  if (!film || reduce()) return;
-  let inView = true;
-  const sync = () => {
-    if (!inView || document.hidden || reduce()) { film.pause(); return; }
-    film.preload = "metadata";
-    film.play().catch(() => {});
+  const watch = (video, target, rootMargin) => {
+    if (!video || !target) return;
+    let inView = true;
+    const sync = () => {
+      if (!inView || document.hidden || reduce()) { video.pause(); return; }
+      video.play().catch(() => {});
+    };
+    if ("IntersectionObserver" in window) {
+      inView = false;
+      const io = new IntersectionObserver(([entry]) => { inView = entry.isIntersecting; sync(); }, { rootMargin, threshold: .01 });
+      io.observe(target);
+    }
+    document.addEventListener("visibilitychange", sync);
+    reduceMQ.addEventListener("change", sync);
+    sync();
   };
-  if ("IntersectionObserver" in window) {
-    inView = false;
-    const io = new IntersectionObserver(([entry]) => { inView = entry.isIntersecting; sync(); }, { rootMargin: "80px", threshold: .05 });
-    io.observe(film);
-  }
-  document.addEventListener("visibilitychange", sync);
-  reduceMQ.addEventListener("change", sync);
-  sync();
+  watch(background, hero, "0px");
+  watch(film, film, "80px");
 }
 /* ===== features/traveler.js ===== */
 /* The travelling full stop.
