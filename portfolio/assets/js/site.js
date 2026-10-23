@@ -12,7 +12,7 @@ const root = document.documentElement;
 const mq = (q) => matchMedia(q);
 const reduceMQ = mq("(prefers-reduced-motion: reduce)");
 const fineMQ = mq("(hover: hover) and (pointer: fine)");
-/* the scroll-pinned scenes (galleries, process) only on screens wide enough for them, and only with motion */
+/* Scroll-pinned scenes run when the viewport is tall enough and motion is allowed. */
 const pinMQ = mq("(min-height: 360px) and (prefers-reduced-motion: no-preference)");
 
 const reduce = () => reduceMQ.matches;
@@ -501,9 +501,8 @@ function initTraveler() {
 
 
 /* ===== features/gallery.js ===== */
-/* The screenshots of each project. On wide screens the section is pinned: you keep scrolling down and the screens
-   slide sideways, each one turning a little as it passes the middle. On phones (and with less motion) it is an
-   ordinary row you swipe, which snaps to each screen. */
+/* The project screens travel sideways while the section is pinned. Touch momentum is eased so a fast swipe still
+   carries the intervening screens through the viewport. With reduced motion, the screenshots form a swipeable row. */
 function initPin() {
   const set = () => { root.classList.toggle("pin", pinMQ.matches); remeasure(); };
   pinMQ.addEventListener("change", set);
@@ -515,11 +514,12 @@ function initGalleries() {
     const track = $(".gal-track", gal), shots = $$(".shot", track), now = $("[data-gal-now]", gal), bar = $("[data-gal-bar]", gal);
     const n = shots.length;
     gal.style.setProperty("--n", n);
-    let top = 0, h = 0, range = 0, vis = false, p = -1, centers = [];
+    let top = 0, h = 0, range = 0, vis = false, p = 0, painted = -1, centers = [];
     measure((s) => {
       top = gal.getBoundingClientRect().top + s.y; h = gal.offsetHeight;
       range = Math.max(0, track.scrollWidth - s.vw);
       centers = shots.map((sh) => sh.offsetLeft + sh.offsetWidth / 2);
+      painted = -1;
     });
     const show = (q) => {
       const i = Math.min(n - 1, Math.round(q * (n - 1)));
@@ -530,19 +530,24 @@ function initGalleries() {
       read(s) { vis = s.y + s.vh > top && s.y < top + h; },
       write(s) {
         if (!vis || !root.classList.contains("pin")) return false;
-        const q = clamp((s.y - top) / Math.max(1, h - s.vh));
-        if (q === p) return false;
-        p = q;
-        const x = q * range;
-        track.style.transform = `translate3d(${-x}px,0,0)`;
-        /* each screen leans as it travels through the window, and stands straight in the middle */
-        const mid = x + s.vw / 2;
-        shots.forEach((sh, i) => {
-          const d = clamp((centers[i] - mid) / s.vw, -1, 1);
-          sh.style.transform = `perspective(1400px) rotateY(${d * -14}deg) scale(${1 - Math.abs(d) * .08})`;
-        });
-        show(q);
-        return false;
+        const target = clamp((s.y - top) / Math.max(1, h - s.vh));
+        /* Touch momentum can move through several cards between frames. Ease the scrubber to
+           the finger's new position so the intervening screens still travel across the viewport. */
+        p = fine() ? target : lerp(p, target, .18);
+        if (Math.abs(target - p) < .001) p = target;
+        if (Math.abs(p - painted) > .0005) {
+          painted = p;
+          const x = p * range;
+          track.style.transform = `translate3d(${-x}px,0,0)`;
+          /* each screen leans as it travels through the window, and stands straight in the middle */
+          const mid = x + s.vw / 2;
+          shots.forEach((sh, i) => {
+            const d = clamp((centers[i] - mid) / s.vw, -1, 1);
+            sh.style.transform = `perspective(1400px) rotateY(${d * -14}deg) scale(${1 - Math.abs(d) * .08})`;
+          });
+          show(p);
+        }
+        return !fine() && Math.abs(target - p) >= .001;
       },
     });
     /* with the keyboard: while pinned, the arrows move one screen (by scrolling the page the right amount) */
@@ -557,7 +562,7 @@ function initGalleries() {
       if (root.classList.contains("pin")) return;
       show(clamp(track.scrollLeft / Math.max(1, track.scrollWidth - track.clientWidth)));
     }, { passive: true });
-    pinMQ.addEventListener("change", () => { track.style.transform = ""; shots.forEach((sh) => (sh.style.transform = "")); p = -1; });
+    pinMQ.addEventListener("change", () => { track.style.transform = ""; shots.forEach((sh) => (sh.style.transform = "")); p = 0; painted = -1; });
   });
 }
 
@@ -571,7 +576,7 @@ function initProcess() {
     stamp = $(".proc-stamp", sec), url = $(".proc-url", sec), steps = $$(".step", sec), phases = $$(".proc-phases li", sec);
   const URLS = ["sketch.teleia", "design.teleia", "7o-epal-project.vercel.app"];
   let top = 0, h = 0, vis = false, last = -1;
-  measure((s) => { top = sec.getBoundingClientRect().top + s.y; h = sec.offsetHeight; last = -1; });
+  measure((s) => { top = sec.getBoundingClientRect().top + s.y; h = sec.offsetHeight; });
 
   const paint = (p) => {
     const draw = clamp(p / .3), col = clamp((p - .3) / .16), wipe = clamp((p - .52) / .22);
@@ -595,9 +600,15 @@ function initProcess() {
         return false;
       }
       if (!vis) return false;
-      const p = clamp((s.y - top) / Math.max(1, h - s.vh));
+      const target = clamp((s.y - top) / Math.max(1, h - s.vh));
+      const current = last >= 0 && last <= 1 ? last : 0;
+      const p = fine() ? target : lerp(current, target, .18);
+      if (Math.abs(target - p) < .001) {
+        if (p !== last) { last = target; paint(target); }
+        return false;
+      }
       if (p !== last) { last = p; paint(p); }
-      return false;
+      return true;
     },
   });
 }
