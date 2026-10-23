@@ -1,51 +1,51 @@
 # teleia. — portfolio of George Sabanis & Asteris Pitas
 
-A static site (HTML, CSS, plain JavaScript, no build step), ready for Vercel. Greek is the main language, English
-is complete.
+A static site (HTML, CSS, plain JavaScript, no build step), ready for Vercel. Greek is the main language,
+English is complete. Version 3: a new structure and a new way of moving, the same colours.
+
+## The idea
+*Teleia* is Greek for "full stop". One red dot is the hero's full stop. As you scroll, the hero holds still and the dot
+grows until the whole window is red: you fall into the red section with the two projects. From there a dot travels
+with you: it waits on a dotted rail in the left margin while you read, and jumps into place as the full stop of every
+heading you reach. Headings it hasn't reached yet have no full stop.
+
+## The page, top to bottom
+1. **Hero** — the headline, three real screens at three depths (they follow the pointer), a marquee.
+2. **Work** (red) — the index of the two projects; on a computer the screenshot follows the pointer.
+3. **Giannotas** (matte black) — screens that slide sideways while you scroll down (pinned), the arrival in five
+   frames, eight facts, before/after, three speedometers (25 versions, 54 checks, 60 fps), the version line.
+4. **PROJECT 7o** — pinned screens, the welcome in 15 languages, sticky notes, the poster.
+5. **From a line to a website** (pinned) — the scroll draws a sketch, colours it in, wipes the real site over it and
+   stamps it "online", while the five steps of how we work light up.
+6. **Team** — two cards that turn over, and our story so far.
+7. **Lab** — find the bugs, draw a line, the real pre-delivery commands, this page measured live.
+8. **Questions** and **Contact** (the form writes an email; nothing is stored or sent from the page).
 
 ## Files
-- `index.html` — the whole page, written in Greek. Every text has a key (`data-t`, `data-th` for text with bold,
-  `data-ta` for attributes such as `aria-label`, `alt` and the meta tags).
-- `assets/js/i18n.js` — the English for every key, plus the texts only scripts show (pointer labels, the bug game,
-  messages), in both languages. `?lang=en` opens the page in English; the choice is remembered on the device.
-- `assets/js/site.js` — everything that moves or answers: the opening line, the pointer, sparks and confetti,
-  letter-by-letter headings, the drawn lines, the thread down the page, marquees that speed up with the scroll,
-  counters, tilting cards, the screenshot carousels, before/after, the 8-language welcome, the lab (find the bugs,
-  draw a line, the terminal, the live meter of the page itself), the team sentence that lights up word by word, the
-  outlined section numbers and corner drawings, the light in the dark sections, the story line, the sketch that
-  becomes a website, the orbit, the small ad, the form.
-- `assets/js/boot.js` — runs before the page is drawn (theme, opening animation once per visit).
-- `assets/css/site.css` — the look. Light paper and a night theme (the moon button).
-- `assets/fonts/Inter-var.woff2` — Inter, one variable file with Greek (SIL OFL licence next to it).
-- `assets/img/work/` — real screenshots of Giannotas (v25 and an older version for the before/after) and PROJECT 7ο.
-- Live sites linked from the page: https://www.giannotaspremiumautosalon.gr/ and https://7o-epal-project.vercel.app/
-- `404.html` + `assets/js/nf.js` — the "not found" page, in both languages.
-- `vercel.json` — strict security headers. The page has no inline scripts or styles, so they all work.
+- `index.html` — the whole page, in Greek. Every text has a key (`data-t`, `data-ta` for attributes).
+- `assets/css/` — `tokens.css` (colours, type, spacing, motion), `base.css`, `components.css`, `sections.css`,
+  `motion.css` (entrances, and what stops with "reduce motion").
+- `assets/js/i18n.js` — the English for every key, plus texts only scripts show, in both languages.
+- `assets/js/site.js` — every script of the page in one plain file, in sections: helpers and the one frame loop
+  first, then one section per thing (`ui`, `extras`, `reveal`, `traveler` (the dot and the zoom), `gallery`,
+  `process`, `pointer`, `lab`, `form`) and the start-up at the end. It also works when `index.html` is opened
+  straight from a folder.
+- `assets/js/boot.js` — runs before the page is drawn (theme, intro once per visit, no Greek flash in English).
+- `assets/video/hero.mp4` — the silent Higgsfield hero film, with a still project screenshot as its poster.
+- `404.html` + `assets/js/nf.js` — the "not found" page.
+- `vercel.json` — strict security headers. No inline scripts or styles anywhere, so they all hold.
 
 ## Change things
-- **A text:** change the Greek in `index.html` and the English under the same key in `assets/js/i18n.js`.
-- **Email:** `tipsandgreeks@gmail.com` in `index.html` (contact, footer) and `EMAIL` in `assets/js/site.js`.
-- **The small ad** (bottom left, once per visit, closes by itself): the `#pop` block at the end of `index.html`.
-- **The ad breaks:** `#ad1` and `#ad2` in `index.html`. They only advertise our own projects.
-- **Numbers:** the `.nums` list (`data-count` is the number it counts up to).
-
-## Put it online
-1. Upload this folder to a GitHub repository.
-2. On vercel.com: Add New → Project → import it (framework "Other", no build command) → Deploy.
+- **A text:** the Greek in `index.html`, the English under the same key in `assets/js/i18n.js`.
+- **Email:** `tipsandgreeks@gmail.com` in `index.html` and `EMAIL` in `assets/js/site.js`.
+- **A new heading that the dot should land on:** end it with `<span class="stop" data-stop aria-hidden="true"></span>`.
 
 ## Speed
-- Everything that loops moves with `transform` and `opacity` only (the graphics card draws it), and parts of the
-  page that are off the screen pause.
-- The red line down the page is measured with plain arithmetic, once per load, resize or language change (asking
-  the browser to measure it was what froze the page for about 3 seconds in v2).
-- The marquees are browser animations; scrolling only changes their speed.
-- The line down the page is as tall as the page and scrolls with it; each section's piece draws itself once, and
-  only the little dot moves (a transform). The dotted paper is the page's own background, not a layer on top.
-- On each frame the scroll position and window height are read once, before anything is written, and only values
-  that changed are written; hovered cards and buttons are measured once when the pointer arrives.
-- The theme and language circle gets the click point directly (no page-wide variable), so a switch restyles the
-  page once, not twice.
+- One frame loop for the whole page: measure (only after resize, load, fonts or language), then every module reads,
+  then every module writes. The loop sleeps when nothing moves.
+- Everything that moves uses `transform` and `opacity` (the zoom circle is drawn large and scaled down, so its edge
+  stays sharp). Pinned scenes run on phones and desktop, with gallery cards and the process scene sized for each viewport. The hero film plays muted while visible and pauses offscreen; reduced-motion preferences keep its poster still.
+- With "reduce motion": nothing pins, travels or sways; every full stop is simply printed.
 
-Everything that moves stops for visitors who ask their device for less motion. Nothing is stored or sent: after
-"Send the message" the visitor chooses Gmail, Outlook, their email app, or copying the text, with the message
-already written in.
+## Put it online
+On vercel.com: import the repository, root directory `portfolio`, framework "Other", no build command.
