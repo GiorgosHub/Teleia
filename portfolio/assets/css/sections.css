@@ -278,6 +278,8 @@
   .pin .proc-phases{flex-wrap:wrap;gap:4px}
 }
 @media (max-width:599px){
+  /* Reserve space for the tallest mobile caption before the preview. */
+  .pin .steps{min-height:162px}
   /* Keep the active caption anchored to the full row while the step fades in. */
   .pin .steps .step.rv{translate:none}
 }
