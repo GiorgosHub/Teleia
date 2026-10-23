@@ -4,10 +4,10 @@
    things that arrive once are CSS transitions switched on by a class (.in).
    ========================================================================== */
 
-/* ---------- headings arrive word by word, each word rising out of its own line ---------- */
-.w{display:inline-block;vertical-align:top}
-.js.reveal-ready .w > span{display:inline-block;transform:translateY(24%) rotate(2deg);opacity:0;transform-origin:0 100%;transition:transform var(--d3) var(--ease),opacity var(--d2) var(--ease);transition-delay:calc(var(--i,0) * 55ms)}
-.js.reveal-ready .in .w > span,.js.reveal-ready .w.in > span{transform:none;opacity:1}
+/* ---------- headings rise word by word; each word comes out of its own line ---------- */
+.w{display:inline-block;overflow:clip;overflow-clip-margin:.12em;vertical-align:top;padding-bottom:.06em;margin-bottom:-.06em}
+.js.reveal-ready .w > span{display:inline-block;transform:translateY(105%) rotate(4deg);transform-origin:0 100%;transition:transform var(--d3) var(--ease);transition-delay:calc(var(--i,0) * 55ms)}
+.js.reveal-ready .in .w > span,.js.reveal-ready .w.in > span{transform:none}
 
 /* ---------- blocks settle in as they arrive ---------- */
 .js.reveal-ready .rv{opacity:0;translate:0 36px;transition:opacity var(--d3) var(--ease),translate var(--d3) var(--ease);transition-delay:calc(var(--i,0) * 70ms)}
