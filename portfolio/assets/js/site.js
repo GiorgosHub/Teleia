@@ -406,7 +406,7 @@ function initTraveler() {
   heroStop.classList.add("landed");
 
   /* measured: where each stop is reached, and the sections where the dot turns yellow (on red) */
-  let stops = [], workTop = 0, zoomEnd = 0, zoomable = false, colorZones = [], railX = 0, anchorY = 0, showRail = true;
+  let stops = [], workTop = 0, zoomEnd = 0, zoomStart = 0, zoomable = false, colorZones = [], railX = 0, anchorY = 0, showRail = true;
   measure((s) => {
     anchorY = s.vh * ANCHOR;
     showRail = true;
@@ -417,6 +417,10 @@ function initTraveler() {
     const hero = $(".hero"), pin = $(".hero-pin");
     zoomable = pin.offsetHeight <= s.vh * 1.06 || s.vw < 960;
     root.classList.toggle("zoomable", zoomable);
+    /* On phones, wait until the checklist scrolls clear before starting the red wipe. */
+    const ticks = $(".ticks");
+    zoomStart = s.vh * .04;
+    if (s.vw < 960 && ticks) zoomStart = Math.max(zoomStart, docTop(ticks) + ticks.offsetHeight);
     zoomEnd = docTop(hero) + hero.offsetHeight - s.vh;
     workTop = docTop(work);
     const pinned = root.classList.contains("pin");
@@ -451,9 +455,13 @@ function initTraveler() {
       const y = s.y;
       /* 1. the zoom: while the hero holds still, its full stop grows until the window is red; the red section
          then slides in underneath, red on red, and takes over */
-      const start = s.vh * .04, p = clamp((y - start) / Math.max(1, zoomEnd - start));
+      const p = clamp((y - zoomStart) / Math.max(1, zoomEnd - zoomStart));
       if (zoomable && heroR && p > 0 && y < workTop) {
-        const ox = heroR.left + heroR.width / 2, oy = heroR.top + heroR.height / 2;
+        /* The phone copy has scrolled clear; grow the wipe from the held collage. */
+        const mobile = s.vw < 960;
+        const stageR = mobile ? $(".stage").getBoundingClientRect() : null;
+        const ox = mobile ? stageR.left + stageR.width / 2 : heroR.left + heroR.width / 2,
+          oy = mobile ? stageR.top + stageR.height / 2 : heroR.top + heroR.height / 2;
         const far = Math.hypot(Math.max(ox, s.vw - ox), Math.max(oy, s.vh - oy));
         const sc = lerp(heroR.width / 2000, far / 1000 + .01, Math.pow(p, 2.4));
         zoom.style.transform = `translate3d(${ox}px,${oy}px,0) scale(${sc})`;

@@ -263,6 +263,9 @@
 @media (max-width:959px){
   .zoomable .hero{height:auto;min-height:0;overflow:visible}
   .zoomable .hero-pin{position:relative;top:auto;overflow-x:clip}
+  /* Hold the artwork for the mobile wipe after the copy has scrolled past. */
+  .zoomable .hero-grid{grid-template-rows:auto minmax(340px,200svh)}
+  .zoomable .stage{position:sticky;top:20vh;height:clamp(340px,60svh,560px)}
   .pin .shot{width:min(86vw,980px)}
   .pin .process{height:440svh}
   .pin .proc-pin{padding-block:calc(var(--hdr) + 10px) 10px}
