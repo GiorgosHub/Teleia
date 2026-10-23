@@ -62,7 +62,10 @@
 
 /* ---------- hero ---------- */
 .hero{position:relative;z-index:2;overflow-x:clip}
-.hero-pin{min-height:100svh;padding-top:calc(var(--hdr) + clamp(20px,4vh,56px));display:flex;flex-direction:column}
+.hero-pin{position:relative;isolation:isolate;min-height:100svh;padding-top:calc(var(--hdr) + clamp(20px,4vh,56px));display:flex;flex-direction:column}
+.hero-backdrop{position:sticky;z-index:-1;top:0;flex:none;height:100svh;margin-top:calc(0px - var(--hdr) - clamp(20px,4vh,56px));margin-bottom:-100svh;overflow:hidden;pointer-events:none;background:var(--paper)}
+.hero-backdrop::after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,color-mix(in srgb,var(--paper) 48%,transparent),color-mix(in srgb,var(--paper) 32%,transparent))}
+.hero-background-video{position:absolute;inset:0;width:100%;height:100%;max-width:none;object-fit:cover;object-position:center;opacity:.68;filter:saturate(.78)}
 /* with motion, and when the hero fits the window: it holds still while its full stop grows over everything */
 .zoomable .hero{height:185svh;overflow:visible}
 .zoomable .hero-pin{position:sticky;top:0;overflow-x:clip}
