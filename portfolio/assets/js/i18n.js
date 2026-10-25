@@ -15,7 +15,7 @@
 
     heroPlace: "Larissa, Greece", duoTxt: "One team, two people",
     heroTitle: "Websites down to the very last dot",
-    heroLead: "George and Asteris build websites and web apps in Larissa, Greece. Two real projects, both live.",
+    heroLead: "We build websites and web apps in Larissa, Greece. Two real projects, both live.",
     seeWork: "See the projects", writeUs: "Write to us",
     hk1: "Phone first", hk2: "Greek & English", hk3: "Code checked by us",
     stk1: "Real projects", stk2: "versions", stk3: "languages",
