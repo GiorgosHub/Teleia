@@ -26,6 +26,7 @@
 /* ---------- chips ---------- */
 .chip{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border:1.5px solid currentColor;border-radius:999px;font-size:var(--t-xs);font-weight:700;line-height:1.4;white-space:nowrap}
 .chip-live::before{content:"";width:8px;height:8px;border-radius:50%;background:#2BC46E;box-shadow:0 0 0 3px color-mix(in srgb,#2BC46E 30%,transparent)}
+.chip-wip::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--yel);box-shadow:0 0 0 3px color-mix(in srgb,var(--yel) 35%,transparent)}
 .pill{display:inline-flex;align-items:center;gap:8px;padding:6px 14px 6px 10px;border:1.5px solid var(--line);border-radius:999px;background:var(--card);font-size:var(--t-sm);font-weight:600;box-shadow:var(--sh-sm)}
 .pulse{width:9px;height:9px;border-radius:50%;background:var(--red)}
 

@@ -11,15 +11,17 @@ heading you reach. Headings it hasn't reached yet have no full stop.
 
 ## The page, top to bottom
 1. **Hero** — the headline, three real screens at three depths (they follow the pointer), a marquee.
-2. **Work** (red) — the index of the two projects; on a computer the screenshot follows the pointer.
+2. **Work** (red) — the index of the four projects; on a computer the screenshot follows the pointer.
 3. **Giannotas** (matte black) — screens that slide sideways while you scroll down (pinned), the arrival in five
    frames, eight facts, before/after, three speedometers (25 versions, 54 checks, 60 fps), the version line.
 4. **PROJECT 7o** — pinned screens, the welcome in 15 languages, sticky notes, the poster.
-5. **From a line to a website** (pinned) — the scroll draws a sketch, colours it in, wipes the real site over it and
+5. **MIRROR** (graphite) — the live site, five screens in the sideways gallery, six notes.
+6. **DAYWIRE** (graphite, in progress) — the code on GitHub until it is live, five screens, six notes.
+7. **From a line to a website** (pinned) — the scroll draws a sketch, colours it in, wipes the real site over it and
    stamps it "online", while the five steps of how we work light up.
-6. **Team** — two cards that turn over, and our story so far.
-7. **Lab** — find the bugs, draw a line, the real pre-delivery commands, this page measured live.
-8. **Questions** and **Contact** (the form writes an email; nothing is stored or sent from the page).
+8. **Team** — two cards that turn over, and our story so far.
+9. **Lab** — find the bugs, draw a line, the real pre-delivery commands, this page measured live.
+10. **Questions** and **Contact** (the form writes an email; nothing is stored or sent from the page).
 
 ## Files
 - `index.html` — the whole page, in Greek. Every text has a key (`data-t`, `data-ta` for attributes).
