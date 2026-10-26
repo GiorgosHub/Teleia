@@ -7,7 +7,7 @@
   "use strict";
   const EN = {
     metaTitle: "teleia. — Websites down to the last dot · George Sabanis & Asteris Pitas",
-    metaDesc: "The portfolio of George Sabanis and Asteris Pitas: websites and web apps from Larissa, Greece. See Giannotas Premium Auto Salon and PROJECT 7o.",
+    metaDesc: "The portfolio of George Sabanis and Asteris Pitas: websites and web apps from Larissa, Greece. See Giannotas Premium Auto Salon, PROJECT 7o and MIRROR.",
     ogTitle: "teleia. — Websites down to the last dot", ogDesc: "Websites and web apps from Larissa, Greece. See the projects.",
     skip: "Skip to content", brandAria: "teleia. — back to the top", navAria: "Main menu", langAria: "Language", menu: "Menu",
     themeDark: "Switch to the dark theme",
@@ -15,15 +15,15 @@
 
     heroPlace: "Larissa, Greece", duoTxt: "One team, two people",
     heroTitle: "Websites down to the very last dot",
-    heroLead: "We build websites and web apps in Larissa, Greece. Two real projects, both live.",
+    heroLead: "We build websites and web apps in Larissa, Greece. Three real projects, all live.",
     seeWork: "See the projects", writeUs: "Write to us",
     hk1: "Phone first", hk2: "Greek & English", hk3: "Code checked by us",
     stk1: "Real projects", stk2: "versions", stk3: "languages",
     mq1: "Websites", mq2: "Web apps", mq3: "AI assistants", mq4: "Greek & English", mq5: "Phone first", mq6: "Live data", mq7: "Larissa",
 
-    workTitle: "Two projects, both live",
+    workTitle: "Three projects, all live",
     workLead: "Real projects for real people, not templates. Pick one to see it up close.",
-    ixG: "Car dealership and parts, Larissa", ixP: "Our school's website, in 15 languages", live: "Live",
+    ixG: "Car dealership and parts, Larissa", ixP: "Our school's website, in 15 languages", ixM: "A website and app for decisions, in 2 languages", live: "Live",
 
     gLead: "A website for a car dealership and parts shop in Larissa. The owner posts his listings on car.gr, and the website shows them by itself.",
     openSite: "Open the website", galG: "Screens from Giannotas",
@@ -58,6 +58,20 @@
 
     pLead: "An unofficial website for the 7th EPAL of Larissa, our school. Everything a student needs during the day, in one place.",
     galP: "Screens from PROJECT 7o",
+    mLead: "Our own product: a website and app for thinking through a decision. You write your options and see where each could lead, what that rests on, and the cheapest way to find out more.",
+    galM: "Screens from MIRROR",
+    m1h: "The liquid mirror", m1p: "The question is reflected in liquid metal that ripples under the pointer and splits into three futures.",
+    m2h: "One decision, step by step", m2p: "As you scroll, the decision splits into paths and one future cracks.",
+    m3h: "Live example", m3p: "The real engine: mark an assumption as not true and see which futures break.",
+    m4h: "The Future Lab", m4p: "Every option at three moments in time, with how sure each future is.",
+    m5h: "Greek and English", m5p: "The whole website and app, in both languages.",
+    mA1: "MIRROR's home page with the liquid mirror", mA2: "A decision splitting into three paths", mA3: "A broken future in the live example", mA4: "The Future Lab inside the app", mA5: "MIRROR's home page in Greek",
+    mf1h: "WebGL from scratch", mf1p: "The mirror is our own shader and wave simulation, no libraries.",
+    mf2h: "It doesn't predict", mf2p: "Every future is marked known, assumed or a guess. No fake percentages.",
+    mf3h: "Stays on your device", mf3p: "No account. Decisions are stored only in the browser.",
+    mf4h: "Experiments and a review", mf4p: "Cheap tests for what you don't know, and a date to check what actually happened.",
+    mf5h: "51 automatic checks", mf5p: "21 unit tests and 30 checks in a real browser, on phone and desktop.",
+    mf6h: "With motion or without", mf6p: "With reduced motion everything shows at once and nothing waits for the scroll.",
     p1h: "Live clock", p1p: "The home page, with a live clock and the bells.",
     p2h: "Your space", p2p: "What a student needs for today.",
     p3h: "Timetable", p3p: "The timetable of every class.",
@@ -94,7 +108,7 @@
     aB1: "Puts in order what every project needs.", aB2: "Makes sure what was planned gets finished.", aB3: "Together we built PROJECT 7o for our school.",
     storyTitle: "Our story, so far",
     sy1: "Our first big website, for our school: timetable, announcements, an AI assistant, 15 languages, the school in 3D.",
-    syOct: "Oct 2026", sy2: "Cars and parts live from car.gr, 25 versions, live since October.",
+    syOct: "Oct 2026", sy2: "Cars and parts live from car.gr, 25 versions, live since October.", sy5: "Our first own product: a website with an app for thinking through a decision, with a liquid mirror in WebGL.",
     sy3: "We give a name to what we already do: websites, down to the last dot.",
     syNext: "Next", sy4h: "The next project", sy4: "The next line goes here.",
 
