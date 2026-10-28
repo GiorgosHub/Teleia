@@ -15,7 +15,7 @@
 
     heroPlace: "Larissa, Greece", duoTxt: "One team, two people",
     heroTitle: "Websites down to the very last dot",
-    heroLead: "We build websites and web apps in Larissa, Greece. Four real projects: three live, the fourth on its way.",
+    heroLead: "We build websites and web apps in Larissa, Greece. Four real projects, all live.",
     seeWork: "See the projects", writeUs: "Write to us",
     hk1: "Phone first", hk2: "Greek & English", hk3: "Code checked by us",
     stk1: "Real projects", stk2: "versions", stk3: "languages",
@@ -136,6 +136,7 @@
     meterTitle: "This page, right now", liveWord: "live", meterSub: "Measured right now on your own device, not written in advance.",
     mFps: "frames per second", mLoad: "ms to load", mKb: "KB of files in total", mReq: "files loaded",
 
+    navPrices: "Prices", prTitle: "Prices", prLead: "Three packages for your business. For anything different, write to us.", prFrom: "From", prCta: "Ask for it", p1For: "Ideal for local businesses that want a fast, modern presence.", p1f1: "Custom UI/UX design (no ready-made templates)", p1f2: "Built with Next.js & Vercel for top speed", p1f3: "Ultra-fast, mobile first (fully optimised for phones)", p1f4: "Basic SEO (to show up on Google)", p1f5: "Static content (a home page with your services)", p1f6: "Simple contact form (connected to your email)", p2For: "Ideal for businesses that want to stand out and change their content themselves.", p2f1: "Everything in Essential", p2f2: "Up to 5 dynamic pages (e.g. Home, Services, Projects, Blog, Contact)", p2f3: "Headless CMS (change texts and photos yourself)", p2f4: "Custom WebGL / CSS animations (for a premium feel and motion)", p2f5: "Google Analytics & Meta Pixel setup (for statistics and ads)", p2f6: "Advanced forms (e.g. for booking appointments)", p3For: "Ideal for shops that want to sell products online with the best speed on the market.", p3f1: "Fully custom e-shop (high speed, no WordPress)", p3f2: "Dynamic cart & checkout experience", p3f3: "Stripe / Viva Wallet (secure card payments)", p3f4: "Product management panel (CMS) (add products and prices easily)", p3f5: "Stock & order management", p3f6: "Advanced product SEO (e-commerce optimisation)",
     faqTitle: "Questions",
     q1: "Who are you?", a1: "George Sabanis, who writes the code, and Asteris Pitas, who runs the projects. We're from Larissa, Greece.",
     q2: "Does AI build everything?", a2: "No. AI is a tool that makes us faster. We check the code ourselves: we debug, find the mistakes and fix them, and we test every page on phones and computers.",

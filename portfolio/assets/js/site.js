@@ -864,6 +864,13 @@ function initForm() {
     el.addEventListener("blur", () => { if (el.value) check(n); });
     el.addEventListener("input", () => { if (el.closest(".field").classList.contains("bad")) check(n); });
   });
+  /* a price card's button writes the first line of the message (only into an empty or untouched message) */
+  let planLine = "";
+  document.querySelectorAll("[data-plan]").forEach((a) => a.addEventListener("click", () => {
+    const m = form.elements.msg, line = (window.I18N?.lang === "en" ? "Hello, I'm interested in the " : "Γεια σας, ενδιαφέρομαι για το πακέτο ") + a.dataset.plan + ".";
+    if (!m.value.trim() || m.value === planLine) { m.value = line; planLine = line; }
+    setTimeout(() => { try { m.focus({ preventScroll: true }); } catch (e) { } }, 700);
+  }));
   let body = "";
   const ways = $("#ways");
   form.addEventListener("submit", (e) => {
