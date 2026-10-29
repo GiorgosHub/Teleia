@@ -15,7 +15,7 @@
 
     heroPlace: "Larissa, Greece", duoTxt: "One team, two people",
     heroTitle: "Websites down to the very last dot",
-    heroLead: "We build websites and web apps in Larissa, Greece. Four real projects, all live.",
+    heroLead: "We design and build custom websites and web apps for businesses, with a focus on performance and digital experiences tailored to each brand.",
     seeWork: "See the projects", writeUs: "Write to us",
     hk1: "Phone first", hk2: "Greek & English", hk3: "Code checked by us",
     stk1: "Real projects", stk2: "versions", stk3: "languages",
@@ -48,7 +48,7 @@
     baSub: "Drag the handle. On the left, an older version with a glowing sign; on the right, today's: the real logo, matte black, letters you can read.",
     before: "Before", after: "After", baAria: "Before and after comparison", baAfterA: "Today's version", baBeforeA: "An older version",
     gg1: "versions until it was just right", gg2: "automated checks before every delivery", gg3: "frames per second while scrolling, measured",
-    verTitle: "25 versions in one line", verSub: "From the first architecture to what the client wanted. Drag the line.",
+    verTitle: "View full version history & technical log", verSub: "Explore 25 iterations, from the first architecture to the final detail.",
     verAria: "The versions of Giannotas, scroll sideways",
     v1: "The architecture: pages, the car.gr connection, search.", v2: "The first big redesign, a call button with landline and mobile.",
     v3: "Smoother motion, a new headline.", v4: "The real logo everywhere, the moving needle, high resolution.",
@@ -147,6 +147,7 @@
 
     contactTitle: "Got an idea? Write to us",
     contactSub: "Want to say something about one of our projects, or just hi? One message is enough.",
+    quickServices: "Quick service selection", quickLabel: "What do you need?", quickWebsite: "Website", quickApp: "Web app", quickShop: "Online shop", quickImprove: "Performance & optimization",
     copy: "Copy",
     h1h: "You write", h1p: "What's on your mind, in your own words.",
     h2h: "We read it", h2p: "We reply to the email you gave us.",
