@@ -83,7 +83,7 @@
           <span class="pill duo"><b class="av av-g" aria-hidden="true">ΓΣ</b><b class="av av-a" aria-hidden="true">ΑΠ</b><span data-t="duoTxt">Μια ομάδα, δύο άτομα</span></span>
         </p>
         <h1 class="h1 hero-title" id="heroTitle"><span class="words" data-t="heroTitle">Ιστοσελίδες μέχρι την τελευταία τελεία</span><span class="stop" data-stop="hero" aria-hidden="true"></span></h1>
-        <p class="lead hero-lead" data-t="heroLead">Φτιάχνουμε ιστοσελίδες και web εφαρμογές στη Λάρισα. Τέσσερα αληθινά έργα, όλα online.</p>
+        <p class="lead hero-lead" data-t="heroLead">Σχεδιάζουμε και αναπτύσσουμε custom ιστοσελίδες και web εφαρμογές για επιχειρήσεις, με έμφαση στην ταχύτητα και στις εμπειρίες που ταιριάζουν πραγματικά σε κάθε brand.</p>
         <div class="hero-acts">
           <a class="btn btn-red magnet" href="#work" data-t="seeWork">Δείτε τα έργα</a>
           <a class="btn btn-line magnet" href="#contact" data-t="writeUs">Γράψτε μας</a>
@@ -247,10 +247,15 @@
           <li class="gauge" data-gauge="60" data-max="66"><svg viewBox="0 0 200 120" aria-hidden="true"><path class="g-track" pathLength="1" d="M20 110a80 80 0 0 1 160 0"/><path class="g-fill" pathLength="1" d="M20 110a80 80 0 0 1 160 0"/><g class="g-ticks"></g><g class="g-needle"><path d="M100 110L100 42"/><circle cx="100" cy="110" r="9"/></g></svg>
             <p><b class="num" data-count="60">60</b><span data-t="gg3">καρέ το δευτερόλεπτο στο scroll, μετρημένα</span></p></li>
         </ul>
-        <div class="versions-head">
-          <h3 class="h3" data-t="verTitle">25 εκδόσεις σε μια γραμμή</h3>
-          <p data-t="verSub">Από την πρώτη αρχιτεκτονική μέχρι αυτό που ήθελε ο πελάτης. Σύρετε τη γραμμή.</p>
-        </div>
+        <!-- Keep the engineering timeline intact, but let visitors open it after scanning the headline metrics. -->
+        <details class="versions-detail">
+          <summary>
+            <span class="versions-summary">
+              <b data-t="verTitle">Δείτε όλο το ιστορικό εκδόσεων &amp; τεχνικό αρχείο</b>
+              <span data-t="verSub">25 εκδόσεις, από την πρώτη αρχιτεκτονική μέχρι την τελική λεπτομέρεια.</span>
+            </span>
+          </summary>
+          <div class="versions-detail-body">
         <ol class="ver-track" tabindex="0" data-ta="aria-label:verAria" aria-label="Οι εκδόσεις του Giannotas">
           <li><b>v6–v12</b><span data-t="v1">Η αρχιτεκτονική: σελίδες, σύνδεση με το car.gr, αναζήτηση.</span></li>
           <li><b>v13</b><span data-t="v2">Πρώτη μεγάλη αλλαγή σχεδίου, κουμπί κλήσης με σταθερό και κινητό.</span></li>
@@ -260,9 +265,10 @@
           <li><b>v23</b><span data-t="v6">Ματ μαύρο, κοντέρ στην είσοδο, ζωντανοί αριθμοί, χωρίς 3D.</span></li>
           <li class="ver-now"><b>v25</b><span data-t="v7">Inter παντού, ακίνητο λογότυπο: όπως το ήθελε ο πελάτης.</span></li>
         </ol>
+            <p class="built"><span data-t="builtWith">Φτιαγμένο με</span> <span class="chip">HTML</span><span class="chip">CSS</span><span class="chip">JavaScript</span><span class="chip">Vercel Functions</span><span class="chip">Playwright</span><span class="chip">Python</span></p>
+          </div>
+        </details>
       </div>
-
-      <p class="built"><span data-t="builtWith">Φτιαγμένο με</span> <span class="chip">HTML</span><span class="chip">CSS</span><span class="chip">JavaScript</span><span class="chip">Vercel Functions</span><span class="chip">Playwright</span><span class="chip">Python</span></p>
     </div>
   </section>
 
@@ -618,6 +624,16 @@
       <div class="contact-copy">
         <h2 class="h2 contact-title" id="contactTitle"><span class="words" data-t="contactTitle">Έχετε ιδέα; Γράψτε μας</span><span class="stop" data-stop="end" aria-hidden="true"></span></h2>
         <p class="lead" data-t="contactSub">Θέλετε να πείτε κάτι για κάποιο από τα έργα μας, ή απλώς ένα γεια; Ένα μήνυμα αρκεί.</p>
+        <!-- Quick service choices reuse the existing message-prefill flow in site.js. -->
+        <div class="quick-services" role="group" data-ta="aria-label:quickServices" aria-label="Γρήγορη επιλογή υπηρεσίας">
+          <p class="small quick-label" data-t="quickLabel">Τι χρειάζεστε;</p>
+          <div class="quick-services-list">
+            <a class="quick-service" href="#contact" data-plan="Custom ιστοσελίδα" data-plan-en="Custom website" data-t="quickWebsite">Ιστοσελίδα</a>
+            <a class="quick-service" href="#contact" data-plan="Web εφαρμογή" data-plan-en="Web app" data-t="quickApp">Web εφαρμογή</a>
+            <a class="quick-service" href="#contact" data-plan="Ηλεκτρονικό κατάστημα" data-plan-en="Online shop" data-t="quickShop">E-shop</a>
+            <a class="quick-service" href="#contact" data-plan="Ταχύτητα και βελτιστοποίηση" data-plan-en="Performance optimization" data-t="quickImprove">Ταχύτητα &amp; βελτιστοποίηση</a>
+          </div>
+        </div>
         <p class="mail-line"><a class="mail" href="mailto:tipsandgreeks@gmail.com">tipsandgreeks@gmail.com</a>
           <button class="btn btn-sm btn-line" type="button" data-copy="tipsandgreeks@gmail.com" data-t="copy">Αντιγραφή</button></p>
         <ol class="how">

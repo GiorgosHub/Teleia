@@ -17,7 +17,7 @@
   --red:#B5172B; --red-t:#B5172B; --red-2:#8E0F20; --yel:#FFC93C; --grn:#137A43; --pink:#F3B6B0; --sky:#B9D8F0;
   --on-red:#FFF7EE; --line:#141414;
   /* the matte black of the Giannotas chapter, the same in both themes */
-  --night:#141414; --night-2:#1F1E1C; --night-ink:#F5F0E6; --night-mute:#B4AC9E;
+  --night:#141414; --night-2:#1F1E1C; --night-ink:#F5F0E6; --night-mute:#C4BDB0;
 
   /* depth: hard offset shadows, never blurred */
   --sh-sm:2px 2px 0 var(--line); --sh:4px 4px 0 var(--line); --sh-lg:8px 8px 0 var(--line);
@@ -50,7 +50,7 @@
 
 /* night: the same scrapbook on black paper */
 :root[data-theme=dark]{
-  --paper:#131313; --paper-2:#1C1B19; --card:#1F1E1C; --ink:#F5F0E6; --ink-2:#D9D2C4; --mute:#B4AC9E;
+  --paper:#131313; --paper-2:#1C1B19; --card:#1F1E1C; --ink:#F5F0E6; --ink-2:#D9D2C4; --mute:#C4BDB0;
   --line:#F5F0E6; --pink:#5A2A2E; --sky:#1E3346; --red-t:#FF7A7A;
   --night:#0B0B0B; --night-2:#191816;
   color-scheme:dark;
