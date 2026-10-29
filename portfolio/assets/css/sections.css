@@ -197,6 +197,7 @@
 .gauge b{font-size:clamp(3rem,5vw,4.6rem);font-weight:900;letter-spacing:var(--track-display);line-height:1}
 .gauge span{color:var(--mute);font-size:var(--t-sm);max-width:26ch}
 @media (max-width:599px){.gauge b{font-size:2rem}.gauge span{font-size:var(--t-xs);line-height:1.4}}
+/* The version history remains complete inside a keyboard-accessible native disclosure. */
 .versions-detail{border:2px solid color-mix(in srgb,currentColor 34%,transparent);border-radius:var(--r);background:color-mix(in srgb,var(--card) 52%,transparent);overflow:hidden}
 .versions-detail>summary{display:flex;align-items:center;justify-content:space-between;gap:var(--s5);padding:var(--s5);cursor:pointer;list-style:none;font-size:var(--t-lg);transition:background-color var(--d2) var(--ease)}
 .versions-detail>summary::-webkit-details-marker{display:none}
@@ -260,18 +261,18 @@
 .proc-site{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:top;clip-path:inset(0 0 0 0)}
 .proc-stamp{position:absolute;right:5%;bottom:7%;padding:10px 18px;border:3px solid var(--grn);border-radius:12px;background:var(--card);color:var(--grn);font-weight:900;font-size:clamp(1rem,2vw,1.6rem);rotate:-8deg;text-transform:none}
 .proc-phases{display:flex;gap:8px;font-weight:800;font-size:var(--t-sm)}
-.proc-phases li{padding:4px 12px;border:1.5px solid var(--line);border-radius:999px;opacity:.5;transition:opacity var(--d2),background-color var(--d2)}
+.proc-phases li{padding:4px 12px;border:1.5px solid var(--line);border-radius:999px;opacity:.78;transition:opacity var(--d2),background-color var(--d2)}
 .proc-phases li.on{opacity:1;background:var(--yel);color:#141414}
 @media (min-width:960px){.proc-grid{grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);align-items:center}}
 /* pinned version (wide screens with motion) */
 .pin .process{height:340vh}
 .pin .proc-pin{position:sticky;top:0;height:100svh;display:flex;align-items:center;padding-block:calc(var(--hdr) + 16px) 24px}
 .pin .proc-pin .h2{font-size:clamp(2.2rem,1rem + 3.4vw,4.4rem)}
-.pin .step{opacity:.78}
+.pin .step{opacity:.9}
 .pin .step p{color:var(--ink-2)}
 .pin .step.on{opacity:1;background:var(--card);box-shadow:var(--sh-sm);outline:2px solid var(--line)}
 .pin .step.on .step-n,.pin .step.done .step-n{background:var(--red);color:var(--on-red)}
-.pin .step.done{opacity:.86}
+.pin .step.done{opacity:.94}
 @media (min-width:960px) and (max-height:760px){.pin .step p{display:none}}
 
 @media (max-width:959px){
@@ -335,6 +336,7 @@
 .story-line time{font-weight:800;font-size:var(--t-sm);color:var(--red-t)}
 .story-line b{font-size:var(--t-lg);font-weight:900;letter-spacing:-.02em}
 .story-line span{color:var(--mute);font-size:var(--t-sm)}
+/* Keep the forthcoming story marker visible without making it compete with live projects. */
 .story-next{opacity:.78} .story-next::before{background:transparent!important;border-style:dashed!important}
 .story-next{border-top-style:dashed!important}
 @media (min-width:900px){.story-line{grid-template-columns:repeat(4,1fr);gap:var(--s5)}}
@@ -393,6 +395,7 @@
 @media (min-width:1000px){.contact-grid{grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr)}}
 .contact-title{max-width:11ch}
 .contact .lead{margin-top:var(--s5)}
+/* Compact service shortcuts feed the existing contact message prefill. */
 .quick-services{margin-top:var(--s5)}
 .quick-label{margin:0 0 var(--s2);font-weight:800;color:var(--night-mute)}
 .quick-services-list{display:flex;flex-wrap:wrap;gap:8px}
