@@ -14,13 +14,13 @@
 <meta property="og:image" content="assets/img/og.png">
 <link rel="preload" href="assets/fonts/Inter-var.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="assets/css/tokens.css?v=20261029">
-<link rel="stylesheet" href="assets/css/base.css?v=20261104">
+<link rel="stylesheet" href="assets/css/base.css?v=20261104f">
 <link rel="stylesheet" href="assets/css/components.css?v=20261023">
-<link rel="stylesheet" href="assets/css/sections.css?v=20261104">
-<link rel="stylesheet" href="assets/css/motion.css?v=20261104c">
+<link rel="stylesheet" href="assets/css/sections.css?v=20261104f">
+<link rel="stylesheet" href="assets/css/motion.css?v=20261104f">
 <script src="assets/js/boot.js?v=20261023"></script>
-<script src="assets/js/i18n.js?v=20261104" defer></script>
-<script src="assets/js/site.js?v=20261104c" defer></script>
+<script src="assets/js/i18n.js?v=20261104f" defer></script>
+<script src="assets/js/site.js?v=20261104f" defer></script>
 </head>
 <body>
 <!-- ============ the first second: a line is drawn, the full stop drops in (once per visit) ============ -->
@@ -83,7 +83,7 @@
           <!-- a game for the pointer: a press anywhere in the hero drops a full stop (only a picture) -->
           <span class="pill play" id="play" aria-hidden="true" hidden><i class="play-dot"></i><span id="playHint"></span><b class="num play-n" id="playN">0</b><span class="play-xy num"><span>X</span><b id="playX">0000</b><span>Y</span><b id="playY">0000</b></span></span>
         </p>
-        <h1 class="h1 hero-title" id="heroTitle"><span class="words" data-t="heroTitle">Ιστοσελίδες μέχρι την τελευταία τελεία</span><span class="stop" data-stop="hero" aria-hidden="true"></span></h1>
+        <h1 class="h1 hero-title" id="heroTitle"><span class="sr" data-t="heroTitle">Ιστοσελίδες μέχρι την τελευταία τελεία</span><span class="hero-vis" aria-hidden="true"><span class="rot" id="rot"><span class="rot-w" data-t="rot1">Ιστοσελίδες</span></span> <span class="words" data-t="heroTitleRest">μέχρι την τελευταία τελεία</span></span><span class="stop" data-stop="hero" aria-hidden="true"></span></h1>
         <p class="lead hero-lead" data-t="heroLead">Σχεδιάζουμε και αναπτύσσουμε custom ιστοσελίδες και web εφαρμογές για επιχειρήσεις, με έμφαση στην ταχύτητα και στις εμπειρίες που ταιριάζουν πραγματικά σε κάθε brand.</p>
         <div class="hero-acts">
           <a class="btn btn-red magnet" href="#work" data-t="seeWork">Δείτε τα έργα</a>
@@ -96,25 +96,19 @@
         </ul>
       </div>
 
-      <!-- three real screens, at three depths -->
+      <!-- the stage is the ball's home; the stickers float around it -->
       <div class="stage" id="stage" aria-hidden="true">
-        <figure class="frame frame-browser layer l1">
-          <figcaption class="frame-bar"><i></i><i></i><i></i><span>teleia.</span></figcaption>
-          <video class="hero-clip" muted playsinline loop preload="none" poster="assets/video/hero-poster.jpg" aria-hidden="true">
-            <source src="assets/video/hero.mp4?v=20261023b" type="video/mp4">
-          </video>
-        </figure>
-        <figure class="frame frame-browser frame-dark layer l2">
-          <figcaption class="frame-bar"><i></i><i></i><i></i><span>giannotaspremiumautosalon.gr</span></figcaption>
-          <img src="assets/img/work/giannotas.webp" width="1200" height="750" alt="">
-        </figure>
-        <figure class="frame frame-phone layer l3"><img src="assets/img/work/giannotas-phone.webp" width="360" height="779" alt=""></figure>
         <span class="sticker st-yel layer l4" data-t="stk1">Αληθινά έργα</span>
         <span class="sticker st-red layer l5"><b class="num">25</b> <span data-t="stk2">εκδόσεις</span></span>
         <span class="sticker st-grn layer l6"><b class="num">15</b> <span data-t="stk3">γλώσσες</span></span>
-        <svg class="stage-line" viewBox="0 0 600 600" preserveAspectRatio="none"><path class="d" pathLength="1" d="M30 520C120 600 260 560 300 470S440 340 560 380"/></svg>
       </div>
     </div>
+
+    <!-- the hero's centrepiece: a giant full stop you can grab, drag and fling. The ink stays on the paper behind the
+         words; the ball flies over everything but never catches a click (only its round handle does). A picture only. -->
+    <canvas class="ball-ink" id="ballInk" aria-hidden="true" hidden></canvas>
+    <canvas class="ball-cv" id="ballCv" aria-hidden="true"></canvas>
+    <span class="ball-grab" id="ballGrab" aria-hidden="true" data-cursor="cGrab"></span>
 
     <div class="marquee" aria-hidden="true">
       <div class="marquee-track">
@@ -133,46 +127,59 @@
         <h2 class="h2" id="workTitle"><span class="words" data-t="workTitle">Τέσσερα αληθινά έργα</span><span class="stop" data-stop aria-hidden="true"></span></h2>
         <p class="lead" data-t="workLead">Πραγματικά έργα για πραγματικούς ανθρώπους, όχι πρότυπα. Διαλέξτε ένα για να το δείτε από κοντά.</p>
       </div>
-      <ol class="index">
-        <li>
-          <a class="index-row" href="#giannotas" data-cursor="cOpen">
-            <span class="index-n num">01</span>
-            <span class="index-name">Giannotas Premium Auto Salon</span>
-            <span class="index-what" data-t="ixG">Έκθεση αυτοκινήτων και ανταλλακτικά, Λάρισα</span>
-            <span class="index-tags"><span class="chip chip-live" data-t="live">Online</span><span class="chip">2026</span></span>
-            <span class="index-thumb"><img src="assets/img/work/giannotas.webp" width="1200" height="750" alt="" loading="lazy"></span>
+      <!-- the four projects as a deck of big cards: a plain scrolling row (swipe, trackpad, arrow keys), plus a
+           counter, a bar, two buttons and dragging with the mouse -->
+      <div class="deck-tools slider-tools">
+        <span class="slider-count num" aria-hidden="true"><b id="deckNow">01</b> / <span id="deckAll">04</span></span>
+        <span class="slider-bar" aria-hidden="true"><i id="deckBar"></i></span>
+        <span class="slider-hint" aria-hidden="true">← <span data-t="drag">Σύρετε</span> →</span>
+        <button class="icon-btn" type="button" id="deckPrev" data-ta="aria-label:prev" aria-label="Προηγούμενο"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+        <button class="icon-btn" type="button" id="deckNext" data-ta="aria-label:next" aria-label="Επόμενο"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
+      </div>
+    </div>
+    <ol class="deck" id="deck" tabindex="0" data-ta="aria-label:deckAria" aria-label="Τα τέσσερα έργα">
+        <li class="card">
+          <a class="card-in" href="#giannotas" data-cursor="cOpen">
+            <span class="card-top"><span class="card-n num">01</span><span class="chip chip-live" data-t="live">Online</span><span class="chip">2026</span></span>
+            <span class="card-shot frame frame-browser frame-dark"><span class="frame-bar"><i></i><i></i><i></i><span>giannotaspremiumautosalon.gr</span></span><img src="assets/img/work/giannotas.webp" width="1200" height="750" alt="" loading="lazy" draggable="false"></span>
+            <span class="card-name">Giannotas Premium Auto Salon</span>
+            <span class="card-what" data-t="ixG">Έκθεση αυτοκινήτων και ανταλλακτικά, Λάρισα</span>
           </a>
         </li>
-        <li>
-          <a class="index-row" href="#project7" data-cursor="cOpen">
-            <span class="index-n num">02</span>
-            <span class="index-name">PROJECT 7ο</span>
-            <span class="index-what" data-t="ixP">Η ιστοσελίδα του σχολείου μας, σε 15 γλώσσες</span>
-            <span class="index-tags"><span class="chip chip-live" data-t="live">Online</span><span class="chip">2026</span></span>
-            <span class="index-thumb"><img src="assets/img/work/project7.webp" width="1200" height="750" alt="" loading="lazy"></span>
+        <li class="card">
+          <a class="card-in" href="#project7" data-cursor="cOpen">
+            <span class="card-top"><span class="card-n num">02</span><span class="chip chip-live" data-t="live">Online</span><span class="chip">2026</span></span>
+            <span class="card-shot frame frame-browser"><span class="frame-bar"><i></i><i></i><i></i><span>7o-epal-project.vercel.app</span></span><img src="assets/img/work/project7.webp" width="1200" height="750" alt="" loading="lazy" draggable="false"></span>
+            <span class="card-name">PROJECT 7ο</span>
+            <span class="card-what" data-t="ixP">Η ιστοσελίδα του σχολείου μας, σε 15 γλώσσες</span>
           </a>
         </li>
-        <li>
-          <a class="index-row" href="#mirror" data-cursor="cOpen">
-            <span class="index-n num">03</span>
-            <span class="index-name">MIRROR</span>
-            <span class="index-what" data-t="ixM">Ιστοσελίδα και εφαρμογή για αποφάσεις, σε 2 γλώσσες</span>
-            <span class="index-tags"><span class="chip chip-live" data-t="live">Online</span><span class="chip">2026</span></span>
-            <span class="index-thumb"><img src="assets/img/work/mirror.webp" width="1200" height="750" alt="" loading="lazy"></span>
+        <li class="card">
+          <a class="card-in" href="#mirror" data-cursor="cOpen">
+            <span class="card-top"><span class="card-n num">03</span><span class="chip chip-live" data-t="live">Online</span><span class="chip">2026</span></span>
+            <span class="card-shot frame frame-browser frame-dark"><span class="frame-bar"><i></i><i></i><i></i><span>projectmirror.vercel.app</span></span><img src="assets/img/work/mirror.webp" width="1200" height="750" alt="" loading="lazy" draggable="false"></span>
+            <span class="card-name">MIRROR</span>
+            <span class="card-what" data-t="ixM">Ιστοσελίδα και εφαρμογή για αποφάσεις, σε 2 γλώσσες</span>
           </a>
         </li>
-        <li>
-          <a class="index-row" href="#daywire" data-cursor="cOpen">
-            <span class="index-n num">04</span>
-            <span class="index-name">DAYWIRE</span>
-            <span class="index-what" data-t="ixD">Τι αλλάζει σήμερα στην πόλη σου, από τις επίσημες πηγές</span>
-            <span class="index-tags"><span class="chip chip-live" data-t="live">Online</span><span class="chip">2026</span></span>
-            <span class="index-thumb"><img src="assets/img/work/daywire.webp" width="1200" height="750" alt="" loading="lazy"></span>
+        <li class="card">
+          <a class="card-in" href="#daywire" data-cursor="cOpen">
+            <span class="card-top"><span class="card-n num">04</span><span class="chip chip-live" data-t="live">Online</span><span class="chip">2026</span></span>
+            <span class="card-shot frame frame-browser frame-dark"><span class="frame-bar"><i></i><i></i><i></i><span>DAYWIRE</span></span><img src="assets/img/work/daywire.webp" width="1200" height="750" alt="" loading="lazy" draggable="false"></span>
+            <span class="card-name">DAYWIRE</span>
+            <span class="card-what" data-t="ixD">Τι αλλάζει σήμερα στην πόλη σου, από τις επίσημες πηγές</span>
           </a>
         </li>
-      </ol>
+    </ol>
+    <div class="wrap">
     </div>
   </section>
+
+  <!-- huge outlined words that slide sideways with the scroll and lean with its speed (only a picture) -->
+  <div class="kin" aria-hidden="true">
+    <p class="kin-row" data-dir="1"><span>Giannotas</span><i></i><span class="kin-fill">PROJECT 7ο</span><i></i><span>MIRROR</span><i></i><span class="kin-fill">DAYWIRE</span><i></i><span>Giannotas</span><i></i><span class="kin-fill">PROJECT 7ο</span><i></i><span>MIRROR</span><i></i><span class="kin-fill">DAYWIRE</span><i></i><span>Giannotas</span><i></i><span class="kin-fill">PROJECT 7ο</span><i></i><span>MIRROR</span><i></i><span class="kin-fill">DAYWIRE</span><i></i></p>
+    <p class="kin-row" data-dir="-1"><span data-t="mq1">Ιστοσελίδες</span><i></i><span class="kin-fill" data-t="mq2">Web εφαρμογές</span><i></i><span data-t="mq3">Βοηθοί AI</span><i></i><span class="kin-fill" data-t="mq7">Λάρισα</span><i></i><span data-t="mq1">Ιστοσελίδες</span><i></i><span class="kin-fill" data-t="mq2">Web εφαρμογές</span><i></i><span data-t="mq3">Βοηθοί AI</span><i></i><span class="kin-fill" data-t="mq7">Λάρισα</span><i></i><span data-t="mq1">Ιστοσελίδες</span><i></i><span class="kin-fill" data-t="mq2">Web εφαρμογές</span><i></i><span data-t="mq3">Βοηθοί AI</span><i></i><span class="kin-fill" data-t="mq7">Λάρισα</span><i></i></p>
+  </div>
 
   <!-- ============ chapter 1: Giannotas (matte black, like the site itself) ============ -->
   <section class="chapter chapter-dark" id="giannotas" aria-labelledby="gTitle">
@@ -437,6 +444,12 @@
       </ul>
     </div>
   </section>
+
+  <!-- huge outlined words that slide sideways with the scroll and lean with its speed (only a picture) -->
+  <div class="kin" aria-hidden="true">
+    <p class="kin-row" data-dir="1"><span data-t="ph1">σκίτσο</span><i></i><span class="kin-fill" data-t="ph2">σχέδιο</span><i></i><span data-t="kinCode">κώδικας</span><i></i><span class="kin-fill" data-t="ph3">online</span><i></i><span data-t="ph1">σκίτσο</span><i></i><span class="kin-fill" data-t="ph2">σχέδιο</span><i></i><span data-t="kinCode">κώδικας</span><i></i><span class="kin-fill" data-t="ph3">online</span><i></i><span data-t="ph1">σκίτσο</span><i></i><span class="kin-fill" data-t="ph2">σχέδιο</span><i></i><span data-t="kinCode">κώδικας</span><i></i><span class="kin-fill" data-t="ph3">online</span><i></i></p>
+    <p class="kin-row" data-dir="-1"><span data-t="heroTitleRest">μέχρι την τελευταία τελεία</span><i></i><span data-t="heroTitleRest">μέχρι την τελευταία τελεία</span><i></i><span data-t="heroTitleRest">μέχρι την τελευταία τελεία</span><i></i></p>
+  </div>
 
   <!-- ============ process: a line becomes a website as you scroll ============ -->
   <section class="process" id="process" aria-labelledby="procTitle">

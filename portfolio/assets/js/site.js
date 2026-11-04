@@ -356,60 +356,227 @@ function initSparks() {
 }
 
 
-/* ===== features/play.js ===== */
-/* The hero answers a press: wherever you click or tap (not on a link or a button), a red full stop drops onto the
-   paper and settles with a bounce, and the pill counts them. With a mouse, the pill also reads out where the
-   pointer is. Only a picture: the pill and the dots are aria-hidden. */
-function initPlay() {
-  const pin = $(".hero-pin"), pill = $("#play"); if (!pin || !pill) return;
-  const hint = $("#playHint"), nEl = $("#playN"), xEl = $("#playX"), yEl = $("#playY");
+/* ===== features/ball.js ===== */
+/* The hero's centrepiece: a giant red full stop you can grab, drag and fling. It bounces off the edges of the hero,
+   squashes when it hits them, spins, and leaves a splash of ink on the paper; a soft spring brings it home to the
+   stage. A press on empty paper kicks it towards the press. The pill counts the throws and reads out where the
+   ball is. When you scroll, the page falls into the ball: the red zoom grows from it (traveler reads ballView).
+   Everything here is a picture (aria-hidden): the canvas never takes a click; only the ball's round handle does. */
+let ballView = null;   // where the ball is, in window pixels, while the hero is in view
+function initBall() {
+  const pin = $(".hero-pin"), stage = $("#stage"), cv = $("#ballCv"), inkCv = $("#ballInk"), grab = $("#ballGrab");
+  if (!pin || !stage || !cv || !cv.getContext) return;
+  const ctx = cv.getContext("2d"), ink = inkCv.getContext("2d");
+  const pill = $("#play"), hint = $("#playHint"), nEl = $("#playN"), xEl = $("#playX"), yEl = $("#playY");
   const label = () => { hint.textContent = T(fine() ? "playFine" : "playTouch"); };
   label(); document.addEventListener("langchange", label);
-  pill.classList.toggle("touch", !fine());
-  pill.hidden = false;
+  pill.classList.toggle("touch", !fine()); pill.hidden = false;
 
-  /* where the pointer is, in the hero's own pixels, written once a frame at most */
-  let px = -1, py = -1, shownX = "", shownY = "";
-  pin.addEventListener("pointermove", (e) => {
-    if (e.pointerType !== "mouse") return;
-    const r = pin.getBoundingClientRect(); px = Math.max(0, Math.round(e.clientX - r.left)); py = Math.max(0, Math.round(e.clientY - r.top));
-  }, { passive: true });
+  const b = { x: 0, y: 0, vx: 0, vy: 0, a: 0, w: 0, sq: 0, sqv: 0, sqA: 0, grow: 0 };
+  let W = 0, H = 0, dpr = 1, R = 80, home = { x: 0, y: 0 }, minY = 80, pinLeft = 0, pinTop = 0, vis = true;
+  let drag = null, throws = 0, placed = false, lastT = 0, splats = 0, shown = "", sizeR = 0, drawn = "", grabAt = "", S = 0, inkOn = false;
+  measure((s) => {
+    const pr = pin.getBoundingClientRect(), st = stage.getBoundingClientRect();
+    const w = pin.clientWidth, h = pin.offsetHeight, d = Math.min(2, devicePixelRatio || 1);
+    /* a canvas forgets its drawing when it is resized: only when the size really changed */
+    if (w !== W || h !== H || d !== dpr) {
+      W = w; H = h; dpr = d;
+      inkCv.width = Math.round(W * dpr); inkCv.height = Math.round(H * dpr); ink.setTransform(dpr, 0, 0, dpr, 0, 0);
+      splats = 0; inkCv.hidden = true; inkOn = false; drawn = ""; S = 0;
+    }
+    pinLeft = pr.left;
+    minY = (parseFloat(getComputedStyle(root).getPropertyValue("--hdr")) || 72) + 16;
+    R = Math.round(clamp(Math.min(st.width, st.height) * .34, 44, 200));
+    home = { x: st.left - pr.left + st.width / 2, y: st.top - pr.top + st.height / 2 };
+    /* on a phone the stage is below the first screen: the ball waits in the first screen instead, in the largest
+       empty space on the right of the hero's words (as close to the headline's full stop as it can) */
+    if (st.top - pr.top > s.vh * .7) {
+      const copy = $(".hero-copy"), stop = $(".hero-title .stop");
+      if (copy && stop) {
+        const busy = [], rg = document.createRange(), tw = document.createTreeWalker(copy, NodeFilter.SHOW_TEXT);
+        /* (the words may still be rising into place: their masks and the rotator's box are where they will be;
+           the other words arrive from 20px lower, so their boxes are stretched up by that much) */
+        for (let n = tw.nextNode(); n; n = tw.nextNode()) {
+          if (!n.textContent.trim() || n.parentElement.closest(".sr, .w, .rot")) continue;
+          rg.selectNodeContents(n);
+          for (const r of rg.getClientRects()) if (r.width > 1) busy.push({ left: r.left, right: r.right, top: r.top - 20, bottom: r.bottom });
+        }
+        $$(".w, .rot, .hero-title .stop, .pill, .btn, .ticks li", copy).forEach((e) => { const r = e.getBoundingClientRect(); busy.push({ left: r.left, right: r.right, top: r.top - 20, bottom: r.bottom }); });
+        const edge = Math.min(W - 12, copy.getBoundingClientRect().right - pr.left), sr = stop.getBoundingClientRect();
+        const free = (cx, cy, r) => !busy.some((b) => b.right - pr.left > cx - r - 10 && b.left - pr.left < cx + r + 4 && b.bottom - pr.top > cy - r - 4 && b.top - pr.top < cy + r + 4);
+        let best = null;
+        for (let r2 = 76; r2 >= 34 && !best; r2 -= 2) {
+          const cx = edge - r2;
+          for (let cy = minY + r2; cy + r2 <= s.vh - 12; cy += 4) {
+            if (!free(cx, cy, r2)) continue;
+            const d = Math.abs(cy - (sr.top - pr.top + sr.height / 2));
+            if (!best || d < best.d) best = { r: r2, x: cx, y: cy, d };
+          }
+        }
+        if (best) { R = best.r; home = { x: best.x, y: best.y }; }
+      }
+    }
+    /* the ball's own canvas is only as big as the ball (stretched, with its shadow) and moves by transform */
+    const s2 = Math.ceil((R * 1.32 + 14) * 2);
+    if (s2 !== S) {
+      S = s2; cv.width = cv.height = Math.round(S * dpr); cv.style.width = cv.style.height = S + "px";
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0); drawn = "";
+    }
+    if (!placed) { b.x = home.x; b.y = home.y; placed = true; }
+    b.x = clamp(b.x, R, Math.max(R, W - R)); b.y = clamp(b.y, minY + R, Math.max(minY + R, H - R));
+  });
+
+  const at = (e) => { const r = pin.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top, t: e.timeStamp }; };
+  grab.addEventListener("pointerdown", (e) => {
+    if (e.button) return;
+    const p = at(e);
+    drag = { id: e.pointerId, ox: b.x - p.x, oy: b.y - p.y, tx: b.x, ty: b.y, hist: [p] };
+    grab.setPointerCapture(e.pointerId); e.preventDefault(); wake();
+  });
+  grab.addEventListener("pointermove", (e) => {
+    if (!drag || e.pointerId !== drag.id) return;
+    const p = at(e); drag.tx = p.x + drag.ox; drag.ty = p.y + drag.oy;
+    drag.hist.push(p); if (drag.hist.length > 8) drag.hist.shift(); wake();
+  });
+  const release = (e) => {
+    if (!drag || e.pointerId !== drag.id) return;
+    /* the throw: how fast the pointer moved in the last tenth of a second */
+    const h = drag.hist.filter((p) => e.timeStamp - p.t < 110), a = h[0] || drag.hist[drag.hist.length - 1], z = h[h.length - 1] || a, dt = Math.max(16, z.t - a.t);
+    b.vx = clamp((z.x - a.x) / dt, -3.6, 3.6); b.vy = clamp((z.y - a.y) / dt, -3.6, 3.6); b.w += b.vx * .006;
+    drag = null;
+    if (Math.hypot(b.vx, b.vy) > .45) {
+      throws++; nEl.textContent = throws;
+      pill.classList.remove("pop"); void pill.offsetWidth; pill.classList.add("pop");
+      if (throws === 10) say(T("play10"));
+    }
+    wake();
+  };
+  grab.addEventListener("pointerup", release); grab.addEventListener("pointercancel", release);
+  /* a press on empty paper kicks the ball towards it */
+  pin.addEventListener("click", (e) => {
+    if (e.detail === 0 || e.target.closest("a,button,input,textarea,select,label,summary,.ball-grab")) return;
+    if (getSelection && String(getSelection()).length) return;
+    const p = at(e), dx = p.x - b.x, dy = p.y - b.y, d = Math.hypot(dx, dy) || 1, sp = clamp(d / 360, .5, 2.6);
+    b.vx += (dx / d) * sp; b.vy += (dy / d) * sp; b.w += (dx / d) * .01; wake();
+  });
+
+  /* ink on the paper where the ball hits a wall (flattened along the wall); old ink fades when there is a lot */
+  const splat = (x, y, nx, ny, power) => {
+    if (++splats > 34) { ink.save(); ink.globalCompositeOperation = "destination-out"; ink.fillStyle = "rgba(0,0,0,.28)"; ink.fillRect(0, 0, W, H); ink.restore(); splats = 22; }
+    if (!inkOn) { inkOn = true; inkCv.hidden = false; }
+    const sz = clamp(power * 24, 10, 44);
+    ink.fillStyle = "#B5172B";
+    ink.beginPath(); ink.ellipse(x, y, sz * (1 + Math.abs(ny) * .9), sz * (1 + Math.abs(nx) * .9), 0, 0, Math.PI * 2); ink.fill();
+    for (let k = 0; k < 9; k++) {
+      const an = Math.random() * Math.PI * 2, dd = sz * (1.1 + Math.random() * 1.8), rr = 2 + Math.random() * sz * .22;
+      ink.beginPath(); ink.arc(x + Math.cos(an) * dd + nx * dd * .5, y + Math.sin(an) * dd + ny * dd * .5, rr, 0, Math.PI * 2); ink.fill();
+    }
+  };
+  const impact = (nx, ny, vn, vt) => {
+    const sp = Math.abs(vn);
+    if (sp < .12) return;
+    b.sqA = Math.atan2(ny, nx); b.sqv += Math.min(.09, sp * .045); b.w += vt * .008;
+    if (sp > .45) splat(b.x - nx * R, b.y - ny * R, nx, ny, sp);
+  };
+
+  const draw = () => {
+    ctx.clearRect(0, 0, S, S);
+    const g0 = b.grow, r = R * (g0 < 1 ? 1 - Math.pow(1 - g0, 3) * Math.cos(g0 * 4) : 1);
+    if (r <= 0) return;
+    const sp = Math.hypot(b.vx, b.vy), st = Math.min(.18, sp * .08), va = Math.atan2(b.vy, b.vx);
+    ctx.save(); ctx.translate(S / 2, S / 2);
+    /* stretched along its flight, squashed against the wall it last hit */
+    ctx.rotate(va); ctx.scale(1 + st, 1 - st * .8); ctx.rotate(-va);
+    ctx.rotate(b.sqA); ctx.scale(1 - b.sq, 1 + b.sq * .85); ctx.rotate(-b.sqA);
+    ctx.fillStyle = "#141414"; ctx.beginPath(); ctx.arc(9, 9, r, 0, Math.PI * 2); ctx.fill();     // the hard shadow every card here has
+    const gr = ctx.createRadialGradient(-r * .38, -r * .42, r * .06, 0, 0, r * 1.05);
+    gr.addColorStop(0, "#F36A5E"); gr.addColorStop(.46, "#C81E33"); gr.addColorStop(1, "#7A0B1B");
+    ctx.fillStyle = gr; ctx.beginPath(); ctx.arc(0, 0, r, 0, Math.PI * 2); ctx.fill();
+    /* the spin shows as a seam that turns with it */
+    ctx.save(); ctx.beginPath(); ctx.arc(0, 0, r, 0, Math.PI * 2); ctx.clip(); ctx.rotate(b.a);
+    ctx.strokeStyle = "rgba(20,20,20,.24)"; ctx.lineWidth = Math.max(2, r * .045);
+    ctx.beginPath(); ctx.ellipse(0, 0, r * 1.02, r * .34, 0, 0, Math.PI * 2); ctx.stroke();
+    ctx.beginPath(); ctx.ellipse(0, 0, r * .34, r * 1.02, 0, -Math.PI / 2, Math.PI / 2); ctx.stroke();
+    ctx.restore();
+    ctx.lineWidth = 3; ctx.strokeStyle = "#141414"; ctx.beginPath(); ctx.arc(0, 0, r, 0, Math.PI * 2); ctx.stroke();
+    ctx.fillStyle = "rgba(255,247,238,.78)"; ctx.beginPath(); ctx.ellipse(-r * .4, -r * .46, r * .2, r * .1, -.7, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+  };
+
   frame({
-    write() {
-      if (px < 0) return false;
-      const x = String(Math.min(9999, px)).padStart(4, "0"), y = String(Math.min(9999, py)).padStart(4, "0");
-      if (x !== shownX) { shownX = x; xEl.textContent = x; }
-      if (y !== shownY) { shownY = y; yEl.textContent = y; }
-      return false;
+    read(s) { vis = s.y < s.vh * 1.6; if (vis) pinTop = pin.getBoundingClientRect().top; },
+    write(s) {
+      if (!vis || !W) { ballView = null; lastT = 0; return false; }
+      const dt = lastT ? Math.min(40, s.t - lastT) : 16, f = dt / 16; lastT = s.t;
+      if (b.grow < 1) b.grow = Math.min(1, b.grow + dt / 900);
+      if (drag) {
+        const nx = lerp(b.x, drag.tx, .5), ny = lerp(b.y, drag.ty, .5);
+        b.vx = (nx - b.x) / dt; b.vy = (ny - b.y) / dt; b.x = nx; b.y = ny;
+      } else {
+        /* a soft spring home and a little air; a fling still crosses the whole hero */
+        b.vx += (home.x - b.x) * .0000075 * dt; b.vy += (home.y - b.y) * .0000075 * dt;
+        const damp = Math.exp(-dt / 950); b.vx *= damp; b.vy *= damp;
+        b.x += b.vx * dt; b.y += b.vy * dt;
+      }
+      const L = R, Rt = W - R, Tp = minY + R, Bt = H - R;
+      if (b.x < L) { impact(1, 0, b.vx, b.vy); b.x = L; b.vx = Math.abs(b.vx) * .72; }
+      else if (b.x > Rt) { impact(-1, 0, b.vx, -b.vy); b.x = Rt; b.vx = -Math.abs(b.vx) * .72; }
+      if (b.y < Tp) { impact(0, 1, b.vy, -b.vx); b.y = Tp; b.vy = Math.abs(b.vy) * .72; }
+      else if (b.y > Bt) { impact(0, -1, b.vy, b.vx); b.y = Bt; b.vy = -Math.abs(b.vy) * .72; }
+      /* the squash wobbles back like jelly; the spin slows down */
+      b.sqv += (-b.sq * .2 - b.sqv * .3) * f; b.sq += b.sqv * f;
+      b.a += b.w * dt; b.w *= Math.exp(-dt / 1800);
+      /* redraw only when the ball changed (the page scrolling under a resting ball changes nothing) */
+      const look = `${b.a.toFixed(3)},${b.sq.toFixed(4)},${b.sqA.toFixed(2)},${b.grow},${S},${Math.atan2(b.vy, b.vx).toFixed(2)},${Math.min(.18, Math.hypot(b.vx, b.vy) * .08).toFixed(3)}`;
+      if (look !== drawn) { drawn = look; draw(); }
+      /* the canvas and the round handle follow the ball; the pill says where it is */
+      if (sizeR !== R) { sizeR = R; grab.style.width = grab.style.height = R * 2 + "px"; }
+      const gt = `${(b.x).toFixed(1)},${(b.y).toFixed(1)}`;
+      if (gt !== grabAt) {
+        grabAt = gt;
+        cv.style.transform = `translate3d(${(b.x - S / 2).toFixed(1)}px,${(b.y - S / 2).toFixed(1)}px,0)`;
+        grab.style.transform = `translate3d(${(b.x - R).toFixed(1)}px,${(b.y - R).toFixed(1)}px,0)`;
+      }
+      const xy = String(Math.round(b.x)).padStart(4, "0") + String(Math.round(b.y)).padStart(4, "0");
+      if (xy !== shown) { shown = xy; xEl.textContent = xy.slice(0, 4); yEl.textContent = xy.slice(4); }
+      ballView = { x: pinLeft + b.x, y: pinTop + b.y, r: R };
+      const moving = !!drag || b.grow < 1 || Math.hypot(b.vx, b.vy) > .004 || Math.abs(b.sq) > .002 || Math.abs(b.sqv) > .002 ||
+        Math.hypot(home.x - b.x, home.y - b.y) > .8 || Math.abs(b.w) > .0004;
+      if (!moving) { b.vx = b.vy = 0; lastT = 0; }
+      return moving;
     },
   });
+}
 
-  /* a press drops a full stop */
-  const dots = []; let n = 0;
-  pin.addEventListener("click", (e) => {
-    if (e.detail === 0 || e.target.closest("a,button,input,textarea,select,label,summary,[contenteditable]")) return;
-    if (getSelection && String(getSelection()).length) return;     // selecting text is not a press
-    const r = pin.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top;
-    const d = document.createElement("i"), ring = document.createElement("i");
-    d.className = "drop"; ring.className = "drop-ring";
-    const size = 14 + Math.random() * 22;
-    for (const el of [d, ring]) { el.style.left = x + "px"; el.style.top = y + "px"; el.style.setProperty("--s", size + "px"); }
-    pin.append(ring, d);
-    d.animate([
-      { transform: "translate(-50%,-50%) translateY(-70px) scale(.25)", opacity: 0 },
-      { transform: "translate(-50%,-50%) scale(1.3,.8)", opacity: 1, offset: .55 },
-      { transform: "translate(-50%,-50%) scale(.9,1.1)", offset: .78 },
-      { transform: "translate(-50%,-50%) scale(1)" },
-    ], { duration: 640, easing: "cubic-bezier(.3,.7,.2,1)", fill: "both" });
-    ring.animate([{ transform: "translate(-50%,-50%) scale(.4)", opacity: .9 }, { transform: "translate(-50%,-50%) scale(2.6)", opacity: 0 }],
-      { duration: 700, delay: 300, easing: "cubic-bezier(.16,1,.3,1)", fill: "both" }).finished.then(() => ring.remove());
-    dots.push(d);
-    /* the paper only holds so many: the oldest one fades */
-    if (dots.length > 24) { const old = dots.shift(); old.animate([{ opacity: 1 }, { opacity: 0, transform: "translate(-50%,-50%) scale(0)" }], { duration: 320, fill: "forwards" }).finished.then(() => old.remove()); }
-    n++; nEl.textContent = n;
-    pill.classList.remove("pop"); void pill.offsetWidth; pill.classList.add("pop");
-    if (n === 10) say(T("play10"));
-  });
+/* the first word of the headline turns over: websites, web apps, AI assistants (the full title stays as text) */
+function initRotator() {
+  const box = $("#rot"), w = box && $(".rot-w", box); if (!w) return;
+  let i = 0, on = true;
+  const words = () => { const l = T("rotWords"); return Array.isArray(l) && l.length ? l : [w.textContent]; };
+  if ("IntersectionObserver" in window) new IntersectionObserver(([e]) => { on = e.isIntersecting; }).observe(box);
+  /* the box is as wide as the longest word (and shrinks the type if that word would not fit the line), so the
+     headline never reflows when the word changes */
+  const fit = () => {
+    const now = w.textContent; box.style.width = ""; box.style.fontSize = "";
+    let max = 0; for (const t of words()) { w.textContent = t; max = Math.max(max, w.getBoundingClientRect().width); }
+    w.textContent = now;
+    const room = box.parentElement.getBoundingClientRect().width, k = max > room ? room / max : 1;
+    if (k < 1) box.style.fontSize = k.toFixed(3) + "em";
+    box.style.width = Math.ceil(max * k) + 1 + "px";
+    remeasure();
+  };
+  let ft = 0; const refit = () => { clearTimeout(ft); ft = setTimeout(fit, 120); };
+  fit(); if (document.fonts) document.fonts.ready.then(fit);
+  window.addEventListener("resize", refit); document.addEventListener("langchange", refit);
+  setInterval(() => {
+    if (!on || document.hidden) return;
+    const list = words(); i = (i + 1) % list.length;
+    w.animate([{ transform: "none", opacity: 1 }, { transform: "translateY(-96%) rotate(-5deg)", opacity: 0 }], { duration: 280, easing: "cubic-bezier(.5,0,.75,0)" }).finished.then(() => {
+      w.textContent = list[i];
+      w.animate([{ transform: "translateY(96%) rotate(5deg)", opacity: 0 }, { transform: "none", opacity: 1 }], { duration: 560, easing: "cubic-bezier(.34,1.56,.64,1)" });
+    });
+  }, 2600);
+  document.addEventListener("langchange", () => { const list = words(); w.textContent = list[i % list.length]; });
 }
 
 /* ===== features/odometer.js ===== */
@@ -436,11 +603,11 @@ function initOdometers() {
 }
 
 /* ===== features/slider.js ===== */
-/* Our story as a slider: a plain scrolling row (so a finger, a trackpad and the arrow keys just work), plus a
-   counter, a bar, two buttons, and dragging with the mouse. */
-function initStorySlider() {
-  const line = $("#storyLine"); if (!line) return;
-  const items = $$("li", line), now = $("#storyNow"), all = $("#storyAll"), bar = $("#storyBar"), prev = $("#storyPrev"), next = $("#storyNext");
+/* A row you can slide: the four projects and our story. Underneath each is a plain scrolling row (so a finger, a
+   trackpad and the arrow keys just work), plus a counter, a bar, two buttons, and dragging with the mouse. */
+function makeSlider(line, now, all, bar, prev, next) {
+  if (!line) return;
+  const items = [...line.children];
   const pad = (k) => String(k).padStart(2, "0");
   all.textContent = pad(items.length);
   /* one step: from one card to the next */
@@ -461,18 +628,129 @@ function initStorySlider() {
   update();
   prev.addEventListener("click", () => line.scrollBy({ left: -step(), behavior: "smooth" }));
   next.addEventListener("click", () => line.scrollBy({ left: step(), behavior: "smooth" }));
-  /* drag with a mouse; the row settles on the nearest step when you let go */
+  /* drag with a mouse; the row settles on the nearest step when you let go; a drag is never a click */
   let down = false, x0 = 0, s0 = 0, moved = false;
-  line.addEventListener("pointerdown", (e) => { if (e.pointerType !== "mouse" || e.button) return; down = true; moved = false; x0 = e.clientX; s0 = line.scrollLeft; line.setPointerCapture(e.pointerId); line.classList.add("dragging"); });
-  line.addEventListener("pointermove", (e) => { if (!down) return; const dx = e.clientX - x0; if (Math.abs(dx) > 3) moved = true; line.scrollLeft = s0 - dx; });
+  line.addEventListener("pointerdown", (e) => { if (e.pointerType !== "mouse" || e.button) return; down = true; moved = false; x0 = e.clientX; s0 = line.scrollLeft; });
+  line.addEventListener("pointermove", (e) => {
+    if (!down) return;
+    const dx = e.clientX - x0;
+    if (!moved && Math.abs(dx) > 4) { moved = true; line.setPointerCapture(e.pointerId); line.classList.add("dragging"); }
+    if (moved) line.scrollLeft = s0 - dx;
+  });
   const up = () => {
     if (!down) return; down = false;
+    if (!moved) return;
     const st = step(), to = Math.round(line.scrollLeft / st) * st;
     line.classList.remove("dragging");
     line.scrollTo({ left: to, behavior: "smooth" });
   };
   line.addEventListener("pointerup", up); line.addEventListener("pointercancel", up);
   line.addEventListener("click", (e) => { if (moved) { e.preventDefault(); e.stopPropagation(); moved = false; } }, true);
+  line.addEventListener("dragstart", (e) => e.preventDefault());
+}
+function initSliders() {
+  makeSlider($("#deck"), $("#deckNow"), $("#deckAll"), $("#deckBar"), $("#deckPrev"), $("#deckNext"));
+  makeSlider($("#storyLine"), $("#storyNow"), $("#storyAll"), $("#storyBar"), $("#storyPrev"), $("#storyNext"));
+}
+
+/* the project cards lean towards the pointer (with a mouse) */
+function initCardTilt() {
+  if (!fine()) return;
+  $$(".card-in").forEach((c) => {
+    let box = null, on = false, rx = 0, ry = 0, tx = 0, ty = 0, shown = "";
+    c.addEventListener("pointerenter", (e) => { if (e.pointerType !== "mouse") return; on = true; box = c.getBoundingClientRect(); wake(); });
+    c.addEventListener("pointermove", () => { if (on) { box = c.getBoundingClientRect(); wake(); } }, { passive: true });
+    c.addEventListener("pointerleave", () => { on = false; tx = ty = 0; wake(); });
+    frame({
+      write(s) {
+        if (on && box) { tx = ((s.py - box.top) / box.height - .5) * -9; ty = ((s.px - box.left) / box.width - .5) * 11; }
+        rx = lerp(rx, tx, .14); ry = lerp(ry, ty, .14);
+        if (!on && Math.abs(rx) < .02 && Math.abs(ry) < .02) { rx = ry = 0; if (shown) { shown = ""; c.style.transform = ""; } return false; }
+        const v = `rotateX(${rx.toFixed(2)}deg) rotateY(${ry.toFixed(2)}deg)`;
+        if (v !== shown) { shown = v; c.style.transform = v; }
+        /* settled under a still pointer: nothing to do until it moves */
+        return Math.abs(rx - tx) > .02 || Math.abs(ry - ty) > .02;
+      },
+    });
+  });
+}
+
+/* ===== features/kinetic.js ===== */
+/* Huge outlined words that slide sideways with the scroll (the two rows of a band go opposite ways) and lean with
+   the scroll's speed. Each row holds its words three times, so there is always more on both sides. */
+function initKinetic() {
+  const bands = $$(".kin").map((k) => ({ k, rows: $$(".kin-row", k).map((r) => ({ r, dir: +r.dataset.dir || 1, w: 0, x: null })), top: 0, h: 0, vis: false }));
+  if (!bands.length) return;
+  let skew = 0;
+  measure((s) => bands.forEach((b) => { const r = b.k.getBoundingClientRect(); b.top = r.top + s.y; b.h = r.height; b.rows.forEach((row) => { row.w = row.r.scrollWidth / 3; row.x = null; }); }));
+  frame({
+    read(s) { bands.forEach((b) => { b.vis = s.y + s.vh > b.top - 100 && s.y < b.top + b.h + 100; }); },
+    write(s) {
+      const target = clamp(s.dy * .3, -12, 12);
+      skew = lerp(skew, target, .12);
+      if (Math.abs(skew) < .01) skew = 0;
+      for (const b of bands) {
+        if (!b.vis) continue;
+        const off = (s.y + s.vh - b.top) * .5;
+        for (const row of b.rows) {
+          const x = Math.round((-row.w + off * row.dir) * 10) / 10, k = Math.round(-skew * row.dir * 100) / 100;
+          if (x !== row.x || k !== row.k) { row.x = x; row.k = k; row.r.style.transform = `translate3d(${x}px,0,0) skewX(${k}deg)`; }
+        }
+      }
+      return skew !== 0;
+    },
+  });
+}
+
+/* ===== features/footer.js ===== */
+/* The footer word plays: with a mouse, its letters step away from the pointer; anyone can pull its red full stop,
+   which snaps back like elastic when let go. (The letters are made by initScenes; they move with `translate`,
+   while their arrival uses `transform`, so the two never fight.) */
+function initFooterPlay() {
+  const word = $(".ftr-word"), stop = word && $(".stop", word); if (!word) return;
+  let letters = [], top = 0, bot = 0;
+  measure((s) => {
+    letters = $$(".fl", word).map((l) => { const r = l.getBoundingClientRect(); return { l, cx: r.left + r.width / 2, cy: r.top + s.y + r.height / 2, x: 0, y: 0 }; });
+    const r = word.getBoundingClientRect(); top = r.top + s.y; bot = r.bottom + s.y;
+  });
+  /* the full stop on a rubber band */
+  const sp = { x: 0, y: 0, vx: 0, vy: 0, held: null };
+  if (stop) {
+    stop.addEventListener("pointerdown", (e) => { sp.held = { id: e.pointerId, x0: e.clientX - sp.x, y0: e.clientY - sp.y }; stop.setPointerCapture(e.pointerId); e.preventDefault(); wake(); });
+    stop.addEventListener("pointermove", (e) => {
+      if (!sp.held || e.pointerId !== sp.held.id) return;
+      /* the further you pull, the harder it pulls back */
+      const dx = e.clientX - sp.held.x0, dy = e.clientY - sp.held.y0, d = Math.hypot(dx, dy) || 1, k = 260 * Math.tanh(d / 260) / d;
+      sp.x = dx * k; sp.y = dy * k; sp.vx = sp.vy = 0; wake();
+    });
+    const let_go = (e) => { if (sp.held && e.pointerId === sp.held.id) { sp.held = null; wake(); } };
+    stop.addEventListener("pointerup", let_go); stop.addEventListener("pointercancel", let_go);
+  }
+  frame({
+    write(s) {
+      let more = false;
+      /* letters */
+      if (fine() && letters.length && s.y + s.vh > top && s.y < bot) {
+        const px = s.px, py = s.py + s.y;
+        for (const L of letters) {
+          let tx = 0, ty = 0;
+          if (px >= 0) { const dx = L.cx - px, dy = L.cy - py, d = Math.hypot(dx, dy) || 1, f = Math.max(0, 1 - d / 280); tx = (dx / d) * f * 64; ty = (dy / d) * f * 46; }
+          L.x = lerp(L.x, tx, .16); L.y = lerp(L.y, ty, .16);
+          if (Math.abs(L.x - tx) > .1 || Math.abs(L.y - ty) > .1) more = true;
+          L.l.style.translate = Math.abs(L.x) < .05 && Math.abs(L.y) < .05 ? "" : `${L.x.toFixed(1)}px ${L.y.toFixed(1)}px`;
+        }
+      }
+      /* the full stop springs home */
+      if (stop) {
+        if (!sp.held) {
+          sp.vx += -sp.x * .16; sp.vy += -sp.y * .16; sp.vx *= .8; sp.vy *= .8; sp.x += sp.vx; sp.y += sp.vy;
+          if (Math.abs(sp.x) < .05 && Math.abs(sp.y) < .05 && Math.abs(sp.vx) < .05 && Math.abs(sp.vy) < .05) { sp.x = sp.y = sp.vx = sp.vy = 0; } else more = true;
+        } else more = true;
+        stop.style.translate = sp.x || sp.y ? `${sp.x.toFixed(1)}px ${sp.y.toFixed(1)}px` : "";
+      }
+      return more;
+    },
+  });
 }
 
 /* ===== features/reveal.js ===== */
@@ -480,7 +758,7 @@ function initStorySlider() {
 /* Blocks that settle in as a whole. Paragraphs that arrive line by line, images that unveil and the chapter leads
    that fill in with the scroll are handled by initScenes below, so they are not in this list. */
 const BLOCKS = [
-  ".index li", ".ch-kicker", ".ch-intro", ".shot", ".film figcaption", ".fact", ".ba-copy > .h3", ".gauge",
+  ".deck .card", ".ch-kicker", ".ch-intro", ".shot", ".film figcaption", ".fact", ".ba-copy > .h3", ".gauge",
   ".versions-head", ".ver-track", ".built", ".hello-card", ".hello-block .h3", ".poster-copy > .h3", ".steps .step", ".proc-visual",
   ".person", ".plus", ".equals", ".story-line li", ".toy", ".qa details", ".contact-copy > :not(h2):not(.lead):not(.how)",
   ".contact-form .field", "#form > .btn", ".form-note", ".ftr-cols > div", ".how li",
@@ -493,6 +771,8 @@ function splitWords(scope = document) {
     const text = el.textContent.trim();
     if (el.dataset.split === text) return;
     el.dataset.split = text;
+    const head = el.closest("h1,h2,h3"), glued = $(".glue > .stop", el);
+    if (glued) head.append(glued);   // the heading's full stop was glued to the old last word: give it back first
     el.textContent = "";
     text.split(/\s+/).forEach((word, i, all) => {
       const w = document.createElement("span"), inner = document.createElement("span");
@@ -500,6 +780,14 @@ function splitWords(scope = document) {
       w.append(inner); el.append(w);
       if (i < all.length - 1) el.append(" ");
     });
+    /* a full stop right after these words (directly, or after their wrapper) is glued to the last word, so it can
+       never be left alone on a line of its own */
+    const after = (n) => { for (let x = n; x && x !== head; x = x.parentElement) { if (x.nextSibling) return x.nextElementSibling === x.nextSibling || !x.nextSibling.textContent.trim() ? x.nextElementSibling : null; } return null; };
+    const stop = head && after(el), last = el.lastElementChild;
+    if (stop && stop.matches(".stop") && last) {
+      const g = document.createElement("span"); g.className = "glue";
+      last.replaceWith(g); g.append(last, stop);
+    }
   });
 }
 
@@ -514,10 +802,19 @@ function initReveal() {
     b.classList.add(b.matches(".gauge, .person, .toy, .hello-card, .how li") ? "rv-scale" : b.matches(".qa details") ? "rv-x" : "rv");
   });
   if (!("IntersectionObserver" in window)) { [...heads, ...blocks].forEach((e) => e.classList.add("in")); return; }
+  /* cards in a sideways row are clipped by the row until it is slid, so the row arrives as one: watch the row */
+  const ROWS = ".deck, .story-line", rows = new Map();
   const io = new IntersectionObserver((es) => es.forEach((e) => {
-    if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); }
+    if (!e.isIntersecting) return;
+    (rows.get(e.target) || [e.target]).forEach((x) => x.classList.add("in")); io.unobserve(e.target);
   }), { threshold: .12, rootMargin: "0px 0px -6% 0px" });
-  [...heads, ...blocks].forEach((e) => { if (!e.closest(".hero")) io.observe(e); });
+  [...heads, ...blocks].forEach((e) => {
+    if (e.closest(".hero")) return;
+    const row = e.parentElement.closest(ROWS);
+    if (!row) return io.observe(e);
+    if (!rows.has(row)) { rows.set(row, []); io.observe(row); }
+    rows.get(row).push(e);
+  });
   $$("svg .d").forEach((d) => io.observe(d.closest("svg")));
   root.classList.add("reveal-ready");
 
@@ -536,13 +833,12 @@ function initReveal() {
      Once a paragraph has arrived its masks stop clipping, so the finished page costs nothing extra to draw.
    - The four chapter leads fill in like ink: each word darkens as the reading line passes it.
    - Screens and the poster unveil from below, then drift a little against the scroll (with a mouse only).
-   - In the red index the rules draw themselves and the big names drift sideways with the scroll.
    - The statement fills in like the chapter leads, and its little project screens pop in as the reading line
      reaches them.
    - Sticky notes are stuck on one after the other; the footer word builds itself letter by letter.
    Hidden states exist only under html.scenes, which is added at the end of a successful start, so if anything here
    fails, everything is simply visible. */
-const LINES = ".sec-head .lead, .story-head > .h3, .poster-copy > p:not(.built), .ba-copy > p, .hello-block p, .contact-copy > .lead, .index-name";
+const LINES = ".sec-head .lead, .story-head > .h3, .poster-copy > p:not(.built), .ba-copy > p, .hello-block p, .contact-copy > .lead";
 const INK = ".ch-intro .lead, .stmt [data-t]";
 const UNVEIL = ".film img, .poster-img, .ba";
 
@@ -594,8 +890,6 @@ function initScenes() {
   lines.forEach((el) => el.classList.add("ls"));
   inks.forEach((el) => el.classList.add("ink"));
 
-  /* phones: the thumbnails in the index are part of the rows, so they unveil too */
-  if (!fine()) unveils.push(...$$(".index-thumb"));
   /* An unveil is a curtain made only of transforms (cheap: no repaint while it moves): a window (.uvm) rises
      from below while the screen inside it moves the other way, so the screen seems to stay put while it is
      uncovered. The window is a little larger than the screen, so hard shadows and tilted corners show. */
@@ -609,7 +903,7 @@ function initScenes() {
   /* one-shot arrivals; a curtain is watched through the box around it (its figure, block or row), which never moves */
   const watchFor = new Map();
   lines.forEach((el) => watchFor.set(el, el));
-  masks.forEach((m) => watchFor.set(m.parentElement.closest(".film, .poster, .ba-block, .index-row") || m.parentElement, m));
+  masks.forEach((m) => watchFor.set(m.parentElement.closest(".film, .poster, .ba-block") || m.parentElement, m));
   const io = new IntersectionObserver((es) => es.forEach((e) => {
     if (!e.isIntersecting) return;
     io.unobserve(e.target);
@@ -631,7 +925,6 @@ function initScenes() {
   $$(".notes .fact").forEach((f, i) => f.style.setProperty("--tilt", (i % 2 ? 6 : -6) + "deg"));
 
   const pics = $$(".stmt-img");
-  const names = $$(".index-name");
   const foot = $(".ftr-word");
   let letters = [];
   if (foot) {
@@ -643,18 +936,17 @@ function initScenes() {
     }
   }
 
-  /* measured: the lines, where each ink word is, the names and screens that drift, the story rows, the footer */
-  let inkWords = [], picsAt = [], drift = [], par = [], footTop = 0, parOn = false, footP = -1;
+  /* measured: the lines, where each ink word is, the statement's screens, the screens that drift, the footer */
+  let inkWords = [], picsAt = [], par = [], footTop = 0, parOn = false, footP = -1;
   measure((s) => {
     /* lines first (they can change heights, which everything below measures); then only reads, then writes */
     buildLines(lines);
     inkWords = inks.map((el) => ({ el, top: el.getBoundingClientRect().top + s.y, bot: el.getBoundingClientRect().bottom + s.y, words: $$(".iw", el).map((w) => ({ w, y: w.getBoundingClientRect().top + s.y, o: -1 })) }));
-    drift = names.map((n, i) => { const r = n.getBoundingClientRect(); return { n, mid: r.top + s.y + r.height / 2, dir: i % 2 ? -1 : 1, x: null }; });
     parOn = fine() && s.vw >= 900;
-    par = masks.filter((m) => !m.querySelector(".index-thumb")).map((u) => { const r = u.parentElement.getBoundingClientRect(); return { u, mid: r.top + s.y + r.height / 2, y: null }; });
+    par = masks.map((u) => { const r = u.parentElement.getBoundingClientRect(); return { u, mid: r.top + s.y + r.height / 2, y: null }; });
     picsAt = pics.map((el) => { const r = el.getBoundingClientRect(); return { el, y: r.top + s.y + r.height * .3, on: null }; });
     footTop = foot ? foot.getBoundingClientRect().top + s.y : 0;
-    drift.forEach((d) => { d.x = null; }); par.forEach((p) => { p.y = null; }); inkWords.forEach((k) => k.words.forEach((w) => { w.o = -1; }));
+    par.forEach((p) => { p.y = null; }); inkWords.forEach((k) => k.words.forEach((w) => { w.o = -1; }));
     root.classList.toggle("par", parOn); footP = -1;
   });
 
@@ -669,13 +961,6 @@ function initScenes() {
           const o = Math.round((.18 + .82 * clamp((line - w.y) / span)) * 100) / 100;
           if (o !== w.o) { w.o = o; w.w.style.opacity = String(o); }
         }
-      }
-      /* the big names in the index drift a little sideways, alternately, with the scroll */
-      for (const d of drift) {
-        const q = (d.mid - (y + vh / 2)) / vh;
-        if (q < -1.2 || q > 1.2) continue;
-        const x = Math.round(clamp(q, -1, 1) * s.vw * .028 * d.dir * 10) / 10;
-        if (x !== d.x) { d.x = x; d.n.style.transform = `translate3d(${x}px,0,0)`; }
       }
       /* screens drift against the scroll, with a mouse and a wide window only */
       /* (the curtain uses transform; the drift uses the separate translate property, so the two never fight) */
@@ -813,12 +1098,11 @@ function initTraveler() {
       const p = clamp((y - zoomStart) / Math.max(1, zoomEnd - zoomStart));
       if (zoomable && heroR && p > 0 && y < workTop) {
         /* The phone copy has scrolled clear; grow the wipe from the held collage. */
-        const mobile = s.vw < 960;
-        const stageR = mobile ? $(".stage").getBoundingClientRect() : null;
-        const ox = mobile ? stageR.left + stageR.width / 2 : heroR.left + heroR.width / 2,
-          oy = mobile ? stageR.top + stageR.height / 2 : heroR.top + heroR.height / 2;
+        /* the page falls into the ball (without it, into the headline's full stop) */
+        const o = ballView || { x: heroR.left + heroR.width / 2, y: heroR.top + heroR.height / 2, r: heroR.width / 2 };
+        const ox = o.x, oy = o.y;
         const far = Math.hypot(Math.max(ox, s.vw - ox), Math.max(oy, s.vh - oy));
-        const sc = lerp(heroR.width / 2000, far / 1000 + .01, Math.pow(p, 2.4));
+        const sc = lerp(o.r / 1000, far / 1000 + .01, Math.pow(p, 2.4));
         zoom.style.transform = `translate3d(${ox}px,${oy}px,0) scale(${sc})`;
         if (!zoomOn) { zoom.style.opacity = "1"; zoomOn = true; }
       } else if (zoomOn) { zoom.style.opacity = "0"; zoomOn = false; }
@@ -1017,25 +1301,6 @@ function initMagnets() {
     });
     /* the box moves with the page; measure again when the page scrolls under a hovering pointer */
     addEventListener("scroll", () => { if (on) box = b.getBoundingClientRect(); }, { passive: true });
-  });
-}
-
-function initIndexThumbs() {
-  if (!fine()) return;
-  $$(".index-row").forEach((row) => {
-    const th = $(".index-thumb", row);
-    let on = false, x = 0, y = 0;
-    row.addEventListener("pointerenter", () => { on = true; x = state.px; y = state.py; });
-    row.addEventListener("pointerleave", () => { on = false; });
-    frame({
-      write(s) {
-        if (!on) return false;
-        x = lerp(x, s.px, .14); y = lerp(y, s.py, .14);
-        th.style.left = "0"; th.style.top = "0";
-        th.style.transform = `translate3d(${x + 28}px,${y - 120}px,0)`;
-        return Math.abs(x - s.px) > .3 || Math.abs(y - s.py) > .3;
-      },
-    });
   });
 }
 
@@ -1263,9 +1528,13 @@ safe("pin", initPin);
 safe("reveal", initReveal);
 safe("scenes", initScenes);
 safe("glide", initGlide);
-safe("play", initPlay);
+safe("ball", initBall);
+safe("rotator", initRotator);
 safe("odometers", initOdometers);
-safe("slider", initStorySlider);
+safe("sliders", initSliders);
+safe("tilt", initCardTilt);
+safe("kinetic", initKinetic);
+safe("footer", initFooterPlay);
 safe("hero-video", initHeroVideo);
 safe("theme", initTheme);
 safe("lang", initLang);
@@ -1277,7 +1546,6 @@ safe("process", initProcess);
 safe("traveler", initTraveler);
 safe("stage", initStage);
 safe("magnets", initMagnets);
-safe("thumbs", initIndexThumbs);
 safe("cursor", initCursor);
 safe("marquee", initMarquee);
 safe("gauges", initGauges);

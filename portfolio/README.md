@@ -41,13 +41,28 @@ Printing shows everything.
   numbers that roll like an odometer (`initOdometers`). All four are real: 4 projects online, 25 versions of
   Giannotas, 15 languages in PROJECT 7o, 152 automated checks (54 + 51 + 47).
 - **Our story** is a slider: a plain scrolling row of cards, with a 01 / 06 counter, a bar, two buttons and dragging
-  (`initStorySlider`).
+  (`makeSlider`).
 - **Contact** reads as a conversation: every question is the field's own label, the four quick replies write the
   first line of the message and show as your answer. Nothing is sent from the page, as before.
 
+## The big moves (v6)
+- **The ball** (`initBall`): the hero's full stop is a giant red ball drawn on a canvas. Grab it and throw it: it
+  bounces off the edges of the hero, squashes, spins, leaves ink where it hits, and a soft spring brings it home. A
+  press on empty paper kicks it. On a phone it waits in the first screen, in the largest empty space beside the
+  headline. When you scroll, the red zoom grows out of the ball (`ballView`, read by the traveler).
+  Its canvas is only as big as the ball and moves by transform; it is redrawn only when its shape changes.
+- **The first word turns over** (`initRotator`): websites, web apps, AI assistants. Its box is as wide as the longest
+  word, so the headline never reflows; the full title stays in the page as text.
+- **The four projects are a deck** of big tilted cards you slide, drag or step through (`makeSlider`), with a
+  counter and a bar; with a mouse a card leans towards the pointer.
+- **Two bands of huge outlined words** slide sideways with the scroll and lean with its speed (`initKinetic`).
+- **A stack of cards:** every section slides up over the one before, with rounded top corners.
+- **The footer word** steps away from the pointer, and its red full stop can be pulled like elastic.
+- A full stop at the end of a heading is glued to the last word, so it never sits alone on a line.
+
 ## The page, top to bottom
-1. **Hero** — the headline, three real screens at three depths (they follow the pointer), a marquee.
-2. **Work** (red) — the index of the four projects; on a computer the screenshot follows the pointer.
+1. **Hero** — the headline with the turning first word, the ball, stickers, a marquee.
+2. **Work** (red) — the deck of the four projects.
 3. **Giannotas** (matte black) — screens that slide sideways while you scroll down (pinned), the arrival in five
    frames, eight facts, before/after, three speedometers (25 versions, 54 checks, 60 fps), the version line.
 4. **PROJECT 7o** — pinned screens, the welcome in 15 languages, sticky notes, the poster.

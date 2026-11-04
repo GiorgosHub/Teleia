@@ -47,8 +47,6 @@
 .scenes .ls:not(.ls-done) .ll{overflow:clip;overflow-clip-margin:.2em}
 .scenes .ls .lli{transform:translate3d(0,110%,0);transition:transform 1s var(--ease);transition-delay:calc(var(--l,0) * 90ms)}
 .scenes .ls.ls-in .lli{transform:none}
-/* the index names rise a little later than their row */
-.scenes .index-name .lli{transition-duration:1.1s;transition-delay:calc(var(--l,0) * 90ms + var(--i,0) * 90ms + 120ms)}
 
 /* the chapter leads fill in like ink; the script sets each word's opacity from the scroll */
 .scenes .ink .iw{opacity:.18}
@@ -59,7 +57,6 @@
 .uvm{display:block;padding:28px;margin:-28px}
 .poster > .uvm{justify-self:center;width:calc(min(100%,360px) + 56px)}
 .poster > .uvm > .poster-img{width:100%}
-.index-row > .uvm{grid-column:1/-1}
 .scenes .uvm{overflow:hidden;transform:translate3d(0,100%,0);transition:transform 1.3s var(--ease)}
 .scenes .uvm:not(.uv-in){pointer-events:none}   /* while it waits below, the empty window must not catch clicks */
 .scenes .uvm > .uv{transform:translate3d(0,-100%,0);scale:1.08;transition:transform 1.3s var(--ease),scale 1.7s var(--ease)}
@@ -73,12 +70,6 @@
 /* the footer word is on its own layer only while it builds */
 .ftr-word.building .fl{will-change:transform,opacity}
 
-/* the red index: the rules draw themselves from the left, one after the other */
-.scenes .index-row{border-bottom-color:transparent}
-.scenes .index-row::after{content:"";position:absolute;left:0;right:0;bottom:-2px;height:2px;background:var(--on-red);transform:scaleX(0);transform-origin:0 50%;
-  transition:transform 1.2s var(--ease) calc(var(--i,0) * 90ms + 80ms)}
-.scenes .index li.in .index-row::after{transform:none}
-.scenes .index-name{will-change:transform}
 
 /* sticky notes are stuck on, crooked at first, one after the other; their resting tilt (rotate) stays */
 .scenes .notes .fact.rv{translate:none;transform:translate3d(0,64px,0) rotate(var(--tilt,-6deg)) scale(.9);
@@ -121,8 +112,6 @@
 @media print{
   .w > span,.rv,.rv-scale,.rv-x,.ls .lli,.ink .iw,.ftr-word .fl{transform:none!important;translate:none!important;scale:none!important;opacity:1!important}
   .uvm,.uv,.uv img{overflow:visible!important;scale:none!important;transform:none!important;translate:none!important}
-  .index-name{transform:none!important}
-  .index-row{border-bottom-color:var(--on-red)!important} .index-row::after{display:none}
   .stmt-img{scale:none!important} .chat .bubble.bot{color:inherit!important} .chat .bubble.bot::after{display:none}
 }
 

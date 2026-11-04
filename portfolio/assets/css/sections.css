@@ -74,27 +74,34 @@
 .duo{gap:4px} .duo span{margin-inline-start:6px}
 .hero-title{font-size:clamp(3.1rem,.6rem + 8.8vw,9.6rem);max-width:12ch;line-height:.88}
 .hero-title .stop{width:.22em;height:.22em}
+/* the full stop never goes to a line of its own: it is glued to the last word (splitWords) */
+.glue{white-space:nowrap}
 .hero-lead{margin-top:var(--s6)}
 .hero-acts{display:flex;flex-wrap:wrap;gap:var(--s4);margin-top:var(--s6)}
 .ticks{display:flex;flex-wrap:wrap;gap:8px 20px;margin-top:var(--s5);font-size:var(--t-sm);font-weight:600;color:var(--ink-2)}
 .ticks li{display:inline-flex;align-items:center;gap:8px}
 .ticks li::before{content:"";width:16px;height:16px;border-radius:5px;background:var(--grn) no-repeat center/11px url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M2 6.5l2.6 2.5L10 3' fill='none' stroke='%23fff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")}
-/* the hero game: a pill that counts the full stops you drop (and, with a mouse, says where the pointer is) */
+/* the hero game: a pill that counts your throws and reads out where the ball is */
 .play{gap:8px}
 .play-dot{width:10px;height:10px;border-radius:50%;background:var(--red)}
 .play-n{min-width:1.6em;padding:1px 6px;border-radius:999px;background:var(--ink);color:var(--paper);font-size:var(--t-xs);text-align:center}
 .play-xy{display:inline-flex;gap:4px;margin-inline-start:2px;padding-inline-start:10px;border-inline-start:1.5px solid var(--line);font-size:var(--t-xs);color:var(--mute)}
 .play-xy b{min-width:4ch;color:var(--ink);font-weight:800}
 .play.touch .play-xy{display:none}
-.drop,.drop-ring{position:absolute;z-index:-1;width:var(--s,20px);height:var(--s,20px);border-radius:50%;pointer-events:none}
-.drop{background:var(--red)}
-.drop-ring{border:2px solid var(--red)}
+/* the ball: drawn on a canvas over the hero (it never catches a click); its ink stays on the paper behind the words;
+   only its round handle answers the pointer */
+.ball-ink{position:absolute;inset:0;z-index:-1;width:100%;height:100%;max-width:none;pointer-events:none}
+.ball-ink[hidden]{display:none}
+.ball-cv{position:absolute;left:0;top:0;z-index:3;width:0;height:0;max-width:none;pointer-events:none;will-change:transform}
+.ball-grab{position:absolute;left:0;top:0;z-index:4;width:0;height:0;border-radius:50%;cursor:grab;touch-action:none;will-change:transform}
+.ball-grab:active{cursor:grabbing}
+/* the first word of the headline turns over: websites, web apps, AI assistants */
+.rot{display:block;overflow:clip;overflow-clip-margin:.12em;vertical-align:top;padding-bottom:.06em;margin-bottom:-.06em}
+.rot-w{display:inline-block;color:var(--red);white-space:nowrap}
+
 
 .stage{position:relative;height:clamp(340px,52vw,560px);margin-top:var(--s5)}
 .stage .layer{position:absolute}
-.stage .l1{left:0;top:6%;width:68%;rotate:-3deg}
-.stage .l2{right:0;top:30%;width:66%;rotate:2.5deg}
-.stage .l3{left:52%;top:0;width:22%;min-width:110px;rotate:6deg}
 .stage .l4{left:4%;bottom:2%;rotate:-6deg}
 .stage .l5{right:6%;top:2%;rotate:5deg}
 .stage .l6{left:30%;bottom:-4%;rotate:3deg}
@@ -116,24 +123,28 @@
 .work{z-index:4;background:var(--red);color:var(--on-red)}
 .work .lead{color:color-mix(in srgb,var(--on-red) 82%,transparent)}
 .work .stop{background:var(--yel)}
-.index{border-top:2px solid var(--on-red)}
-.index-row{position:relative;display:grid;grid-template-columns:auto 1fr;gap:6px 20px;align-items:baseline;padding:clamp(24px,4vw,44px) 0;border-bottom:2px solid var(--on-red);text-decoration:none}
-.index-n{font-weight:800;font-size:var(--t-sm);opacity:.92}
-.index-name{font-weight:900;font-size:clamp(2rem,1rem + 4.6vw,5rem);line-height:.95;letter-spacing:var(--track-display);transition:translate var(--d2) var(--ease)}
-.index-what{grid-column:2;font-size:var(--t-md);opacity:.86}
-.index-tags{grid-column:2;display:flex;gap:8px;margin-top:6px}
-.index-thumb{grid-column:1/-1;margin-top:var(--s4);border:2px solid #141414;border-radius:var(--r);overflow:hidden;box-shadow:6px 6px 0 #141414}
-.index-thumb img{aspect-ratio:16/10;object-fit:cover;width:100%}
-@media (min-width:900px) and (hover:hover){
-  .index-row{grid-template-columns:80px 1fr auto}
-  .index-what,.index-tags{grid-column:2}
-  .index-tags{grid-column:3;grid-row:1}
-  .index-row:hover .index-name{translate:24px 0}
-  .index-row:hover .index-n{color:var(--yel);opacity:1}
-  /* the thumbnail follows the pointer (the script moves it) */
-  .index-thumb{position:fixed;left:0;top:0;z-index:50;width:min(380px,30vw);margin:0;pointer-events:none;opacity:0;scale:.6;rotate:-4deg;transition:opacity var(--d2) var(--ease),scale var(--d2) var(--spring)}
-  .index-row:hover .index-thumb{opacity:1;scale:1}
-}
+/* the four projects: a deck of big cards on a scrolling row that runs to the edges of the window */
+.deck-tools{justify-content:flex-end;margin-bottom:var(--s4)}
+.work .slider-count b{color:var(--yel)}
+.work .slider-bar{background:color-mix(in srgb,var(--on-red) 30%,transparent)} .work .slider-bar i{background:var(--yel)}
+.work .slider-hint{color:var(--on-red)}
+.work .icon-btn{background:var(--yel);color:#141414;border-color:#141414;box-shadow:2px 2px 0 #141414}
+.deck{--edge:max(var(--gutter),(100% - 1280px) / 2);display:flex;gap:clamp(16px,2.4vw,32px);padding:18px var(--edge) 44px;overflow-x:auto;overscroll-behavior-x:contain;
+  scroll-snap-type:x mandatory;scroll-padding-inline:var(--edge);scrollbar-width:none;cursor:grab}
+.deck::-webkit-scrollbar{display:none}
+.deck:focus-visible{outline-offset:-6px}
+.deck.dragging{scroll-snap-type:none;cursor:grabbing;user-select:none}
+.card{flex:0 0 clamp(272px,46vw,640px);scroll-snap-align:start;perspective:1400px}
+.card-in{display:grid;align-content:start;gap:14px;height:100%;padding:clamp(16px,2vw,26px);border:2px solid #141414;border-radius:var(--r-lg);background:var(--card);color:var(--ink);
+  text-decoration:none;box-shadow:8px 8px 0 #141414;transform-style:preserve-3d;transition:box-shadow var(--d1),translate var(--d1) var(--ease)}
+.card:nth-child(odd) .card-in{rotate:-1deg} .card:nth-child(even) .card-in{rotate:1.2deg}
+.card-in:hover{box-shadow:13px 13px 0 #141414;translate:-3px -3px}
+.card-top{display:flex;align-items:center;gap:8px}
+.card-n{margin-inline-end:auto;font-weight:900;font-size:var(--t-xl);color:var(--red-t)}
+.card-shot{box-shadow:none;border-radius:var(--r)}
+.card-shot img{aspect-ratio:16/10;pointer-events:none}
+.card-name{font-weight:900;font-size:clamp(1.7rem,1rem + 2.2vw,3.2rem);line-height:.96;letter-spacing:var(--track-tight)}
+.card-what{color:var(--mute);font-size:var(--t-md)}
 
 /* ---------- the chapters ---------- */
 .chapter{position:relative;z-index:4;padding-block:var(--sec);background:var(--paper)}
@@ -495,3 +506,25 @@
 .chat .bubble-in{width:min(100%,92%);justify-self:end;border-radius:20px 20px 5px 20px}
 .chat .quick-services{margin:0 0 var(--s5)}
 .chat .quick-service.on{background:var(--yel);color:#141414;border-color:var(--yel)}
+
+/* ---------- huge outlined words that slide with the scroll ---------- */
+.kin{position:relative;z-index:4;overflow:hidden;padding:clamp(28px,5vw,72px) 0;background:var(--paper)}
+.kin-row{display:flex;align-items:center;gap:.28em;width:max-content;font-weight:900;font-size:clamp(3.4rem,1rem + 11vw,13rem);line-height:.95;
+  letter-spacing:var(--track-display);white-space:nowrap;color:transparent;-webkit-text-stroke:2px var(--ink);will-change:transform}
+.kin-row + .kin-row{margin-top:.06em}
+.kin-row .kin-fill{color:var(--red);-webkit-text-stroke:2px var(--ink)}
+.kin-row i{flex:none;width:.2em;height:.2em;border:2px solid var(--ink);border-radius:50%;background:var(--red)}
+
+/* ---------- a stack of cards: every section slides up over the one before, with rounded top corners ---------- */
+:root{--stack:clamp(26px,4.4vw,60px)}
+.kin,.chapter,.statement,.process,.team,.lab,.faq,.contact,.ftr{position:relative;z-index:4;margin-top:calc(-1 * var(--stack));
+  border-top:2px solid var(--line);border-top-left-radius:var(--stack);border-top-right-radius:var(--stack)}
+.chapter-dark,.contact{border-top-color:#F5F0E6}
+
+/* ---------- how we work: the active step's number grows and turns red ---------- */
+.pin .step-n{transition:background-color var(--d2),color var(--d2),scale .55s var(--spring)}
+.pin .step.on .step-n{scale:1.4}
+
+/* ---------- the footer word: letters step away from the pointer, the full stop can be pulled ---------- */
+.ftr-word .stop{position:relative;z-index:2;cursor:grab;touch-action:none}
+.ftr-word .stop:active{cursor:grabbing}

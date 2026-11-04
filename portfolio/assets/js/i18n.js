@@ -14,7 +14,7 @@
     navWork: "Work", navProcess: "How we work", navLab: "Lab", navTeam: "Us", navContact: "Contact",
 
     heroPlace: "Larissa, Greece", duoTxt: "One team, two people",
-    heroTitle: "Websites down to the very last dot",
+    heroTitle: "Websites down to the very last dot", heroTitleRest: "down to the very last dot", rot1: "Websites",
     heroLead: "We design and build custom websites and web apps for businesses, with a focus on performance and digital experiences tailored to each brand.",
     seeWork: "See the projects", writeUs: "Write to us",
     hk1: "Phone first", hk2: "Greek & English", hk3: "Code checked by us",
@@ -120,7 +120,7 @@
     gB3: "Checks every page on phones and computers.", gB4: "Loves computers and servers.",
     aName: "Asteris Pitas", aSum: "Runs the projects: what gets built and when.",
     aB1: "Puts in order what every project needs.", aB2: "Makes sure what was planned gets finished.", aB3: "Together we built PROJECT 7o for our school.",
-    storyTitle: "Our story, so far", storyAria: "Our story, so far", drag: "Drag", prev: "Previous", next: "Next",
+    storyTitle: "Our story, so far", storyAria: "Our story, so far", deckAria: "The four projects", kinCode: "code", drag: "Drag", prev: "Previous", next: "Next",
     sy1: "Our first big website, for our school: timetable, announcements, an AI assistant, 15 languages, the school in 3D.",
     syOct: "Oct 2026", sy2: "Cars and parts live from car.gr, 25 versions, live since October.", sy5: "Our first own product: a website with an app for thinking through a decision, with a liquid mirror in WebGL.", sy6: "What changes today in Larissa and other cities, on a split-flap board like a station's. Only from official sources.",
     sy3: "We give a name to what we already do: websites, down to the last dot.",
@@ -181,7 +181,8 @@
       bugDone: "Και τα 3! Έτσι δουλεύουμε κάθε μέρα: βρίσκουμε τα λάθη και τα διορθώνουμε μόνοι μας.",
       bugNo: "Αυτή η γραμμή είναι σωστή. Ψάξτε αλλού.",
       drawDone: "Και μια τελεία στο τέλος.",
-      playFine: "Πατήστε κάπου για τελεία", playTouch: "Αγγίξτε κάπου για τελεία", play10: "10 τελείες. Αρκετές για μια παράγραφο.",
+      playFine: "Πιάστε την τελεία και πετάξτε τη", playTouch: "Σύρετε και πετάξτε την τελεία", play10: "10 πεταξιές! Στις ιστοσελίδες μας μένει στη θέση της.",
+      rotWords: ["Ιστοσελίδες", "Web εφαρμογές", "Βοηθοί AI"], cGrab: "Πιάστε",
       mailOpening: "Ανοίγει σε νέα καρτέλα· πατήστε «Αποστολή» εκεί.",
       langNames: { el: "ΕΛ", en: "EN", de: "DE", es: "ES", ru: "RU", sq: "SQ", fa: "FA", he: "HE", fr: "FR", zh: "ZH", hi: "HI", ar: "AR", bn: "BN", pt: "PT", id: "ID" },
     },
@@ -196,7 +197,8 @@
       bugDone: "All 3! That's how we work every day: we find the mistakes and fix them ourselves.",
       bugNo: "This line is fine. Look elsewhere.",
       drawDone: "And a dot at the end.",
-      playFine: "Click anywhere for a full stop", playTouch: "Tap anywhere for a full stop", play10: "10 full stops. Enough for a paragraph.",
+      playFine: "Grab the full stop and throw it", playTouch: "Drag and throw the full stop", play10: "10 throws! On our websites it stays where it belongs.",
+      rotWords: ["Websites", "Web apps", "AI assistants"], cGrab: "Grab",
       mailOpening: "Opening in a new tab; press “Send” there.",
       langNames: { el: "EL", en: "EN", de: "DE", es: "ES", ru: "RU", sq: "SQ", fa: "FA", he: "HE", fr: "FR", zh: "ZH", hi: "HI", ar: "AR", bn: "BN", pt: "PT", id: "ID" },
     },
@@ -220,7 +222,12 @@
     lang = l === "en" ? "en" : "el";
     const D = lang === "en" ? EN : EL, get = (k) => D[k] ?? EL[k] ?? "";
     document.documentElement.lang = lang;
-    $$("[data-t]").forEach((e) => { const v = get(e.dataset.t); if (e.textContent.trim() !== v) e.textContent = v; });
+    $$("[data-t]").forEach((e) => {
+      const v = get(e.dataset.t); if (e.textContent.trim() === v) return;
+      /* a heading's full stop may be glued inside its words (site.js, splitWords): put it back before the words go */
+      e.querySelectorAll(".glue > .stop").forEach((st) => (e.closest("h1,h2,h3") || e.parentElement).append(st));
+      e.textContent = v;
+    });
     $$("[data-ta]").forEach((e) => attrs(e).forEach(([a, k]) => e.setAttribute(a, get(k))));
     $$("[data-lang]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.lang === lang)));
     if (save) try { localStorage.setItem("lang", lang); } catch {}
