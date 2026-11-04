@@ -1,5 +1,5 @@
 /* ==========================================================================
-   motion: how things arrive, and what stops when the visitor asks for less motion.
+   motion: how things arrive and everything that moves.
    Only transform, opacity and clip-path move. Things that follow the scroll are set by the script (one frame loop);
    things that arrive once are CSS transitions switched on by a class (.in).
    ========================================================================== */
@@ -40,6 +40,65 @@
 .proc-stamp{opacity:0;scale:1.6;transition:opacity .25s,scale .45s var(--spring)}
 .proc-stamp.on{opacity:1;scale:1}
 
+/* ---------- scenes: the page appears as you scroll (site.js, initScenes). Only under html.scenes. ---------- */
+/* paragraphs, line by line: each visual line in its own mask (.ll), rising a beat after the one above (--l) */
+.ls .ll{display:block;padding-bottom:.12em;margin-bottom:-.12em}
+.ls .lli{display:block}
+.scenes .ls:not(.ls-done) .ll{overflow:clip;overflow-clip-margin:.2em}
+.scenes .ls .lli{transform:translate3d(0,110%,0);transition:transform 1s var(--ease);transition-delay:calc(var(--l,0) * 90ms)}
+.scenes .ls.ls-in .lli{transform:none}
+/* the index names rise a little later than their row */
+.scenes .index-name .lli{transition-duration:1.1s;transition-delay:calc(var(--l,0) * 90ms + var(--i,0) * 90ms + 120ms)}
+
+/* the chapter leads fill in like ink; the script sets each word's opacity from the scroll */
+.scenes .ink .iw{opacity:.18}
+
+/* screens and the poster unveil from below: a window (.uvm) rises while the screen inside moves the other way.
+   Transforms only, so nothing repaints while it moves. The window is 28px larger on every side (and gives the
+   space back with a negative margin), so the layout is unchanged and hard shadows and tilted corners show. */
+.uvm{display:block;padding:28px;margin:-28px}
+.poster > .uvm{justify-self:center;width:calc(min(100%,360px) + 56px)}
+.poster > .uvm > .poster-img{width:100%}
+.index-row > .uvm{grid-column:1/-1}
+.scenes .uvm{overflow:hidden;transform:translate3d(0,100%,0);transition:transform 1.3s var(--ease)}
+.scenes .uvm:not(.uv-in){pointer-events:none}   /* while it waits below, the empty window must not catch clicks */
+.scenes .uvm > .uv{transform:translate3d(0,-100%,0);scale:1.08;transition:transform 1.3s var(--ease),scale 1.7s var(--ease)}
+.scenes .uvm.uv-in,.scenes .uvm.uv-in > .uv{transform:none}
+.scenes .uvm.uv-in > .uv{scale:none}
+.scenes .uvm.uv-done{overflow:visible}
+.scenes .ba.uv img{scale:1.14;transition:scale 1.9s var(--ease)}
+.scenes .uv-in .ba.uv img{scale:none}
+/* with a mouse, the screens drift a little against the scroll (translate, set by the script) */
+.par .uvm{will-change:transform,translate}
+/* the footer word is on its own layer only while it builds */
+.ftr-word.building .fl{will-change:transform,opacity}
+
+/* the red index: the rules draw themselves from the left, one after the other */
+.scenes .index-row{border-bottom-color:transparent}
+.scenes .index-row::after{content:"";position:absolute;left:0;right:0;bottom:-2px;height:2px;background:var(--on-red);transform:scaleX(0);transform-origin:0 50%;
+  transition:transform 1.2s var(--ease) calc(var(--i,0) * 90ms + 80ms)}
+.scenes .index li.in .index-row::after{transform:none}
+.scenes .index-name{will-change:transform}
+
+/* sticky notes are stuck on, crooked at first, one after the other; their resting tilt (rotate) stays */
+.scenes .notes .fact.rv{translate:none;transform:translate3d(0,64px,0) rotate(var(--tilt,-6deg)) scale(.9);
+  transition:opacity .45s var(--ease),transform 1s var(--spring);transition-delay:calc(var(--i,0) * 90ms)}
+.scenes .notes .fact.rv.in{transform:none}
+
+/* questions slide in from the side */
+.js.reveal-ready .rv-x{opacity:0;translate:56px 0;transition:opacity var(--d3) var(--ease),translate var(--d3) var(--ease);transition-delay:calc(var(--i,0) * 70ms)}
+.js.reveal-ready .rv-x.in{opacity:1;translate:none}
+
+/* the story: the rule above each step fills with the scroll (--f), and its dot lands when it begins */
+.scenes .story-line li{border-top-color:transparent}
+.scenes .story-line li::after{content:"";position:absolute;left:0;right:0;top:-2px;height:2px;background:var(--line);transform:scaleX(var(--f,0));transform-origin:0 50%}
+.scenes .story-line .story-next::after{background:repeating-linear-gradient(90deg,var(--line) 0 8px,transparent 8px 14px)}
+.scenes .story-line li::before{z-index:1;scale:0;transition:scale .55s var(--spring)}
+.scenes .story-line li.reached::before{scale:1}
+
+/* the footer word, letter by letter (set by the script) */
+.ftr-word .fl{display:inline-block;transform-origin:50% 100%}
+
 /* ---------- small reactions ---------- */
 @keyframes pop{50%{transform:scale(1.35)}}
 @keyframes shake{20%,60%{transform:translateX(-5px)}40%,80%{transform:translateX(5px)}}
@@ -49,13 +108,12 @@
 /* ---------- theme and language: a circle opens from the click (View Transitions) ---------- */
 ::view-transition-old(root),::view-transition-new(root){animation:none;mix-blend-mode:normal}
 
-/* ---------- less motion: everything is simply there ---------- */
-@media (prefers-reduced-motion:reduce){
-  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;transition-delay:0s!important;scroll-behavior:auto!important}
-  .w > span,.js .rv,.js.reveal-ready .rv-scale{transform:none!important;translate:none!important;scale:none!important;opacity:1!important}
-  .js.reveal-ready .hero .pill,.js.reveal-ready .hero-lead,.js.reveal-ready .hero-acts,.js.reveal-ready .ticks,.js.reveal-ready .stage .frame,.js.reveal-ready .stage .sticker,.js.reveal-ready .hero .stop[data-stop=hero]{opacity:1!important;translate:none!important;scale:none!important;transform:none!important}
-  .d{stroke-dashoffset:0}
-  .marquee-track{animation:none}
-  .intro{display:none}
-  .person-face{transition:none}
+/* ---------- printing: everything is simply there ---------- */
+@media print{
+  .w > span,.rv,.rv-scale,.rv-x,.ls .lli,.ink .iw,.ftr-word .fl{transform:none!important;translate:none!important;scale:none!important;opacity:1!important}
+  .uvm,.uv,.uv img{overflow:visible!important;scale:none!important;transform:none!important;translate:none!important}
+  .index-name{transform:none!important}
+  .index-row{border-bottom-color:var(--on-red)!important} .index-row::after{display:none}
+  .story-line li{border-top-color:var(--line)!important} .story-line li::after{display:none} .story-line li::before{scale:none!important}
 }
+

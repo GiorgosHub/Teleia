@@ -10,12 +10,10 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const root = document.documentElement;
 
 const mq = (q) => matchMedia(q);
-const reduceMQ = mq("(prefers-reduced-motion: reduce)");
 const fineMQ = mq("(hover: hover) and (pointer: fine)");
-/* Scroll-pinned scenes run when the viewport is tall enough and motion is allowed. */
-const pinMQ = mq("(min-height: 360px) and (prefers-reduced-motion: no-preference)");
+/* Scroll-pinned scenes run when the viewport is tall enough. */
+const pinMQ = mq("(min-height: 360px)");
 
-const reduce = () => reduceMQ.matches;
 const fine = () => fineMQ.matches;
 
 const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
@@ -98,7 +96,7 @@ const isAwake = () => awake;
    Larissa, the toast and the copy buttons. */
 function initIntro(done) {
   const intro = $("#intro");
-  if (!intro || root.classList.contains("seen") || reduce()) { intro && intro.remove(); done(); return; }
+  if (!intro || root.classList.contains("seen")) { intro && intro.remove(); done(); return; }
   let out = false;
   const go = () => {
     if (out) return; out = true;
@@ -113,7 +111,7 @@ function initIntro(done) {
 
 /* the circle that opens the new look; the click point goes straight into the animation */
 function circleSwap(e, update) {
-  if (reduce() || !document.startViewTransition) { update(); return; }
+  if (!document.startViewTransition) { update(); return; }
   const x = e.clientX || innerWidth / 2, y = e.clientY || 0;
   const vt = document.startViewTransition(update);
   vt.ready.then(() => {
@@ -201,7 +199,7 @@ function initCopy() { $$("[data-copy]").forEach((b) => b.addEventListener("click
 /* Smaller things that move: the marquee that speeds up with the scroll, numbers that count, the speedometers,
    before/after, the welcome in 15 languages, the versions you drag, the cards that turn, sparks. */
 function initMarquee() {
-  const tr = $(".marquee-track"); if (!tr || reduce()) return;
+  const tr = $(".marquee-track"); if (!tr) return;
   /* the track holds its words twice, so moving it by half loops without a seam */
   tr.append(...[...tr.childNodes].map((n) => n.cloneNode(true)));
   let rate = 1;
@@ -218,7 +216,6 @@ function initMarquee() {
 
 /* numbers count up once, when they arrive */
 function countUp(el, to, dur = 1400) {
-  if (reduce()) { el.textContent = to; return; }
   const t0 = performance.now();
   const step = (t) => { const k = clamp((t - t0) / dur); el.textContent = Math.round(to * ease.out(k)); if (k < 1) requestAnimationFrame(step); };
   requestAnimationFrame(step);
@@ -238,7 +235,6 @@ function initGauges() {
     }
     const end = val / max;
     const set = (k) => { needle.style.transform = `rotate(${-90 + 180 * k}deg)`; fill.style.strokeDashoffset = String(1 - k); };
-    if (reduce()) { set(end); return; }
     num.textContent = "0"; set(0);
     once(g, () => {
       countUp(num, val, 1600);
@@ -259,7 +255,7 @@ function initBeforeAfter() {
   const r = $(".ba-range", ba), set = () => ba.style.setProperty("--p", r.value + "%");
   r.addEventListener("input", set); set();
   /* a first nudge so it is clear the handle moves */
-  if (!reduce()) once(ba, () => {
+  once(ba, () => {
     const t0 = performance.now();
     const nudge = (t) => { const k = Math.min(1, (t - t0) / 1800); r.value = 50 + Math.sin(k * Math.PI * 2) * 24 * (1 - k); set(); if (k < 1) requestAnimationFrame(nudge); };
     requestAnimationFrame(nudge);
@@ -272,7 +268,6 @@ function initHello() {
   let i = 0, on = false;
   const show = () => { const [code, word] = HELLO[i]; w.textContent = word; w.lang = code; w.dir = ["fa", "he", "ar"].includes(code) ? "rtl" : "ltr"; l.textContent = (T("langNames") || {})[code] || code.toUpperCase(); };
   show();
-  if (reduce()) return;
   if ("IntersectionObserver" in window) new IntersectionObserver(([e]) => { on = e.isIntersecting; }).observe(w);
   setInterval(() => {
     if (!on || document.hidden) return;
@@ -299,7 +294,6 @@ function initFlips() {
 
 /* sparks: red, yellow and green dots fly from a point */
 function burst(x, y, n = 18) {
-  if (reduce()) return;
   const C = ["#B5172B", "#FFC93C", "#137A43", "#F3B6B0"];
   for (let i = 0; i < n; i++) {
     const s = document.createElement("i"); s.className = "spark";
@@ -320,11 +314,13 @@ function initSparks() {
 
 /* ===== features/reveal.js ===== */
 /* Headings rise word by word; blocks settle in as they arrive. */
+/* Blocks that settle in as a whole. Paragraphs that arrive line by line, images that unveil and the chapter leads
+   that fill in with the scroll are handled by initScenes below, so they are not in this list. */
 const BLOCKS = [
-  ".sec-head .lead", ".index li", ".ch-kicker", ".ch-intro", ".shot", ".film", ".fact", ".ba-block > *", ".gauge",
-  ".versions-head", ".ver-track", ".built", ".hello-block > *", ".poster > *", ".steps .step", ".proc-visual",
-  ".person", ".plus", ".equals", ".story > .h3", ".story-line li", ".toy", ".qa details", ".contact-copy > :not(h2)",
-  ".contact-form", ".ftr-cols > div",
+  ".index li", ".ch-kicker", ".ch-intro", ".shot", ".film figcaption", ".fact", ".ba-copy > .h3", ".gauge",
+  ".versions-head", ".ver-track", ".built", ".hello-card", ".hello-block .h3", ".poster-copy > .h3", ".steps .step", ".proc-visual",
+  ".person", ".plus", ".equals", ".story-line li", ".toy", ".qa details", ".contact-copy > :not(h2):not(.lead):not(.how)",
+  ".contact-form .field", "#form > .btn", ".form-note", ".ftr-cols > div", ".how li",
 ].join(",");
 
 /* split a heading's words into masks; the language switch writes new text, so this runs again after it */
@@ -351,9 +347,9 @@ function initReveal() {
   blocks.forEach((b) => {
     const sibs = [...b.parentElement.children].filter((c) => c.matches(BLOCKS));
     b.style.setProperty("--i", Math.min(sibs.indexOf(b), 6));
-    b.classList.add(b.matches(".gauge, .person, .toy, .hello-card, .poster-img") ? "rv-scale" : "rv");
+    b.classList.add(b.matches(".gauge, .person, .toy, .hello-card, .how li") ? "rv-scale" : b.matches(".qa details") ? "rv-x" : "rv");
   });
-  if (reduce() || !("IntersectionObserver" in window)) { [...heads, ...blocks].forEach((e) => e.classList.add("in")); return; }
+  if (!("IntersectionObserver" in window)) { [...heads, ...blocks].forEach((e) => e.classList.add("in")); return; }
   const io = new IntersectionObserver((es) => es.forEach((e) => {
     if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); }
   }), { threshold: .12, rootMargin: "0px 0px -6% 0px" });
@@ -369,6 +365,210 @@ function initReveal() {
 }
 
 
+/* ===== features/scenes.js ===== */
+/* The page appears in front of you as you scroll.
+   - Paragraphs arrive line by line: each visual line rises out of its own mask, a beat after the line above.
+     The lines are found by measuring the words, and found again when the paragraph's width or language changes.
+     Once a paragraph has arrived its masks stop clipping, so the finished page costs nothing extra to draw.
+   - The four chapter leads fill in like ink: each word darkens as the reading line passes it.
+   - Screens and the poster unveil from below, then drift a little against the scroll (with a mouse only).
+   - In the red index the rules draw themselves and the big names drift sideways with the scroll.
+   - Sticky notes are stuck on one after the other; the story's timeline fills as you read it; the footer word
+     builds itself letter by letter.
+   Hidden states exist only under html.scenes, which is added at the end of a successful start, so if anything here
+   fails, everything is simply visible. */
+const LINES = ".sec-head .lead, .story > .h3, .poster-copy > p:not(.built), .ba-copy > p, .hello-block p, .contact-copy > .lead, .index-name";
+const INK = ".ch-intro .lead";
+const UNVEIL = ".film img, .poster-img, .ba";
+
+/* words into spans; the text itself stays the same string, so the language switch can compare it */
+const plain = (el) => el.textContent.replace(/\s+/g, " ").trim();
+function splitInto(el, cls) {
+  const text = plain(el);
+  if (el.dataset.split === text && el.querySelector("." + cls)) return false;
+  el.dataset.split = text;
+  el.textContent = "";
+  text.split(" ").forEach((word, i, all) => {
+    const w = document.createElement("span"); w.className = cls; w.textContent = word; el.append(w);
+    if (i < all.length - 1) el.append(" ");
+  });
+  return true;
+}
+
+/* Paragraphs into visual lines, each its own mask. Built for a width; built again only when the width or the text
+   changes. All paragraphs are done together: first every one is split into words (writes), then every word is
+   measured (one layout), then the lines are written. */
+function buildLines(els) {
+  const widths = new Map();
+  const todo = els.filter((el) => { const t = plain(el), w = el.clientWidth; widths.set(el, w); return el.dataset.split !== t || +el.dataset.lw !== w || !el.querySelector(".ll"); });
+  if (!todo.length) return;
+  todo.forEach((el) => { splitInto(el, "lwd"); });
+  const groups = todo.map((el) => {
+    const out = []; let top = null;
+    $$(".lwd", el).forEach((w) => { const t = w.offsetTop; if (top === null || Math.abs(t - top) > 3) { top = t; out.push([]); } out[out.length - 1].push(w.textContent); });
+    return out;
+  });
+  todo.forEach((el, k) => {
+    /* (the width read before any write: splitting into words never changes it) */
+    el.dataset.lw = widths.get(el);
+    el.textContent = "";
+    groups[k].forEach((words, l) => {
+      const m = document.createElement("span"), inner = document.createElement("span");
+      m.className = "ll"; inner.className = "lli"; inner.textContent = words.join(" "); inner.style.setProperty("--l", l);
+      m.append(inner); el.append(m);
+      if (l < groups[k].length - 1) el.append(" ");
+    });
+  });
+}
+
+function initScenes() {
+  if (!("IntersectionObserver" in window)) return;
+  const lines = $$(LINES), inks = $$(INK), unveils = $$(UNVEIL);
+  inks.forEach((el) => splitInto(el, "iw"));
+  buildLines(lines);
+  lines.forEach((el) => el.classList.add("ls"));
+  inks.forEach((el) => el.classList.add("ink"));
+
+  /* phones: the thumbnails in the index are part of the rows, so they unveil too */
+  if (!fine()) unveils.push(...$$(".index-thumb"));
+  /* An unveil is a curtain made only of transforms (cheap: no repaint while it moves): a window (.uvm) rises
+     from below while the screen inside it moves the other way, so the screen seems to stay put while it is
+     uncovered. The window is a little larger than the screen, so hard shadows and tilted corners show. */
+  const masks = unveils.map((el) => {
+    const m = document.createElement(el.tagName === "DIV" ? "div" : "span");
+    m.className = "uvm";
+    el.before(m); m.append(el); el.classList.add("uv");
+    return m;
+  });
+
+  /* one-shot arrivals; a curtain is watched through the box around it (its figure, block or row), which never moves */
+  const watchFor = new Map();
+  lines.forEach((el) => watchFor.set(el, el));
+  masks.forEach((m) => watchFor.set(m.parentElement.closest(".film, .poster, .ba-block, .index-row") || m.parentElement, m));
+  const io = new IntersectionObserver((es) => es.forEach((e) => {
+    if (!e.isIntersecting) return;
+    io.unobserve(e.target);
+    const el = watchFor.get(e.target);
+    if (el.classList.contains("ls")) {
+      el.classList.add("ls-in");
+      /* arrived: the masks stop clipping (the last line starts at --l × 90 ms and takes 1.1 s) */
+      setTimeout(() => el.classList.add("ls-done"), 1400 + el.querySelectorAll(".ll").length * 90 + 400);
+    }
+    if (el.classList.contains("uvm")) {
+      el.classList.add("uv-in");
+      /* once it has opened, the window stops clipping, so the focus ring is never cut */
+      setTimeout(() => el.classList.add("uv-done"), 1700);
+    }
+  }), { threshold: .15, rootMargin: "0px 0px -8% 0px" });
+  watchFor.forEach((_, target) => io.observe(target));
+
+  /* sticky notes keep their crooked rest; they arrive more crooked, from alternate sides */
+  $$(".notes .fact").forEach((f, i) => f.style.setProperty("--tilt", (i % 2 ? 6 : -6) + "deg"));
+
+  /* the story: the rule above each step fills as it passes the reading line, the red dot lands when it begins */
+  const story = $(".story-line"), steps = story ? $$("li", story) : [];
+  const names = $$(".index-name");
+  const foot = $(".ftr-word");
+  let letters = [];
+  if (foot) {
+    const txt = [...foot.childNodes].find((n) => n.nodeType === 3 && n.textContent.trim());
+    if (txt) {
+      const frag = document.createDocumentFragment();
+      letters = [...txt.textContent.trim()].map((ch) => { const s = document.createElement("span"); s.className = "fl"; s.textContent = ch; frag.append(s); return s; });
+      txt.replaceWith(frag);
+    }
+  }
+
+  /* measured: the lines, where each ink word is, the names and screens that drift, the story rows, the footer */
+  let inkWords = [], drift = [], par = [], rows = [], footTop = 0, storyTop = 0, storyBot = 0, parOn = false, footP = -1;
+  measure((s) => {
+    /* lines first (they can change heights, which everything below measures); then only reads, then writes */
+    buildLines(lines);
+    inkWords = inks.map((el) => ({ el, top: el.getBoundingClientRect().top + s.y, bot: el.getBoundingClientRect().bottom + s.y, words: $$(".iw", el).map((w) => ({ w, y: w.getBoundingClientRect().top + s.y, o: -1 })) }));
+    drift = names.map((n, i) => { const r = n.getBoundingClientRect(); return { n, mid: r.top + s.y + r.height / 2, dir: i % 2 ? -1 : 1, x: null }; });
+    parOn = fine() && s.vw >= 900;
+    par = masks.filter((m) => !m.querySelector(".index-thumb")).map((u) => { const r = u.parentElement.getBoundingClientRect(); return { u, mid: r.top + s.y + r.height / 2, y: null }; });
+    if (story) {
+      const r = story.getBoundingClientRect(); storyTop = r.top + s.y; storyBot = r.bottom + s.y;
+      /* the steps of one visual row (four on a wide screen, one on a phone) fill one after the other */
+      const byTop = new Map();
+      steps.forEach((li) => { const b = li.getBoundingClientRect(), t = Math.round(b.top + s.y); if (!byTop.has(t)) byTop.set(t, []); byTop.get(t).push([b.left, li]); });
+      rows = [...byTop.entries()].map(([top, lis]) => ({ top, lis: lis.sort((a, b) => a[0] - b[0]).map((x) => x[1]), f: [] }));
+    }
+    footTop = foot ? foot.getBoundingClientRect().top + s.y : 0;
+    drift.forEach((d) => { d.x = null; }); par.forEach((p) => { p.y = null; }); inkWords.forEach((k) => k.words.forEach((w) => { w.o = -1; }));
+    root.classList.toggle("par", parOn); footP = -1;
+  });
+
+  frame({
+    write(s) {
+      const vh = s.vh, y = s.y;
+      /* ink: each word darkens over a short stretch as the reading line (80% down the window) passes it */
+      const line = y + vh * .8, span = vh * .14;
+      for (const k of inkWords) {
+        if (k.bot < y - vh * .2 || k.top > y + vh * 1.2) continue;
+        for (const w of k.words) {
+          const o = Math.round((.18 + .82 * clamp((line - w.y) / span)) * 100) / 100;
+          if (o !== w.o) { w.o = o; w.w.style.opacity = String(o); }
+        }
+      }
+      /* the big names in the index drift a little sideways, alternately, with the scroll */
+      for (const d of drift) {
+        const q = (d.mid - (y + vh / 2)) / vh;
+        if (q < -1.2 || q > 1.2) continue;
+        const x = Math.round(clamp(q, -1, 1) * s.vw * .028 * d.dir * 10) / 10;
+        if (x !== d.x) { d.x = x; d.n.style.transform = `translate3d(${x}px,0,0)`; }
+      }
+      /* screens drift against the scroll, with a mouse and a wide window only */
+      /* (the curtain uses transform; the drift uses the separate translate property, so the two never fight) */
+      for (const p of par) {
+        const q = p.mid - (y + vh / 2);
+        if (Math.abs(q) > vh * 1.3) continue;
+        const v = parOn ? Math.round(clamp(q * -.05, -24, 24)) : 0;
+        if (v !== p.y) { p.y = v; p.u.style.translate = v ? `0 ${v}px` : ""; }
+      }
+      /* the story */
+      if (story && y + vh > storyTop - vh * .2 && y < storyBot + vh * .2) {
+        for (const r of rows) {
+          const t = (y + vh * .85 - r.top) / (vh * .42), n = r.lis.length;
+          r.lis.forEach((li, j) => {
+            const f = Math.round(clamp(t * n - j) * 1000) / 1000;
+            if (f !== r.f[j]) { r.f[j] = f; li.style.setProperty("--f", f); li.classList.toggle("reached", f > .02); }
+          });
+        }
+      }
+      /* the footer word builds itself, letter by letter, as the footer comes up */
+      if (letters.length && y + vh > footTop - 40) {
+        const p = clamp((y + vh - footTop) / (vh * .55));
+        if (p !== footP) {
+          footP = p;
+          letters.forEach((l, i) => {
+            const k = Math.round(ease.out(clamp(p * 1.6 - i * .1)) * 1000) / 1000;
+            l.style.transform = k >= 1 ? "" : `translate3d(0,${(1 - k) * 60}%,0) rotate(${(1 - k) * 10}deg)`;
+            l.style.opacity = k >= 1 ? "" : String(k);
+          });
+          foot.classList.toggle("building", p > 0 && p < 1);
+        }
+      }
+      return false;
+    },
+  });
+
+  /* the real font changes where lines break: build them once more when it has loaded */
+  if (document.fonts) document.fonts.ready.then(() => { lines.forEach((el) => { delete el.dataset.lw; }); remeasure(); });
+  /* the language switch writes new text: split again, then the loop measures the new lines */
+  document.addEventListener("langchange", () => {
+    inks.forEach((el) => splitInto(el, "iw"));
+    /* paragraphs that have already arrived are rebuilt in place, without rising again */
+    buildLines(lines);
+    remeasure();
+  });
+  /* printing shows everything */
+  addEventListener("beforeprint", () => { lines.forEach((el) => el.classList.add("ls-in")); masks.forEach((m) => m.classList.add("uv-in", "uv-done")); });
+  root.classList.add("scenes");
+}
+
+
 function initHeroVideo() {
   const hero = $(".hero");
   const background = $(".hero-background-video");
@@ -377,7 +577,7 @@ function initHeroVideo() {
     if (!video || !target) return;
     let inView = true;
     const sync = () => {
-      if (!inView || document.hidden || reduce()) { video.pause(); return; }
+      if (!inView || document.hidden) { video.pause(); return; }
       video.play().catch(() => {});
     };
     if ("IntersectionObserver" in window) {
@@ -386,7 +586,6 @@ function initHeroVideo() {
       io.observe(target);
     }
     document.addEventListener("visibilitychange", sync);
-    reduceMQ.addEventListener("change", sync);
     sync();
   };
   watch(background, hero, "0px");
@@ -397,13 +596,11 @@ function initHeroVideo() {
    teleia is Greek for "full stop". One red dot is the hero's full stop; as you scroll it grows until the page falls
    into it (the red of the work section). From there a dot travels with you: it waits on the rail in the left margin
    while you read and jumps into place as the full stop of every heading you reach. Headings it has not reached yet
-   have no full stop. Everything here is only a picture (aria-hidden); with "reduce motion" the full stops are simply
-   printed and nothing travels. */
+   have no full stop. Everything here is only a picture (aria-hidden). */
 const ANCHOR = .36;      // the reading line, as a share of the window height
 const RAIL_SIZE = 12;    // px, the dot while it waits on the rail
 
 function initTraveler() {
-  if (reduce()) return;
   const dot = $("#traveler"), ball = $("i", dot), railEl = $("#rail"), zoom = $("#zoom");
   const heroStop = $('.stop[data-stop="hero"]'), work = $("#work");
   const all = $$(".stop[data-stop]").filter((s) => s !== heroStop);
@@ -515,7 +712,7 @@ function initTraveler() {
 
 /* ===== features/gallery.js ===== */
 /* The project screens travel sideways while the section is pinned. Touch momentum is eased so a fast swipe still
-   carries the intervening screens through the viewport. With reduced motion, the screenshots form a swipeable row. */
+   carries the intervening screens through the viewport. On very short windows, the screenshots form a swipeable row. */
 function initPin() {
   const set = () => { root.classList.toggle("pin", pinMQ.matches); remeasure(); };
   pinMQ.addEventListener("change", set);
@@ -630,9 +827,9 @@ function initProcess() {
 /* ===== features/pointer.js ===== */
 /* Everything that answers the pointer: the screens in the hero (depth with the pointer and the scroll), buttons
    that lean towards it, the project thumbnail that follows it over the work list, and the ring that says what a
-   click does. Only on devices with a mouse; nothing here moves with "reduce motion". */
+   click does. The ring and the thumbnail only on devices with a mouse. */
 function initStage() {
-  const stage = $("#stage"); if (!stage || reduce()) return;
+  const stage = $("#stage"); if (!stage) return;
   const layers = $$(".layer", stage), depth = [.5, .9, 1.4, 1.8, 1.2, 1.6];
   let r = null, mx = 0, my = 0, tx = 0, ty = 0, vis = true, sy = 0;
   measure(() => { r = stage.getBoundingClientRect(); r = { cx: r.left + r.width / 2, cy: r.top + r.height / 2 + window.scrollY }; });
@@ -652,7 +849,6 @@ function initStage() {
 }
 
 function initMagnets() {
-  if (reduce()) return;
   $$(".magnet").forEach((b) => {
     let box = null, on = false, x = 0, y = 0, tx = 0, ty = 0;
     b.addEventListener("pointerenter", (e) => { if (e.pointerType !== "mouse") return; box = b.getBoundingClientRect(); on = true; });
@@ -672,7 +868,7 @@ function initMagnets() {
 }
 
 function initIndexThumbs() {
-  if (!fine() || reduce()) return;
+  if (!fine()) return;
   $$(".index-row").forEach((row) => {
     const th = $(".index-thumb", row);
     let on = false, x = 0, y = 0;
@@ -691,7 +887,7 @@ function initIndexThumbs() {
 }
 
 function initCursor() {
-  const c = $("#cursor"); if (!c || !fine() || reduce()) return;
+  const c = $("#cursor"); if (!c || !fine()) return;
   const label = $(".cursor-label", c);
   let x = -100, y = -100, shown = false;
   const HOT = "a,button,summary,input[type=range],.pad,[data-cursor]";
@@ -765,7 +961,6 @@ function draw() {
   const end = () => {
     if (!drawing) return; drawing = false;
     if (pts.length < 4) return;
-    if (reduce()) { paint(pts, pts.length, 9); return; }
     const t0 = performance.now(), dur = Math.min(1600, 300 + pts.length * 6);
     const step = (t) => {
       const k = Math.min(1, (t - t0) / dur); paint(pts, Math.max(2, Math.round(pts.length * k)));
@@ -801,10 +996,9 @@ function terminal() {
       for (const part of SCRIPT) for (let j = 0; j < part.length; j += 2) {
         const cls = part[j], txt = part[j + 1], span = document.createElement("span");
         if (cls !== "c") span.className = cls; tty.append(span);
-        if (cls === "c" && !reduce()) { for (const ch of txt) { span.textContent += ch; await wait(26 + Math.random() * 40); } span.textContent += "\n"; await wait(360); }
-        else { span.textContent = txt + (cls === "c" ? "\n" : ""); if (!reduce()) await wait(150); }
+        if (cls === "c") { for (const ch of txt) { span.textContent += ch; await wait(26 + Math.random() * 40); } span.textContent += "\n"; await wait(360); }
+        else { span.textContent = txt + (cls === "c" ? "\n" : ""); await wait(150); }
       }
-      if (reduce()) return;
       await wait(4200);
     }
   }
@@ -886,7 +1080,7 @@ function initForm() {
     $("#wOutlook").href = `https://outlook.live.com/mail/0/deeplink/compose?to=${EMAIL}&subject=${su}&body=${bo}`;
     $("#wApp").href = `mailto:${EMAIL}?subject=${su}&body=${bo}`;
     ways.hidden = false;
-    requestAnimationFrame(() => { ways.focus({ preventScroll: true }); ways.scrollIntoView({ block: "nearest", behavior: reduce() ? "auto" : "smooth" }); });
+    requestAnimationFrame(() => { ways.focus({ preventScroll: true }); ways.scrollIntoView({ block: "nearest", behavior: "smooth" }); });
     const r = e.submitter?.getBoundingClientRect?.(); if (r) burst(r.left + r.width / 2, r.top + r.height / 2, 30);
   });
   $("#copyMsg").addEventListener("click", () => copy(body));
@@ -900,11 +1094,12 @@ function initForm() {
    core/loop.js    the one frame loop: measure → read → write, asleep when nothing moves
    features/*.js   one file per thing that moves or answers
    Texts come from i18n.js (window.I18N). Nothing is stored or sent; the theme and the language are remembered on
-   this device only. With "reduce motion" nothing travels, pins or sways: everything is simply there. */
+   this device only. */
 const safe = (name, fn) => { try { fn(); } catch (e) { console.warn("[teleia]", name, e); } };
 
 safe("pin", initPin);
 safe("reveal", initReveal);
+safe("scenes", initScenes);
 safe("hero-video", initHeroVideo);
 safe("theme", initTheme);
 safe("lang", initLang);
