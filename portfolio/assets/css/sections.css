@@ -129,6 +129,15 @@
 .work .slider-bar{background:color-mix(in srgb,var(--on-red) 30%,transparent)} .work .slider-bar i{background:var(--yel)}
 .work .slider-hint{color:var(--on-red)}
 .work .icon-btn{background:var(--yel);color:#141414;border-color:#141414;box-shadow:2px 2px 0 #141414}
+
+/* ---------- the projects page (erga.html): a red head with a way back and a jump to each project ---------- */
+.erga-head{padding-top:calc(var(--hdr) + var(--s8))}
+.back{display:inline-block;margin-bottom:var(--s5);font-weight:700;color:inherit;text-decoration:underline;text-underline-offset:.25em}
+.erga-jump{display:flex;flex-wrap:wrap;gap:10px;margin-top:var(--s5)}
+.erga-jump .chip{padding:8px 16px;font-size:var(--t-sm);color:var(--on-red);text-decoration:none;transition:background-color var(--d2),color var(--d2)}
+.erga-jump .chip:hover,.erga-jump .chip:focus-visible{background:var(--yel);border-color:var(--yel);color:#141414}
+.erga-end{position:relative;z-index:4;text-align:center}
+.erga-acts{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin-top:var(--s6)}
 .deck{--edge:max(var(--gutter),(100% - 1280px) / 2);display:flex;gap:clamp(16px,2.4vw,32px);padding:18px var(--edge) 44px;overflow-x:auto;overscroll-behavior-x:contain;
   scroll-snap-type:x mandatory;scroll-padding-inline:var(--edge);scrollbar-width:none;cursor:grab}
 .deck::-webkit-scrollbar{display:none}

@@ -23,6 +23,12 @@
 
     workTitle: "Four real projects",
     workLead: "Real projects for real people, not templates. Pick one to see it up close.",
+    ergaMetaTitle: "The projects up close — teleia.",
+    ergaMetaDesc: "teleia.'s projects up close: Giannotas Premium Auto Salon, PROJECT 7o, MIRROR and DAYWIRE, with their screens, their numbers and their versions.",
+    backHome: "← Back to the start", backHome2: "To the start", ergaJump: "The four projects",
+    ergaTitle: "The projects, up close",
+    ergaLead: "Four projects, one by one: their screens, their numbers and what changed from version to version.",
+    ergaEndTitle: "Have an idea of your own",
     ixG: "Car dealership and parts, Larissa", ixP: "Our school's website, in 15 languages", ixM: "A website and app for decisions, in 2 languages", ixD: "What changes today in your city, from the official sources", live: "Live", wip: "In progress",
 
     gLead: "A website for a car dealership and parts shop in Larissa. The owner posts his listings on car.gr, and the website shows them by itself.",

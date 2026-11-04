@@ -60,22 +60,33 @@ Printing shows everything.
 - **The footer word** steps away from the pointer, and its red full stop can be pulled like elastic.
 - A full stop at the end of a heading is glued to the last word, so it never sits alone on a line.
 
-## The page, top to bottom
+## Two pages
+The first page stays short; the projects up close live on a page of their own, so the screens of every project are
+not all stacked on the first page.
+
+**`index.html`, top to bottom**
 1. **Hero** — the headline with the turning first word, the ball, stickers, a marquee.
-2. **Work** (red) — the deck of the four projects.
-3. **Giannotas** (matte black) — screens that slide sideways while you scroll down (pinned), the arrival in five
-   frames, eight facts, before/after, three speedometers (25 versions, 54 checks, 60 fps), the version line.
-4. **PROJECT 7o** — pinned screens, the welcome in 15 languages, sticky notes, the poster.
-5. **MIRROR** (graphite) — the live site, five screens in the sideways gallery, six notes.
-6. **DAYWIRE** (graphite, in progress) — the code on GitHub until it is live, five screens, six notes.
-7. **From a line to a website** (pinned) — the scroll draws a sketch, colours it in, wipes the real site over it and
+2. **Work** (red) — the deck of the four projects. Each card opens that project on the projects page.
+3. **In a few words** — the sentence with small screens in it, and the four numbers.
+4. **From a line to a website** (pinned) — the scroll draws a sketch, colours it in, wipes the real site over it and
    stamps it "online", while the five steps of how we work light up.
-8. **Team** — two cards that turn over, and our story so far.
-9. **Lab** — find the bugs, draw a line, the real pre-delivery commands, this page measured live.
-10. **Questions** and **Contact** (the form writes an email; nothing is stored or sent from the page).
+5. **Team** — two cards that turn over, and our story so far.
+6. **Lab** — find the bugs, draw a line, the real pre-delivery commands, this page measured live.
+7. **Questions** and **Contact** (the form writes an email; nothing is stored or sent from the page).
+
+**`erga.html` (online as `/erga`): the projects up close**
+1. A red head with a way back and a link to each project.
+2. **Giannotas** (matte black) — screens that slide sideways while you scroll down (pinned), the arrival in five
+   frames, eight facts, before/after, three speedometers (25 versions, 54 checks, 60 fps), the version line.
+3. **PROJECT 7o** — pinned screens, the welcome in 15 languages, sticky notes, the poster.
+4. **MIRROR** (graphite) — the live site, five screens in the sideways gallery, six notes.
+5. **DAYWIRE** (graphite, in progress) — the code on GitHub until it is live, five screens, six notes.
+6. A way to write to us or go back.
+
+Both pages use the same styles and the same script; a part that is not on a page simply does not start there.
 
 ## Files
-- `index.html` — the whole page, in Greek. Every text has a key (`data-t`, `data-ta` for attributes).
+- `index.html` and `erga.html` — the two pages, in Greek. Every text has a key (`data-t`, `data-ta` for attributes).
 - `assets/css/` — `tokens.css` (colours, type, spacing, motion), `base.css`, `components.css`, `sections.css`,
   `motion.css` (entrances and everything that moves).
 - `assets/js/i18n.js` — the English for every key, plus texts only scripts show, in both languages.

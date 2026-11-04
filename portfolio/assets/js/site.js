@@ -1043,7 +1043,7 @@ function initTraveler() {
   const heroStop = $('.stop[data-stop="hero"]'), work = $("#work");
   const all = $$(".stop[data-stop]").filter((s) => s !== heroStop);
   root.classList.add("travel");
-  heroStop.classList.add("landed");
+  if (heroStop) heroStop.classList.add("landed");   // (the projects page has no hero: then there is no zoom either)
 
   /* measured: where each stop is reached, and the sections where the dot turns yellow (on red) */
   let stops = [], workTop = 0, zoomEnd = 0, zoomStart = 0, zoomable = false, colorZones = [], railX = 0, anchorY = 0, showRail = true;
@@ -1055,14 +1055,14 @@ function initTraveler() {
     const maxScroll = document.documentElement.scrollHeight - s.vh;
     /* the hero holds still while its full stop grows, if it fits in the window */
     const hero = $(".hero"), pin = $(".hero-pin");
-    zoomable = pin.offsetHeight <= s.vh * 1.06 || s.vw < 960;
+    zoomable = !!(hero && pin && zoom && heroStop) && (pin.offsetHeight <= s.vh * 1.06 || s.vw < 960);
     root.classList.toggle("zoomable", zoomable);
     /* On phones, wait until the checklist scrolls clear before starting the red wipe. */
     const ticks = $(".ticks");
     zoomStart = s.vh * .04;
     if (s.vw < 960 && ticks) zoomStart = Math.max(zoomStart, docTop(ticks) + ticks.offsetHeight);
-    zoomEnd = docTop(hero) + hero.offsetHeight - s.vh;
-    workTop = docTop(work);
+    zoomEnd = hero ? docTop(hero) + hero.offsetHeight - s.vh : 0;
+    workTop = work ? docTop(work) : 0;
     const pinned = root.classList.contains("pin");
     let list = all.map((el) => {
       const r = el.getBoundingClientRect(), mid = r.top + r.height / 2;
@@ -1079,13 +1079,13 @@ function initTraveler() {
     stops = list;
     colorZones = $$("[data-dot-color]").map((z) => ({ top: docTop(z), bot: docTop(z) + z.offsetHeight, c: z.dataset.dotColor }));
   });
-  work.dataset.dotColor = "yel";
+  if (work) work.dataset.dotColor = "yel";
 
   let A = null, B = null, k = -1, zoomOn = false, heroR = null;
   frame({
     read(s) {
       const y = s.y;
-      heroR = y < workTop + 10 ? heroStop.getBoundingClientRect() : null;
+      heroR = heroStop && y < workTop + 10 ? heroStop.getBoundingClientRect() : null;
       k = -1;
       for (let i = 0; i < stops.length; i++) if (y >= stops[i].trig) k = i;
       A = k >= 0 ? stops[k].el.getBoundingClientRect() : null;
@@ -1556,7 +1556,7 @@ safe("flips", initFlips);
 safe("sparks", initSparks);
 safe("lab", initLab);
 safe("form", initForm);
-safe("intro", () => initIntro(() => { $(".hero").classList.add("in"); $(".hero-title").classList.add("in"); }));
+safe("intro", () => initIntro(() => { [".hero", ".hero-title"].forEach((q) => { const e = $(q); if (e) e.classList.add("in"); }); }));
 root.classList.add("ready");
 
 })();
