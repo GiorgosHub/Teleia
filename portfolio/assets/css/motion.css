@@ -89,12 +89,21 @@
 .js.reveal-ready .rv-x{opacity:0;translate:56px 0;transition:opacity var(--d3) var(--ease),translate var(--d3) var(--ease);transition-delay:calc(var(--i,0) * 70ms)}
 .js.reveal-ready .rv-x.in{opacity:1;translate:none}
 
-/* the story: the rule above each step fills with the scroll (--f), and its dot lands when it begins */
-.scenes .story-line li{border-top-color:transparent}
-.scenes .story-line li::after{content:"";position:absolute;left:0;right:0;top:-2px;height:2px;background:var(--line);transform:scaleX(var(--f,0));transform-origin:0 50%}
-.scenes .story-line .story-next::after{background:repeating-linear-gradient(90deg,var(--line) 0 8px,transparent 8px 14px)}
-.scenes .story-line li::before{z-index:1;scale:0;transition:scale .55s var(--spring)}
-.scenes .story-line li.reached::before{scale:1}
+/* the statement: its little screens pop in when the reading line reaches them */
+.scenes .stmt-img{scale:0;transition:scale .7s var(--spring)}
+.scenes .stmt-img.on{scale:1}
+
+/* the conversation: each question shows the three typing dots first, then its words */
+.js.reveal-ready .chat .bubble.bot{color:transparent}
+.js.reveal-ready #form > .bubble.bot.in,.js.reveal-ready .chat .field.in > .bubble.bot{color:inherit;animation:typeIn 1s var(--ease) calc(var(--i,0) * 70ms + 150ms) both}
+.chat .bubble.bot::after{content:"";position:absolute;left:16px;top:50%;width:7px;height:7px;margin-top:-3.5px;border-radius:50%;background:var(--mute);box-shadow:11px 0 var(--mute),22px 0 var(--mute);opacity:0;pointer-events:none}
+.js.reveal-ready #form > .bubble.bot.in::after,.js.reveal-ready .chat .field.in > .bubble.bot::after{animation:typeDots 1s steps(1,end) calc(var(--i,0) * 70ms + 150ms) both}
+@keyframes typeIn{0%,55%{color:transparent}}
+@keyframes typeDots{0%,55%{opacity:1}56%,100%{opacity:0}}
+.bubble.me.pop{animation:bubbleIn .55s var(--spring)}
+@keyframes bubbleIn{from{scale:.5;opacity:0}}
+.play.pop{animation:playPop .45s var(--spring)}
+@keyframes playPop{45%{scale:1.08}}
 
 /* the footer word, letter by letter (set by the script) */
 .ftr-word .fl{display:inline-block;transform-origin:50% 100%}
@@ -114,6 +123,6 @@
   .uvm,.uv,.uv img{overflow:visible!important;scale:none!important;transform:none!important;translate:none!important}
   .index-name{transform:none!important}
   .index-row{border-bottom-color:var(--on-red)!important} .index-row::after{display:none}
-  .story-line li{border-top-color:var(--line)!important} .story-line li::after{display:none} .story-line li::before{scale:none!important}
+  .stmt-img{scale:none!important} .chat .bubble.bot{color:inherit!important} .chat .bubble.bot::after{display:none}
 }
 

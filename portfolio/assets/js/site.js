@@ -90,6 +90,50 @@ if ("ResizeObserver" in window) {
 const isAwake = () => awake;
 
 
+/* ===== core/glide.js ===== */
+/* A mouse wheel moves the page in notches; here each notch glides to a soft stop instead. Trackpads and touch are
+   already smooth and stay native, and so does anything that scrolls by itself (the message box, sideways rows).
+   A key, a press or a link takes over at once. The glide runs inside the one frame loop, so the pinned scenes,
+   the travelling dot and the reveals simply follow it. */
+function initGlide() {
+  if (!fine()) return;
+  const TAU = 115;                         // ms: how quickly a notch settles
+  let target = 0, cur = 0, on = false, set = -1, lastT = 0;
+  const max = () => document.documentElement.scrollHeight - innerHeight;
+  const scrollsItself = (n) => {
+    for (; n && n !== document.body && n !== root; n = n.parentElement) {
+      if (n.scrollHeight > n.clientHeight + 1) { const o = getComputedStyle(n).overflowY; if (o === "auto" || o === "scroll") return true; }
+    }
+    return false;
+  };
+  addEventListener("wheel", (e) => {
+    if (e.ctrlKey || e.metaKey || e.shiftKey || Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
+    const notch = e.deltaMode === 1 || Math.abs(e.deltaY) >= 40;
+    if (!notch) { on = false; return; }
+    if (scrollsItself(e.target)) return;
+    e.preventDefault();
+    if (!on) { cur = target = window.scrollY; lastT = 0; set = -1; }
+    target = clamp(target + (e.deltaMode === 1 ? e.deltaY * 40 : e.deltaY), 0, max());
+    on = true; wake();
+  }, { passive: false });
+  const stop = () => { on = false; };
+  addEventListener("keydown", stop); addEventListener("pointerdown", stop);
+  frame({
+    write(s) {
+      if (!on) return false;
+      /* someone else moved the page (a link, the scrollbar): let them */
+      if (set >= 0 && Math.abs(s.y - set) > 3) { on = false; return false; }
+      const dt = lastT ? Math.min(64, s.t - lastT) : 16; lastT = s.t;
+      cur += (target - cur) * (1 - Math.exp(-dt / TAU));
+      if (Math.abs(target - cur) < .5) { cur = target; on = false; }
+      set = Math.round(cur);
+      window.scrollTo({ top: cur, left: 0, behavior: "instant" });
+      return on;
+    },
+  });
+}
+
+
 /* ===== features/ui.js ===== */
 /* The frame of the page: the opening, theme and language (a circle opens from the click), the menu, the header
    that steps aside while you read, the progress line, the menu link of the section you are in, the clock in
@@ -312,6 +356,125 @@ function initSparks() {
 }
 
 
+/* ===== features/play.js ===== */
+/* The hero answers a press: wherever you click or tap (not on a link or a button), a red full stop drops onto the
+   paper and settles with a bounce, and the pill counts them. With a mouse, the pill also reads out where the
+   pointer is. Only a picture: the pill and the dots are aria-hidden. */
+function initPlay() {
+  const pin = $(".hero-pin"), pill = $("#play"); if (!pin || !pill) return;
+  const hint = $("#playHint"), nEl = $("#playN"), xEl = $("#playX"), yEl = $("#playY");
+  const label = () => { hint.textContent = T(fine() ? "playFine" : "playTouch"); };
+  label(); document.addEventListener("langchange", label);
+  pill.classList.toggle("touch", !fine());
+  pill.hidden = false;
+
+  /* where the pointer is, in the hero's own pixels, written once a frame at most */
+  let px = -1, py = -1, shownX = "", shownY = "";
+  pin.addEventListener("pointermove", (e) => {
+    if (e.pointerType !== "mouse") return;
+    const r = pin.getBoundingClientRect(); px = Math.max(0, Math.round(e.clientX - r.left)); py = Math.max(0, Math.round(e.clientY - r.top));
+  }, { passive: true });
+  frame({
+    write() {
+      if (px < 0) return false;
+      const x = String(Math.min(9999, px)).padStart(4, "0"), y = String(Math.min(9999, py)).padStart(4, "0");
+      if (x !== shownX) { shownX = x; xEl.textContent = x; }
+      if (y !== shownY) { shownY = y; yEl.textContent = y; }
+      return false;
+    },
+  });
+
+  /* a press drops a full stop */
+  const dots = []; let n = 0;
+  pin.addEventListener("click", (e) => {
+    if (e.detail === 0 || e.target.closest("a,button,input,textarea,select,label,summary,[contenteditable]")) return;
+    if (getSelection && String(getSelection()).length) return;     // selecting text is not a press
+    const r = pin.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top;
+    const d = document.createElement("i"), ring = document.createElement("i");
+    d.className = "drop"; ring.className = "drop-ring";
+    const size = 14 + Math.random() * 22;
+    for (const el of [d, ring]) { el.style.left = x + "px"; el.style.top = y + "px"; el.style.setProperty("--s", size + "px"); }
+    pin.append(ring, d);
+    d.animate([
+      { transform: "translate(-50%,-50%) translateY(-70px) scale(.25)", opacity: 0 },
+      { transform: "translate(-50%,-50%) scale(1.3,.8)", opacity: 1, offset: .55 },
+      { transform: "translate(-50%,-50%) scale(.9,1.1)", offset: .78 },
+      { transform: "translate(-50%,-50%) scale(1)" },
+    ], { duration: 640, easing: "cubic-bezier(.3,.7,.2,1)", fill: "both" });
+    ring.animate([{ transform: "translate(-50%,-50%) scale(.4)", opacity: .9 }, { transform: "translate(-50%,-50%) scale(2.6)", opacity: 0 }],
+      { duration: 700, delay: 300, easing: "cubic-bezier(.16,1,.3,1)", fill: "both" }).finished.then(() => ring.remove());
+    dots.push(d);
+    /* the paper only holds so many: the oldest one fades */
+    if (dots.length > 24) { const old = dots.shift(); old.animate([{ opacity: 1 }, { opacity: 0, transform: "translate(-50%,-50%) scale(0)" }], { duration: 320, fill: "forwards" }).finished.then(() => old.remove()); }
+    n++; nEl.textContent = n;
+    pill.classList.remove("pop"); void pill.offsetWidth; pill.classList.add("pop");
+    if (n === 10) say(T("play10"));
+  });
+}
+
+/* ===== features/odometer.js ===== */
+/* The numbers under the statement roll into place like an odometer the first time they are seen. Each digit is a
+   strip 0–9 twice over, so it rolls past a full turn before it stops. The real figure is kept as .sr text. */
+function initOdometers() {
+  $$(".odo-num").forEach((el) => {
+    const val = el.dataset.odo || el.textContent.trim();
+    el.textContent = "";
+    const strips = [...val].map((ch) => {
+      const col = document.createElement("span"), strip = document.createElement("span");
+      col.className = "odo-col"; strip.className = "odo-strip";
+      if (/\d/.test(ch)) { strip.textContent = "01234567890123456789".split("").join("\n"); strip.dataset.d = ch; }
+      else strip.textContent = ch;
+      col.append(strip); el.append(col);
+      return strip;
+    });
+    once(el, () => strips.forEach((s, i) => {
+      if (!s.dataset.d) return;
+      s.style.transitionDelay = (strips.length - 1 - i) * 120 + "ms";
+      s.style.transform = `translate3d(0,${-(10 + +s.dataset.d) * 5}%,0)`;
+    }), { threshold: .6 });
+  });
+}
+
+/* ===== features/slider.js ===== */
+/* Our story as a slider: a plain scrolling row (so a finger, a trackpad and the arrow keys just work), plus a
+   counter, a bar, two buttons, and dragging with the mouse. */
+function initStorySlider() {
+  const line = $("#storyLine"); if (!line) return;
+  const items = $$("li", line), now = $("#storyNow"), all = $("#storyAll"), bar = $("#storyBar"), prev = $("#storyPrev"), next = $("#storyNext");
+  const pad = (k) => String(k).padStart(2, "0");
+  all.textContent = pad(items.length);
+  /* one step: from one card to the next */
+  const step = () => { const a = items[0].getBoundingClientRect(), b = items[1] ? items[1].getBoundingClientRect() : a; return Math.abs(b.left - a.left) || a.width; };
+  let raf = 0;
+  const update = () => {
+    raf = 0;
+    const max = line.scrollWidth - line.clientWidth, x = line.scrollLeft, p = max > 0 ? clamp(x / max) : 0;
+    bar.style.transform = `scaleX(${Math.max(.08, p)})`;
+    /* the card at the left edge; at the very end, the last card */
+    const atEnd = x >= max - 8, i = atEnd ? items.length - 1 : Math.min(items.length - 1, Math.round(x / step()));
+    now.textContent = pad(i + 1);
+    prev.disabled = x <= 8; next.disabled = atEnd;
+  };
+  const later = () => { if (!raf) raf = requestAnimationFrame(update); };
+  line.addEventListener("scroll", later, { passive: true });
+  addEventListener("resize", later, { passive: true });
+  update();
+  prev.addEventListener("click", () => line.scrollBy({ left: -step(), behavior: "smooth" }));
+  next.addEventListener("click", () => line.scrollBy({ left: step(), behavior: "smooth" }));
+  /* drag with a mouse; the row settles on the nearest step when you let go */
+  let down = false, x0 = 0, s0 = 0, moved = false;
+  line.addEventListener("pointerdown", (e) => { if (e.pointerType !== "mouse" || e.button) return; down = true; moved = false; x0 = e.clientX; s0 = line.scrollLeft; line.setPointerCapture(e.pointerId); line.classList.add("dragging"); });
+  line.addEventListener("pointermove", (e) => { if (!down) return; const dx = e.clientX - x0; if (Math.abs(dx) > 3) moved = true; line.scrollLeft = s0 - dx; });
+  const up = () => {
+    if (!down) return; down = false;
+    const st = step(), to = Math.round(line.scrollLeft / st) * st;
+    line.classList.remove("dragging");
+    line.scrollTo({ left: to, behavior: "smooth" });
+  };
+  line.addEventListener("pointerup", up); line.addEventListener("pointercancel", up);
+  line.addEventListener("click", (e) => { if (moved) { e.preventDefault(); e.stopPropagation(); moved = false; } }, true);
+}
+
 /* ===== features/reveal.js ===== */
 /* Headings rise word by word; blocks settle in as they arrive. */
 /* Blocks that settle in as a whole. Paragraphs that arrive line by line, images that unveil and the chapter leads
@@ -321,6 +484,7 @@ const BLOCKS = [
   ".versions-head", ".ver-track", ".built", ".hello-card", ".hello-block .h3", ".poster-copy > .h3", ".steps .step", ".proc-visual",
   ".person", ".plus", ".equals", ".story-line li", ".toy", ".qa details", ".contact-copy > :not(h2):not(.lead):not(.how)",
   ".contact-form .field", "#form > .btn", ".form-note", ".ftr-cols > div", ".how li",
+  ".odo li", ".slider-tools", ".chat-head", "#form > .bubble.bot", "#form > .quick-services",
 ].join(",");
 
 /* split a heading's words into masks; the language switch writes new text, so this runs again after it */
@@ -373,12 +537,13 @@ function initReveal() {
    - The four chapter leads fill in like ink: each word darkens as the reading line passes it.
    - Screens and the poster unveil from below, then drift a little against the scroll (with a mouse only).
    - In the red index the rules draw themselves and the big names drift sideways with the scroll.
-   - Sticky notes are stuck on one after the other; the story's timeline fills as you read it; the footer word
-     builds itself letter by letter.
+   - The statement fills in like the chapter leads, and its little project screens pop in as the reading line
+     reaches them.
+   - Sticky notes are stuck on one after the other; the footer word builds itself letter by letter.
    Hidden states exist only under html.scenes, which is added at the end of a successful start, so if anything here
    fails, everything is simply visible. */
-const LINES = ".sec-head .lead, .story > .h3, .poster-copy > p:not(.built), .ba-copy > p, .hello-block p, .contact-copy > .lead, .index-name";
-const INK = ".ch-intro .lead";
+const LINES = ".sec-head .lead, .story-head > .h3, .poster-copy > p:not(.built), .ba-copy > p, .hello-block p, .contact-copy > .lead, .index-name";
+const INK = ".ch-intro .lead, .stmt [data-t]";
 const UNVEIL = ".film img, .poster-img, .ba";
 
 /* words into spans; the text itself stays the same string, so the language switch can compare it */
@@ -465,8 +630,7 @@ function initScenes() {
   /* sticky notes keep their crooked rest; they arrive more crooked, from alternate sides */
   $$(".notes .fact").forEach((f, i) => f.style.setProperty("--tilt", (i % 2 ? 6 : -6) + "deg"));
 
-  /* the story: the rule above each step fills as it passes the reading line, the red dot lands when it begins */
-  const story = $(".story-line"), steps = story ? $$("li", story) : [];
+  const pics = $$(".stmt-img");
   const names = $$(".index-name");
   const foot = $(".ftr-word");
   let letters = [];
@@ -480,7 +644,7 @@ function initScenes() {
   }
 
   /* measured: the lines, where each ink word is, the names and screens that drift, the story rows, the footer */
-  let inkWords = [], drift = [], par = [], rows = [], footTop = 0, storyTop = 0, storyBot = 0, parOn = false, footP = -1;
+  let inkWords = [], picsAt = [], drift = [], par = [], footTop = 0, parOn = false, footP = -1;
   measure((s) => {
     /* lines first (they can change heights, which everything below measures); then only reads, then writes */
     buildLines(lines);
@@ -488,13 +652,7 @@ function initScenes() {
     drift = names.map((n, i) => { const r = n.getBoundingClientRect(); return { n, mid: r.top + s.y + r.height / 2, dir: i % 2 ? -1 : 1, x: null }; });
     parOn = fine() && s.vw >= 900;
     par = masks.filter((m) => !m.querySelector(".index-thumb")).map((u) => { const r = u.parentElement.getBoundingClientRect(); return { u, mid: r.top + s.y + r.height / 2, y: null }; });
-    if (story) {
-      const r = story.getBoundingClientRect(); storyTop = r.top + s.y; storyBot = r.bottom + s.y;
-      /* the steps of one visual row (four on a wide screen, one on a phone) fill one after the other */
-      const byTop = new Map();
-      steps.forEach((li) => { const b = li.getBoundingClientRect(), t = Math.round(b.top + s.y); if (!byTop.has(t)) byTop.set(t, []); byTop.get(t).push([b.left, li]); });
-      rows = [...byTop.entries()].map(([top, lis]) => ({ top, lis: lis.sort((a, b) => a[0] - b[0]).map((x) => x[1]), f: [] }));
-    }
+    picsAt = pics.map((el) => { const r = el.getBoundingClientRect(); return { el, y: r.top + s.y + r.height * .3, on: null }; });
     footTop = foot ? foot.getBoundingClientRect().top + s.y : 0;
     drift.forEach((d) => { d.x = null; }); par.forEach((p) => { p.y = null; }); inkWords.forEach((k) => k.words.forEach((w) => { w.o = -1; }));
     root.classList.toggle("par", parOn); footP = -1;
@@ -527,15 +685,10 @@ function initScenes() {
         const v = parOn ? Math.round(clamp(q * -.05, -24, 24)) : 0;
         if (v !== p.y) { p.y = v; p.u.style.translate = v ? `0 ${v}px` : ""; }
       }
-      /* the story */
-      if (story && y + vh > storyTop - vh * .2 && y < storyBot + vh * .2) {
-        for (const r of rows) {
-          const t = (y + vh * .85 - r.top) / (vh * .42), n = r.lis.length;
-          r.lis.forEach((li, j) => {
-            const f = Math.round(clamp(t * n - j) * 1000) / 1000;
-            if (f !== r.f[j]) { r.f[j] = f; li.style.setProperty("--f", f); li.classList.toggle("reached", f > .02); }
-          });
-        }
+      /* the screens inside the statement pop in when the reading line reaches them */
+      for (const p of picsAt) {
+        const on = line > p.y;
+        if (on !== p.on) { p.on = on; p.el.classList.toggle("on", on); }
       }
       /* the footer word builds itself, letter by letter, as the footer comes up */
       if (letters.length && y + vh > footTop - 40) {
@@ -1058,13 +1211,22 @@ function initForm() {
     el.addEventListener("blur", () => { if (el.value) check(n); });
     el.addEventListener("input", () => { if (el.closest(".field").classList.contains("bad")) check(n); });
   });
-  /* a quick-service button writes the first line of the message (only into an empty or untouched message) */
-  let planLine = "";
-  document.querySelectorAll("[data-plan]").forEach((a) => a.addEventListener("click", () => {
-    const m = form.elements.msg, line = (window.I18N?.lang === "en" ? "Hello, I'm interested in " + (a.dataset.planEn || a.dataset.plan) : "Γεια σας, ενδιαφέρομαι για το πακέτο " + a.dataset.plan) + ".";
+  /* a quick reply writes the first line of the message (only into an empty or untouched message), shows itself as
+     your answer in the conversation, and moves on to the next question that is still empty */
+  let planLine = "", picked = null;
+  const pick = $("#chatPick");
+  const showPick = () => { if (pick && picked) { pick.textContent = picked.textContent.trim(); pick.hidden = false; } };
+  document.querySelectorAll("[data-plan]").forEach((a) => a.addEventListener("click", (e) => {
+    e.preventDefault();
+    const m = form.elements.msg, line = (window.I18N?.lang === "en" ? "Hello, I'm interested in " + (a.dataset.planEn || a.dataset.plan) : "Γεια σας, ενδιαφέρομαι για " + a.dataset.plan.toLowerCase()) + ".";
     if (!m.value.trim() || m.value === planLine) { m.value = line; planLine = line; }
-    setTimeout(() => { try { m.focus({ preventScroll: true }); } catch (e) { } }, 700);
+    $$("[data-plan]").forEach((x) => x.classList.toggle("on", x === a));
+    picked = a; showPick();
+    if (pick) { pick.classList.remove("pop"); void pick.offsetWidth; pick.classList.add("pop"); }
+    const nextEmpty = ["name", "email", "msg"].map((k) => form.elements[k]).find((el) => !el.value.trim()) || m;
+    setTimeout(() => { try { nextEmpty.focus({ preventScroll: true }); nextEmpty.scrollIntoView({ block: "nearest", behavior: "smooth" }); } catch (err) { } }, 380);
   }));
+  document.addEventListener("langchange", showPick);
   let body = "";
   const ways = $("#ways");
   form.addEventListener("submit", (e) => {
@@ -1100,6 +1262,10 @@ const safe = (name, fn) => { try { fn(); } catch (e) { console.warn("[teleia]", 
 safe("pin", initPin);
 safe("reveal", initReveal);
 safe("scenes", initScenes);
+safe("glide", initGlide);
+safe("play", initPlay);
+safe("odometers", initOdometers);
+safe("slider", initStorySlider);
 safe("hero-video", initHeroVideo);
 safe("theme", initTheme);
 safe("lang", initLang);

@@ -32,6 +32,19 @@ Printing shows everything.
 - **A new screen that should unveil:** add it to `UNVEIL` (it is wrapped in a `.uvm` window by the script; watch the
   box around it in `watchFor` if it is not inside `.film`, `.poster`, `.ba-block` or `.index-row`).
 
+## Things to touch and drag (v5)
+- **Glide:** a mouse wheel's notches glide to a soft stop (`initGlide`); trackpads, touch, the message box and
+  sideways rows scroll natively; a key, a press or a link takes over at once.
+- **The hero game:** a press anywhere in the hero (not on a link or a button) drops a red full stop; the pill counts
+  them and, with a mouse, reads out the pointer's X/Y (`initPlay`).
+- **In a few words:** a sentence with small project screens inside it, filling in as you read; under it four
+  numbers that roll like an odometer (`initOdometers`). All four are real: 4 projects online, 25 versions of
+  Giannotas, 15 languages in PROJECT 7o, 152 automated checks (54 + 51 + 47).
+- **Our story** is a slider: a plain scrolling row of cards, with a 01 / 06 counter, a bar, two buttons and dragging
+  (`initStorySlider`).
+- **Contact** reads as a conversation: every question is the field's own label, the four quick replies write the
+  first line of the message and show as your answer. Nothing is sent from the page, as before.
+
 ## The page, top to bottom
 1. **Hero** — the headline, three real screens at three depths (they follow the pointer), a marquee.
 2. **Work** (red) — the index of the four projects; on a computer the screenshot follows the pointer.

@@ -79,6 +79,16 @@
 .ticks{display:flex;flex-wrap:wrap;gap:8px 20px;margin-top:var(--s5);font-size:var(--t-sm);font-weight:600;color:var(--ink-2)}
 .ticks li{display:inline-flex;align-items:center;gap:8px}
 .ticks li::before{content:"";width:16px;height:16px;border-radius:5px;background:var(--grn) no-repeat center/11px url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M2 6.5l2.6 2.5L10 3' fill='none' stroke='%23fff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")}
+/* the hero game: a pill that counts the full stops you drop (and, with a mouse, says where the pointer is) */
+.play{gap:8px}
+.play-dot{width:10px;height:10px;border-radius:50%;background:var(--red)}
+.play-n{min-width:1.6em;padding:1px 6px;border-radius:999px;background:var(--ink);color:var(--paper);font-size:var(--t-xs);text-align:center}
+.play-xy{display:inline-flex;gap:4px;margin-inline-start:2px;padding-inline-start:10px;border-inline-start:1.5px solid var(--line);font-size:var(--t-xs);color:var(--mute)}
+.play-xy b{min-width:4ch;color:var(--ink);font-weight:800}
+.play.touch .play-xy{display:none}
+.drop,.drop-ring{position:absolute;z-index:-1;width:var(--s,20px);height:var(--s,20px);border-radius:50%;pointer-events:none}
+.drop{background:var(--red)}
+.drop-ring{border:2px solid var(--red)}
 
 .stage{position:relative;height:clamp(340px,52vw,560px);margin-top:var(--s5)}
 .stage .layer{position:absolute}
@@ -330,16 +340,29 @@
 .person-list span::before{content:"";position:absolute;left:0;top:.55em;width:8px;height:8px;border-radius:50%;background:var(--red)}
 
 .story{margin-top:var(--sec)}
-.story-line{display:grid;gap:var(--s6);margin-top:var(--s6);counter-reset:s}
-.story-line li{position:relative;display:grid;gap:6px;padding-top:var(--s6);border-top:2px solid var(--line)}
-.story-line li::before{content:"";position:absolute;left:0;top:-9px;width:16px;height:16px;border-radius:50%;background:var(--red);border:2px solid var(--line)}
+.story-head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:var(--s4)}
+/* our story is a slider: a plain scrolling row of cards pinned to one timeline (the line scrolls with the cards) */
+.slider-tools{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s3)}
+.slider-count{font-weight:900;font-size:var(--t-sm)}
+.slider-count b{color:var(--red-t)}
+.slider-bar{width:clamp(64px,10vw,140px);height:3px;border-radius:3px;background:color-mix(in srgb,var(--line) 22%,transparent);overflow:hidden}
+.slider-bar i{display:block;height:100%;background:var(--red);transform-origin:0 50%;transform:scaleX(.08);transition:transform .3s var(--ease)}
+.slider-hint{font-weight:800;font-size:var(--t-xs);color:var(--mute);white-space:nowrap}
+.icon-btn:disabled{opacity:.35;cursor:default;box-shadow:none;translate:none}
+.story-line{display:flex;gap:var(--s5);margin-top:var(--s5);padding:24px 6px 28px;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x mandatory;scroll-padding-inline:6px;scrollbar-width:none;cursor:grab;
+  background:linear-gradient(var(--line),var(--line)) 0 23px/100% 2px no-repeat local}
+.story-line::-webkit-scrollbar{display:none}
+.story-line:focus-visible{outline-offset:6px}
+.story-line.dragging{scroll-snap-type:none;cursor:grabbing;user-select:none}
+.story-line li{position:relative;flex:0 0 min(84%,330px);display:grid;align-content:start;gap:6px;padding:var(--s6) var(--s5) var(--s5);scroll-snap-align:start;
+  border:2px solid var(--line);border-radius:var(--r);background:var(--card);box-shadow:var(--sh)}
+.story-line li::before{content:"";position:absolute;left:22px;top:-10px;width:16px;height:16px;border-radius:50%;background:var(--red);border:2px solid var(--line)}
+.story-line li:nth-child(odd){rotate:-.6deg} .story-line li:nth-child(even){rotate:.6deg}
 .story-line time{font-weight:800;font-size:var(--t-sm);color:var(--red-t)}
 .story-line b{font-size:var(--t-lg);font-weight:900;letter-spacing:-.02em}
 .story-line span{color:var(--mute);font-size:var(--t-sm)}
 /* Keep the forthcoming story marker visible without making it compete with live projects. */
-.story-next{opacity:.78} .story-next::before{background:transparent!important;border-style:dashed!important}
-.story-next{border-top-style:dashed!important}
-@media (min-width:900px){.story-line{grid-template-columns:repeat(4,1fr);gap:var(--s5)}}
+.story-next{opacity:.78;border-style:dashed!important} .story-next::before{background:transparent!important;border-style:dashed!important}
 
 /* ---------- lab ---------- */
 .lab{background:var(--paper)}
@@ -441,3 +464,34 @@
 .intro{animation:introAway .4s ease 2.6s forwards}
 @keyframes introAway{to{opacity:0;visibility:hidden}}
 
+
+/* ---------- in a few words: a sentence with the projects inside it, then the numbers ---------- */
+.statement{background:var(--paper)}
+.stmt{max-width:19ch;font-weight:900;font-size:clamp(2.1rem,.8rem + 4.8vw,5.8rem);line-height:1.04;letter-spacing:var(--track-display);word-spacing:.12em;text-wrap:balance}
+.stmt .stop{width:.19em;height:.19em}
+.stmt-img{display:inline-block;width:1.9em;height:.8em;margin:0 .05em;vertical-align:-.06em;border:2px solid var(--line);border-radius:999px;overflow:hidden;background:var(--paper-2);box-shadow:var(--sh-sm)}
+.stmt-img img{width:100%;height:100%;object-fit:cover;object-position:top}
+/* a little crooked, each its own way (the sentence's children, in order) */
+.stmt > :nth-child(2){rotate:-4deg} .stmt > :nth-child(5){rotate:3deg} .stmt > :nth-child(8){rotate:-3deg} .stmt > :nth-child(9){rotate:5deg;margin-inline-start:-.35em}
+.odo{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:var(--s6) var(--s5);margin-top:clamp(56px,8vw,112px);padding-top:var(--s6);border-top:2px solid var(--line)}
+.odo li{display:grid;align-content:start;gap:10px}
+.odo li > span:not(.sr){max-width:22ch;color:var(--mute);font-weight:700}
+.odo-num{display:flex;align-items:flex-end;font-weight:900;font-size:clamp(3.4rem,2rem + 4vw,6.2rem);line-height:1;letter-spacing:-.05em}
+.odo-num::after{content:"";flex:none;width:.17em;height:.17em;margin:0 0 .06em .05em;border-radius:50%;background:var(--red)}
+.odo-col{display:inline-block;height:1em;overflow:clip;line-height:1}
+.odo-strip{display:block;white-space:pre;transition:transform 1.9s var(--ease)}
+
+/* ---------- contact, as a conversation ---------- */
+.chat-head{display:flex;align-items:center;gap:12px;padding-bottom:var(--s4);margin-bottom:var(--s5);border-bottom:2px dashed var(--line)}
+.chat-avs{display:flex}
+.chat-who{display:grid;line-height:1.3}
+.chat-who b{font-weight:900}
+.chat-status{font-size:var(--t-xs);color:var(--mute)}
+.bubble{position:relative;display:block;width:fit-content;max-width:90%;margin:0 0 10px;padding:11px 16px;border:2px solid var(--line);border-radius:20px;font-weight:700;font-size:var(--t-md);line-height:1.35}
+.bubble.bot{background:var(--paper-2);border-bottom-left-radius:5px}
+.bubble.me{margin-inline-start:auto;margin-bottom:var(--s5);background:var(--yel);color:#141414;border-color:#141414;border-bottom-right-radius:5px}
+.chat .field label.bubble{font-weight:700;font-size:var(--t-md)}
+.chat .field{justify-items:stretch}
+.chat .bubble-in{width:min(100%,92%);justify-self:end;border-radius:20px 20px 5px 20px}
+.chat .quick-services{margin:0 0 var(--s5)}
+.chat .quick-service.on{background:var(--yel);color:#141414;border-color:var(--yel)}

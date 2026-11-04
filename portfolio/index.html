@@ -16,11 +16,11 @@
 <link rel="stylesheet" href="assets/css/tokens.css?v=20261029">
 <link rel="stylesheet" href="assets/css/base.css?v=20261104">
 <link rel="stylesheet" href="assets/css/components.css?v=20261023">
-<link rel="stylesheet" href="assets/css/sections.css?v=20261101">
-<link rel="stylesheet" href="assets/css/motion.css?v=20261104b">
+<link rel="stylesheet" href="assets/css/sections.css?v=20261104">
+<link rel="stylesheet" href="assets/css/motion.css?v=20261104c">
 <script src="assets/js/boot.js?v=20261023"></script>
-<script src="assets/js/i18n.js?v=20261101" defer></script>
-<script src="assets/js/site.js?v=20261104b" defer></script>
+<script src="assets/js/i18n.js?v=20261104" defer></script>
+<script src="assets/js/site.js?v=20261104c" defer></script>
 </head>
 <body>
 <!-- ============ the first second: a line is drawn, the full stop drops in (once per visit) ============ -->
@@ -80,6 +80,8 @@
         <p class="hero-meta">
           <span class="pill"><i class="pulse" aria-hidden="true"></i><span data-t="heroPlace">Λάρισα, Ελλάδα</span> <time class="num" id="clock">--:--</time></span>
           <span class="pill duo"><b class="av av-g" aria-hidden="true">ΓΣ</b><b class="av av-a" aria-hidden="true">ΑΠ</b><span data-t="duoTxt">Μια ομάδα, δύο άτομα</span></span>
+          <!-- a game for the pointer: a press anywhere in the hero drops a full stop (only a picture) -->
+          <span class="pill play" id="play" aria-hidden="true" hidden><i class="play-dot"></i><span id="playHint"></span><b class="num play-n" id="playN">0</b><span class="play-xy num"><span>X</span><b id="playX">0000</b><span>Y</span><b id="playY">0000</b></span></span>
         </p>
         <h1 class="h1 hero-title" id="heroTitle"><span class="words" data-t="heroTitle">Ιστοσελίδες μέχρι την τελευταία τελεία</span><span class="stop" data-stop="hero" aria-hidden="true"></span></h1>
         <p class="lead hero-lead" data-t="heroLead">Σχεδιάζουμε και αναπτύσσουμε custom ιστοσελίδες και web εφαρμογές για επιχειρήσεις, με έμφαση στην ταχύτητα και στις εμπειρίες που ταιριάζουν πραγματικά σε κάθε brand.</p>
@@ -416,6 +418,26 @@
     </div>
   </section>
 
+  <!-- ============ in a few words: a sentence with the projects inside it, then the numbers ============ -->
+  <section class="sec statement" id="statement" aria-labelledby="stmtTitle">
+    <div class="wrap">
+      <h2 class="sr" id="stmtTitle" data-t="stmtTitle">Με λίγα λόγια</h2>
+      <p class="stmt">
+        <span data-t="sm1">Από</span> <span class="stmt-img"><img src="assets/img/work/project7.webp" width="1200" height="750" alt="" loading="lazy"></span> <span data-t="sm2">ένα σχολείο,</span>
+        <span data-t="sm3">σε</span> <span class="stmt-img"><img src="assets/img/work/giannotas.webp" width="1200" height="750" alt="" loading="lazy"></span> <span data-t="sm4">μια έκθεση αυτοκινήτων,</span>
+        <span data-t="sm5">σε δύο δικά μας</span> <span class="stmt-img"><img src="assets/img/work/mirror.webp" width="1200" height="750" alt="" loading="lazy"></span><span class="stmt-img"><img src="assets/img/work/daywire.webp" width="1200" height="750" alt="" loading="lazy"></span> <span data-t="sm6">προϊόντα.</span>
+        <span data-t="sm7">Κάθε φορά, μέχρι την τελευταία τελεία</span><span class="stop" data-stop aria-hidden="true"></span>
+      </p>
+      <!-- the numbers roll like an odometer; the real figure is in the .sr text, the rolling digits are only a picture -->
+      <ul class="odo">
+        <li><b class="odo-num num" data-odo="4" aria-hidden="true">4</b><span class="sr">4</span><span data-t="od1">έργα online</span></li>
+        <li><b class="odo-num num" data-odo="25" aria-hidden="true">25</b><span class="sr">25</span><span data-t="od2">εκδόσεις του Giannotas</span></li>
+        <li><b class="odo-num num" data-odo="15" aria-hidden="true">15</b><span class="sr">15</span><span data-t="od3">γλώσσες στο PROJECT 7ο</span></li>
+        <li><b class="odo-num num" data-odo="152" aria-hidden="true">152</b><span class="sr">152</span><span data-t="od4">αυτόματοι έλεγχοι σε τρία έργα</span></li>
+      </ul>
+    </div>
+  </section>
+
   <!-- ============ process: a line becomes a website as you scroll ============ -->
   <section class="process" id="process" aria-labelledby="procTitle">
     <div class="proc-pin">
@@ -504,8 +526,18 @@
       </div>
 
       <div class="story">
-        <h3 class="h3" data-t="storyTitle">Η ιστορία μας, μέχρι τώρα</h3>
-        <ol class="story-line">
+        <div class="story-head">
+          <h3 class="h3" data-t="storyTitle">Η ιστορία μας, μέχρι τώρα</h3>
+          <!-- a slider: drag it, swipe it, or use the arrows (it is a plain scrolling row underneath) -->
+          <div class="slider-tools">
+            <span class="slider-count num" aria-hidden="true"><b id="storyNow">01</b> / <span id="storyAll">06</span></span>
+            <span class="slider-bar" aria-hidden="true"><i id="storyBar"></i></span>
+            <span class="slider-hint" aria-hidden="true">← <span data-t="drag">Σύρετε</span> →</span>
+            <button class="icon-btn" type="button" id="storyPrev" data-ta="aria-label:prev" aria-label="Προηγούμενο"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+            <button class="icon-btn" type="button" id="storyNext" data-ta="aria-label:next" aria-label="Επόμενο"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
+          </div>
+        </div>
+        <ol class="story-line" id="storyLine" tabindex="0" data-cursor="cDrag" data-ta="aria-label:storyAria" aria-label="Η ιστορία μας, μέχρι τώρα">
           <li><time>2026</time><b>PROJECT 7ο</b><span data-t="sy1">Η πρώτη μας μεγάλη ιστοσελίδα, για το σχολείο μας: πρόγραμμα, ανακοινώσεις, βοηθός AI, 15 γλώσσες, το σχολείο σε 3D.</span></li>
           <li><time data-t="syOct">Οκτ. 2026</time><b>Giannotas Premium Auto Salon</b><span data-t="sy2">Αυτοκίνητα και ανταλλακτικά ζωντανά από το car.gr, 25 εκδόσεις, online από τον Οκτώβριο.</span></li>
           <li><time data-t="syOct">Οκτ. 2026</time><b>teleia.</b><span data-t="sy3">Δίνουμε όνομα σε αυτό που ήδη κάνουμε: ιστοσελίδες, μέχρι την τελευταία τελεία.</span></li>
@@ -587,16 +619,6 @@
       <div class="contact-copy">
         <h2 class="h2 contact-title" id="contactTitle"><span class="words" data-t="contactTitle">Έχετε ιδέα; Γράψτε μας</span><span class="stop" data-stop="end" aria-hidden="true"></span></h2>
         <p class="lead" data-t="contactSub">Θέλετε να πείτε κάτι για κάποιο από τα έργα μας, ή απλώς ένα γεια; Ένα μήνυμα αρκεί.</p>
-        <!-- Quick service choices reuse the existing message-prefill flow in site.js. -->
-        <div class="quick-services" role="group" data-ta="aria-label:quickServices" aria-label="Γρήγορη επιλογή υπηρεσίας">
-          <p class="small quick-label" data-t="quickLabel">Τι χρειάζεστε;</p>
-          <div class="quick-services-list">
-            <a class="quick-service" href="#contact" data-plan="Custom ιστοσελίδα" data-plan-en="Custom website" data-t="quickWebsite">Ιστοσελίδα</a>
-            <a class="quick-service" href="#contact" data-plan="Web εφαρμογή" data-plan-en="Web app" data-t="quickApp">Web εφαρμογή</a>
-            <a class="quick-service" href="#contact" data-plan="Ηλεκτρονικό κατάστημα" data-plan-en="Online shop" data-t="quickShop">E-shop</a>
-            <a class="quick-service" href="#contact" data-plan="Ταχύτητα και βελτιστοποίηση" data-plan-en="Performance optimization" data-t="quickImprove">Ταχύτητα &amp; βελτιστοποίηση</a>
-          </div>
-        </div>
         <p class="mail-line"><a class="mail" href="mailto:tipsandgreeks@gmail.com">tipsandgreeks@gmail.com</a>
           <button class="btn btn-sm btn-line" type="button" data-copy="tipsandgreeks@gmail.com" data-t="copy">Αντιγραφή</button></p>
         <ol class="how">
@@ -605,11 +627,27 @@
           <li><b data-t="h3h">Το συζητάμε</b><span data-t="h3p">Αν θέλετε, μιλάμε για την ιδέα σας.</span></li>
         </ol>
       </div>
-      <div class="contact-form">
+      <!-- the form, written as a conversation: every question is the field's own label -->
+      <div class="contact-form chat">
+        <div class="chat-head">
+          <span class="chat-avs" aria-hidden="true"><b class="av av-g">ΓΣ</b><b class="av av-a">ΑΠ</b></span>
+          <span class="chat-who"><b data-t="chatWho">Γιώργος &amp; Αστέρης</b><span class="chat-status" data-t="chatStatus">Θα σας απαντήσουμε εμείς, όχι κάποιο bot</span></span>
+        </div>
         <form id="form" novalidate>
-          <div class="field"><label for="fName" data-t="fName">Όνομα</label><input id="fName" name="name" autocomplete="name" required><p class="err" id="e-name" data-t="eName">Γράψτε το όνομά σας.</p></div>
-          <div class="field"><label for="fEmail" data-t="fEmail">Email</label><input id="fEmail" name="email" type="email" autocomplete="email" inputmode="email" required><p class="err" id="e-email" data-t="eEmail">Γράψτε ένα email όπως onoma@example.gr, για να σας απαντήσουμε.</p></div>
-          <div class="field"><label for="fMsg" data-t="fMsg">Μήνυμα</label><textarea id="fMsg" name="msg" rows="5" required></textarea><p class="err" id="e-msg" data-t="eMsg">Γράψτε ένα σύντομο μήνυμα.</p></div>
+          <p class="bubble bot" data-t="chatHi">Γεια σας! Τι θα θέλατε να φτιάξουμε;</p>
+          <!-- quick replies: each one writes the first line of the message (site.js, initForm) -->
+          <div class="quick-services" role="group" data-ta="aria-label:quickServices" aria-label="Γρήγορη επιλογή υπηρεσίας">
+            <div class="quick-services-list">
+              <a class="quick-service" href="#contact" data-plan="Custom ιστοσελίδα" data-plan-en="Custom website" data-t="quickWebsite">Ιστοσελίδα</a>
+              <a class="quick-service" href="#contact" data-plan="Web εφαρμογή" data-plan-en="Web app" data-t="quickApp">Web εφαρμογή</a>
+              <a class="quick-service" href="#contact" data-plan="Ηλεκτρονικό κατάστημα" data-plan-en="Online shop" data-t="quickShop">E-shop</a>
+              <a class="quick-service" href="#contact" data-plan="Ταχύτητα και βελτιστοποίηση" data-plan-en="Performance optimization" data-t="quickImprove">Ταχύτητα &amp; βελτιστοποίηση</a>
+            </div>
+          </div>
+          <p class="bubble me chat-pick" id="chatPick" hidden></p>
+          <div class="field"><label class="bubble bot" for="fName" data-t="fName">Πώς σας λένε;</label><input class="bubble-in" id="fName" name="name" autocomplete="name" required><p class="err" id="e-name" data-t="eName">Γράψτε το όνομά σας.</p></div>
+          <div class="field"><label class="bubble bot" for="fEmail" data-t="fEmail">Σε ποιο email να σας απαντήσουμε;</label><input class="bubble-in" id="fEmail" name="email" type="email" autocomplete="email" inputmode="email" required><p class="err" id="e-email" data-t="eEmail">Γράψτε ένα email όπως onoma@example.gr, για να σας απαντήσουμε.</p></div>
+          <div class="field"><label class="bubble bot" for="fMsg" data-t="fMsg">Και πείτε μας λίγα λόγια για την ιδέα σας.</label><textarea class="bubble-in" id="fMsg" name="msg" rows="4" required></textarea><p class="err" id="e-msg" data-t="eMsg">Γράψτε ένα σύντομο μήνυμα.</p></div>
           <button class="btn btn-red btn-wide magnet" type="submit" data-t="send">Γράψτε το μήνυμα</button>
           <p class="small form-note" data-t="formNote">Μετά διαλέγετε από πού θα φύγει: Gmail, Outlook ή η εφαρμογή email σας. Η σελίδα δεν αποθηκεύει τίποτα.</p>
         </form>
