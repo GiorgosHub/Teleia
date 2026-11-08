@@ -603,7 +603,7 @@ function initOdometers() {
 }
 
 /* ===== features/slider.js ===== */
-/* A row you can slide: the four projects and our story. Underneath each is a plain scrolling row (so a finger, a
+/* A row you can slide: the five projects and our story. Underneath each is a plain scrolling row (so a finger, a
    trackpad and the arrow keys just work), plus a counter, a bar, two buttons, and dragging with the mouse. */
 function makeSlider(line, now, all, bar, prev, next) {
   if (!line) return;

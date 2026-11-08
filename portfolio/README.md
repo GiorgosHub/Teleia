@@ -38,8 +38,8 @@ Printing shows everything.
 - **The hero game:** a press anywhere in the hero (not on a link or a button) drops a red full stop; the pill counts
   them and, with a mouse, reads out the pointer's X/Y (`initPlay`).
 - **In a few words:** a sentence with small project screens inside it, filling in as you read; under it four
-  numbers that roll like an odometer (`initOdometers`). All four are real: 4 projects online, 25 versions of
-  Giannotas, 15 languages in PROJECT 7o, 152 automated checks (54 + 51 + 47).
+  numbers that roll like an odometer (`initOdometers`). All four are real: 5 projects online, 25 versions of
+  Giannotas, 15 languages in PROJECT 7o, 203 automated checks (54 + 51 + 47 + 51).
 - **Our story** is a slider: a plain scrolling row of cards, with a 01 / 06 counter, a bar, two buttons and dragging
   (`makeSlider`).
 - **Contact** reads as a conversation: every question is the field's own label, the four quick replies write the
@@ -53,7 +53,7 @@ Printing shows everything.
   Its canvas is only as big as the ball and moves by transform; it is redrawn only when its shape changes.
 - **The first word turns over** (`initRotator`): websites, web apps, AI assistants. Its box is as wide as the longest
   word, so the headline never reflows; the full title stays in the page as text.
-- **The four projects are a deck** of big tilted cards you slide, drag or step through (`makeSlider`), with a
+- **The five projects are a deck** of big tilted cards you slide, drag or step through (`makeSlider`), with a
   counter and a bar; with a mouse a card leans towards the pointer.
 - **Two bands of huge outlined words** slide sideways with the scroll and lean with its speed (`initKinetic`).
 - **A stack of cards:** every section slides up over the one before, with rounded top corners.
@@ -66,7 +66,7 @@ not all stacked on the first page.
 
 **`index.html`, top to bottom**
 1. **Hero** — the headline with the turning first word, the ball, stickers, a marquee.
-2. **Work** (red) — the deck of the four projects. Each card opens that project on the projects page.
+2. **Work** (red) — the deck of the five projects. Each card opens that project on the projects page.
 3. **In a few words** — the sentence with small screens in it, and the four numbers.
 4. **From a line to a website** (pinned) — the scroll draws a sketch, colours it in, wipes the real site over it and
    stamps it "online", while the five steps of how we work light up.
@@ -81,7 +81,8 @@ not all stacked on the first page.
 3. **PROJECT 7o** — pinned screens, the welcome in 15 languages, sticky notes, the poster.
 4. **MIRROR** (graphite) — the live site, five screens in the sideways gallery, six notes.
 5. **DAYWIRE** (graphite, in progress) — the code on GitHub until it is live, five screens, six notes.
-6. A way to write to us or go back.
+6. **Dubdeck** (ink) — the live site, five screens in the sideways gallery, six notes.
+7. A way to write to us or go back.
 
 Both pages use the same styles and the same script; a part that is not on a page simply does not start there.
 
