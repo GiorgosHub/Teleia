@@ -181,7 +181,7 @@
     formNote: "Then you choose how it goes out: Gmail, Outlook or your email app. This page stores nothing.",
     waysTitle: "Your message is ready. Where do you want to send it from?",
     wApp: "Email app", copyMsg: "Copy message",
-    waysNote: "It goes to tipsandgreeks@gmail.com. If you copy the message, you can paste it into any email you like.",
+    waysNote: "It goes to teleia01gr@gmail.com. If you copy the message, you can paste it into any email you like.",
 
     fPage: "Page", fFaq: "Questions", fSign: "teleia. George Sabanis & Asteris Pitas, Larissa.",
     fNote: "Made with code, not a template. No cookies, no tracking.", toTop: "Top",
