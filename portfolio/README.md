@@ -131,7 +131,7 @@ Both pages use the same styles and the same script; a part that is not on a page
 - **Then check:** `node tools/build.mjs` (from the repository's root) builds `portfolio/dist` and runs the security
   check. Vercel runs the same command before every deployment, so you never have to update fingerprints by hand.
 - **A text:** the Greek in `index.html`, the English under the same key in `assets/js/i18n.js`.
-- **Email:** `tipsandgreeks@gmail.com` in `index.html` and `EMAIL` in `assets/js/site.js`.
+- **Email:** `teleia01gr@gmail.com` in `index.html` and `EMAIL` in `assets/js/site.js`.
 - **A new heading that the dot should land on:** end it with `<span class="stop" data-stop aria-hidden="true"></span>`.
 
 ## Speed
