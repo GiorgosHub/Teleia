@@ -1,7 +1,8 @@
 # teleia. — portfolio of George Sabanis & Asteris Pitas
 
-A static site (HTML, CSS, plain JavaScript, no build step), ready for Vercel. Greek is the main language,
-English is complete. Version 3: a new structure and a new way of moving, the same colours.
+A static site (HTML, CSS, plain JavaScript), ready for Vercel. Greek is the main language, English is complete. The
+only build step is a security one (`tools/build.mjs`, see [Security](#security)); the pages also open straight from a
+folder.
 
 ## The idea
 *Teleia* is Greek for "full stop". One red dot is the hero's full stop. As you scroll, the hero holds still and the dot
@@ -60,6 +61,29 @@ Printing shows everything.
 - **The footer word** steps away from the pointer, and its red full stop can be pulled like elastic.
 - A full stop at the end of a heading is glued to the last word, so it never sits alone on a line.
 
+## Small interactions (v7)
+Every control answers the finger and the pointer in its own way, and the press works on phones too (iOS shows
+`:active` only on pages that listen to touches, so the page does).
+- **Buttons** lift under a mouse, press down onto their shadow under a finger or a click (quickly), and spring back.
+  Hover effects exist only where a pointer can hover, so a tap never leaves a button stuck in the air.
+- **The header:** the logo's full stop hops; the red language pill slides between ΕΛ and EN; the moon sets and the sun
+  rises; on a phone the menu's two lines fold into a cross and the links follow the panel down one by one.
+- **The menu marks the section you are reading**, by page position (the menu's order is not the page's order).
+- **Questions open and close smoothly:** the box follows the answer's height and the answer rises in; a second click
+  halfway turns it around (`initDetails`). Without the script they simply open.
+- **The form:** an answer that is right turns the field green with a tick; a send with gaps shakes the missing fields,
+  shows the errors sliding in and focuses the first one; the ways to send arrive one after the other.
+- **Copy** says "Copied" with a tick on the button itself, at the same width, then goes back; the toast is a yellow
+  note, readable on the cream paper and on the black contact section.
+- **Sliders:** the counter's digit drops in, the arrows lean the way they go, and an arrow with nothing more that way
+  sinks into the paper.
+- **Cards** lift (and their screen zooms a little) under a mouse and press under a finger; **team cards** lean away
+  when pointed at, a hint that they turn.
+- **The Lab:** a found bug flashes and slides in fixed, and keeps the keyboard focus; drawing never selects the text
+  around the pad.
+- **Between the two pages** the old page lifts away and the new one rises in (cross-document View Transitions, in
+  Chrome, Edge and Safari; elsewhere a normal page load).
+
 ## Two pages
 The first page stays short; the projects up close live on a page of their own, so the screens of every project are
 not all stacked on the first page.
@@ -99,9 +123,13 @@ Both pages use the same styles and the same script; a part that is not on a page
 - `assets/js/boot.js` — runs before the page is drawn (theme, intro once per visit, no Greek flash in English).
 - `assets/video/hero.mp4` — the silent Higgsfield hero film, with a still project screenshot as its poster.
 - `404.html` + `assets/js/nf.js` — the "not found" page.
-- `vercel.json` — strict security headers. No inline scripts or styles anywhere, so they all hold.
+- `vercel.json` — the security headers and the build (see [Security](#security)).
+- `api/csp-report.js` — receives the browser's reports of blocked content and logs a cleaned summary.
+- `.well-known/security.txt` — how to report a security problem (renew its `Expires` date within a year).
 
 ## Change things
+- **Then check:** `node tools/build.mjs` (from the repository's root) builds `portfolio/dist` and runs the security
+  check. Vercel runs the same command before every deployment, so you never have to update fingerprints by hand.
 - **A text:** the Greek in `index.html`, the English under the same key in `assets/js/i18n.js`.
 - **Email:** `tipsandgreeks@gmail.com` in `index.html` and `EMAIL` in `assets/js/site.js`.
 - **A new heading that the dot should land on:** end it with `<span class="stop" data-stop aria-hidden="true"></span>`.
@@ -112,5 +140,44 @@ Both pages use the same styles and the same script; a part that is not on a page
 - Everything that moves uses `transform` and `opacity` (the zoom circle is drawn large and scaled down, so its edge
   stays sharp). Pinned scenes run on phones and desktop, with gallery cards and the process scene sized for each viewport. The hero film plays muted while visible and pauses offscreen.
 
+## Security
+The site has no accounts, no database, no cookies and no tracking, and the form stores and sends nothing. What is left
+to protect is the page itself, its visitors and the way it is built. The layers, from the browser outwards:
+
+**In the browser (headers in `vercel.json`)**
+- **Content Security Policy:** `default-src 'none'`, then only what the site uses, all from the site itself (scripts,
+  styles, images, the font, the video). No inline code, no `eval`, no `data:` or `blob:` URLs, no connections out
+  (`connect-src 'none'`), no forms posting anywhere (`form-action 'none'`), no plugins, no `<base>`, and no framing.
+- **Trusted Types** with no policy at all: the APIs that turn text into HTML or code (`innerHTML`, `eval`, a script's
+  `src` from text...) throw. The site builds every element with `createElement` and `textContent`, so nothing breaks.
+- **Fingerprints:** every script and stylesheet carries `integrity="sha384-…"`, and the `Integrity-Policy` header
+  makes the browser refuse any script without one. A file changed anywhere on the way is refused.
+- **Isolation:** `Cross-Origin-Opener-Policy`, `Cross-Origin-Embedder-Policy` and `Cross-Origin-Resource-Policy`
+  (`same-origin`; only the sharing picture and the touch icon may be shown elsewhere), `Origin-Agent-Cluster`, and
+  `Access-Control-Allow-Origin` naming only this site (instead of Vercel's default `*`).
+- **Everything else:** HSTS for two years with preload, `nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy:
+  no-referrer` (and `rel="noopener noreferrer"` on every new-tab link), and a Permissions-Policy that turns off the
+  camera, microphone, location, payments, USB, reading the clipboard and more.
+- **Reports:** a blocked script or file is reported to `/api/csp-report`, which logs a short, cleaned line in the
+  Vercel logs (POST only, 8 KB at most, known types only; nothing stored).
+
+**At the edge (Vercel Firewall, project "teleia")**
+- Probes for admin pages, secret files and other platforms (`/.env`, `/.git`, `/wp-admin`, `.php` and similar) are
+  denied, and the address that sent them is blocked for an hour.
+- Only `GET` and `HEAD` are allowed, plus `POST` to the reporting endpoint.
+- The reporting endpoint is rate-limited per address.
+- Vercel's own DDoS protection is always on.
+
+**Before anything goes live**
+- `tools/build.mjs` copies only the public files into `portfolio/dist` (no README, config or function source is ever
+  published), writes the fingerprints, then checks the headers, the pages, the scripts, the stylesheets,
+  `security.txt` and the whole repository for secrets. Vercel runs it as the build command: if a check fails, the
+  deployment fails and the site stays on its last good version.
+- GitHub runs the same check on every push and pull request and every Monday (`.github/workflows/security.yml`,
+  read-only, its action pinned to an exact commit), plus CodeQL code scanning, secret scanning with push protection,
+  and Dependabot for the pinned action. `main` cannot be force-pushed or deleted.
+- How to report a problem: `SECURITY.md` at the root of the repository and `/.well-known/security.txt`.
+
 ## Put it online
-On vercel.com: import the repository, root directory `portfolio`, framework "Other", no build command.
+On vercel.com: import the repository, root directory `portfolio`, framework "Other". The build command and the output
+directory come from `vercel.json` (`node ../tools/build.mjs`, `dist`).

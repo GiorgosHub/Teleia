@@ -90,6 +90,35 @@ if ("ResizeObserver" in window) {
 const isAwake = () => awake;
 
 
+/* ===== core/scrub.js ===== */
+/* Scroll-driven animations. Where the browser has ScrollTimeline, an animation is tied to the page's scroll and runs
+   on the compositor, in the same step as the scroll itself: it cannot stutter, even when the page is busy, and it never
+   lags a frame behind the finger. Keyframes are given at page scroll positions (px); they become shares of the whole
+   scroll range here, so they are built again whenever the page is measured. Without ScrollTimeline the callers draw
+   the same thing in the frame loop. */
+const scrollTL = (() => {
+  try {
+    if (typeof ScrollTimeline !== "function" || !("animate" in Element.prototype)) return null;
+    const tl = new ScrollTimeline({ source: document.documentElement, axis: "block" });
+    document.createElement("i").animate([{ opacity: 0 }, { opacity: 1 }], { timeline: tl }).cancel();
+    return tl;
+  } catch { return null; }
+})();
+const scrubbed = new WeakMap();   // element -> { "": animation, "::after": animation }
+function scrub(el, frames, pseudo = "") {
+  if (!scrollTL || !el) return null;
+  const mine = scrubbed.get(el) || {};
+  if (mine[pseudo]) { mine[pseudo].cancel(); delete mine[pseudo]; }
+  if (!frames.length) return null;
+  const range = Math.max(1, root.scrollHeight - root.clientHeight);
+  let last = 0;   // offsets may never go backwards
+  const kf = frames.map(({ y, ...props }) => { last = Math.max(last, clamp(y / range)); return { ...props, offset: last }; });
+  mine[pseudo] = el.animate(kf, { timeline: scrollTL, fill: "both", easing: "linear", ...(pseudo ? { pseudoElement: pseudo } : {}) });
+  scrubbed.set(el, mine);
+  return mine[pseudo];
+}
+
+
 /* ===== core/glide.js ===== */
 /* A mouse wheel moves the page in notches; here each notch glides to a soft stop instead. Trackpads and touch are
    already smooth and stay native, and so does anything that scrolls by itself (the message box, sideways rows).
@@ -157,7 +186,9 @@ function initIntro(done) {
 function circleSwap(e, update) {
   if (!document.startViewTransition) { update(); return; }
   const x = e.clientX || innerWidth / 2, y = e.clientY || 0;
+  root.classList.add("vt-circle");
   const vt = document.startViewTransition(update);
+  vt.finished.finally(() => root.classList.remove("vt-circle"));
   vt.ready.then(() => {
     const r = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
     root.animate({ clipPath: [`circle(0px at ${x}px ${y}px)`, `circle(${r}px at ${x}px ${y}px)`] },
@@ -184,6 +215,7 @@ function initTheme() {
 }
 
 function initLang() {
+  requestAnimationFrame(() => requestAnimationFrame(() => root.classList.add("lang-anim")));
   $$("[data-lang]").forEach((b) => b.addEventListener("click", (e) => {
     if (b.dataset.lang === window.I18N.lang) return;
     circleSwap(e, () => window.I18N.set(b.dataset.lang));
@@ -191,6 +223,7 @@ function initLang() {
 }
 
 function initNav() {
+  document.addEventListener("touchstart", () => {}, { passive: true });
   const hdr = $("#hdr"), nav = $("#nav"), btn = $("#menuBtn"), bar = $("#progress");
   const close = () => { nav.classList.remove("open"); btn.setAttribute("aria-expanded", "false"); };
   btn.addEventListener("click", () => { const o = nav.classList.toggle("open"); btn.setAttribute("aria-expanded", String(o)); if (o) $("a", nav).focus(); });
@@ -211,7 +244,8 @@ function initNav() {
       const back = s.y < 200 || acc < -24;
       if (want && !away) { away = true; hdr.classList.add("away"); }
       else if (back && away) { away = false; hdr.classList.remove("away"); }
-      let k = -1; tops.forEach((t, i) => { if (s.y + s.vh * .4 >= t) k = i; });
+      /* the section whose top was passed last (the menu's order is not the page's order) */
+      let k = -1, best = -Infinity; tops.forEach((t, i) => { if (s.y + s.vh * .4 >= t && t > best) { best = t; k = i; } });
       if (k !== cur) { cur = k; links.forEach((a, i) => (i === k ? a.setAttribute("aria-current", "true") : a.removeAttribute("aria-current"))); }
       return false;
     },
@@ -230,13 +264,23 @@ function initClock() {
 
 let toastT = 0;
 function say(text) {
-  const t = $("#toast"); t.textContent = text; t.classList.add("on");
-  clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove("on"), 2400);
+  const t = $("#toast");
+  if (t.classList.contains("on") && t.animate) t.animate([{ scale: 1.08 }, { scale: 1 }], { duration: 320, easing: "cubic-bezier(.34,1.56,.64,1)" });
+  t.textContent = text; t.classList.add("on");
+  clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove("on"), Math.max(2400, text.length * 60));
 }
-async function copy(text) {
-  try { await navigator.clipboard.writeText(text); say(T("copied")); } catch { say(T("copyFail")); }
+async function copy(text, btn) {
+  try { await navigator.clipboard.writeText(text); } catch { say(T("copyFail")); return; }
+  say(T("copied"));
+  if (!btn) return;
+  /* the button itself answers: "Copied" and a tick, at the same width, then its own word again */
+  const k = btn.dataset.t, words = () => (window.I18N ? window.I18N.keys[window.I18N.lang === "en" ? "EN" : "EL"] : {});
+  clearTimeout(btn._done);
+  if (!btn.classList.contains("did")) btn.style.minWidth = btn.offsetWidth + "px";
+  btn.textContent = T("copied"); btn.classList.add("did");
+  btn._done = setTimeout(() => { btn.classList.remove("did"); btn.textContent = (k && words()[k]) || btn.textContent; btn.style.minWidth = ""; }, 1800);
 }
-function initCopy() { $$("[data-copy]").forEach((b) => b.addEventListener("click", () => copy(b.dataset.copy))); }
+function initCopy() { $$("[data-copy]").forEach((b) => b.addEventListener("click", () => copy(b.dataset.copy, b))); }
 
 
 /* ===== features/extras.js ===== */
@@ -332,6 +376,31 @@ function initVersions() {
   vt.addEventListener("pointerup", up); vt.addEventListener("pointercancel", up);
 }
 
+/* questions and the versions list open and close smoothly: the box follows the answer's height while the answer
+   rises in. A second click halfway turns it around from where it is. Without the script they simply open. */
+function initDetails() {
+  $$(".qa details, details.versions-detail").forEach((d) => {
+    const sum = d.querySelector(":scope > summary"); if (!sum || !d.animate) return;
+    let anim = null, want = d.open;
+    const h = () => d.getBoundingClientRect().height;
+    sum.addEventListener("click", (e) => {
+      e.preventDefault();
+      want = !want;
+      const from = h();
+      if (anim) { anim.cancel(); anim = null; }
+      d.open = false; const shut = h();
+      d.open = true; const full = h();
+      d.classList.toggle("opening", want); d.classList.toggle("closing", !want);
+      d.style.overflow = "clip";
+      anim = d.animate({ height: [from + "px", (want ? full : shut) + "px"] },
+        { duration: want ? 560 : 380, easing: want ? "cubic-bezier(.16,1,.3,1)" : "cubic-bezier(.4,0,.2,1)" });
+      if (want) [...d.children].forEach((c, i) => { if (c !== sum) c.animate([{ opacity: 0, translate: "0 12px" }, { opacity: 1, translate: "0 0" }],
+        { duration: 520, delay: 70 + i * 40, easing: "cubic-bezier(.16,1,.3,1)", fill: "backwards" }); });
+      anim.onfinish = () => { anim = null; d.open = want; d.style.overflow = ""; d.classList.remove("opening", "closing"); };
+    });
+  });
+}
+
 function initFlips() {
   $$(".person").forEach((p) => p.addEventListener("click", () => p.setAttribute("aria-pressed", String(p.getAttribute("aria-pressed") !== "true"))));
 }
@@ -362,7 +431,8 @@ function initSparks() {
    stage. A press on empty paper kicks it towards the press. The pill counts the throws and reads out where the
    ball is. When you scroll, the page falls into the ball: the red zoom grows from it (traveler reads ballView).
    Everything here is a picture (aria-hidden): the canvas never takes a click; only the ball's round handle does. */
-let ballView = null;   // where the ball is, in window pixels, while the hero is in view
+let ballView = null;   // where the ball is and how big it looks, in window pixels, while the hero is in view
+let heroPlan = null;   // what the zoom needs from the ball: where it starts (phones) and the ball's radius there
 function initBall() {
   const pin = $(".hero-pin"), stage = $("#stage"), cv = $("#ballCv"), inkCv = $("#ballInk"), grab = $("#ballGrab");
   if (!pin || !stage || !cv || !cv.getContext) return;
@@ -373,8 +443,30 @@ function initBall() {
   pill.classList.toggle("touch", !fine()); pill.hidden = false;
 
   const b = { x: 0, y: 0, vx: 0, vy: 0, a: 0, w: 0, sq: 0, sqv: 0, sqA: 0, grow: 0 };
-  let W = 0, H = 0, dpr = 1, R = 80, home = { x: 0, y: 0 }, minY = 80, pinLeft = 0, pinTop = 0, vis = true;
-  let drag = null, throws = 0, placed = false, lastT = 0, splats = 0, shown = "", sizeR = 0, drawn = "", grabAt = "", S = 0, inkOn = false;
+  let W = 0, H = 0, dpr = 1, R = 80, drawR = 80, home = { x: 0, y: 0 }, minY = 80, pinLeft = 0, pinTop = 0, vis = true, visEnd = 0;
+  let drag = null, throws = 0, placed = false, lastT = 0, splats = 0, shown = "", sizeR = 0, drawn = "", physAt = "", S = 0, inkOn = false;
+  /* On a phone the collage sits below the first screen and is held (sticky) while the page falls into the red.
+     The ball starts beside the headline; the scroll carries it down into the middle of the collage, growing to the
+     collage's size, and holds it there while it grows over the window. The physics moves the ball with `translate`
+     and the scroll moves it with `transform`, so the two never fight. */
+  let fol = null, folShown = "", grabbable = true;
+  const STILL = { x: 0, y: 0, s: 1 };
+  const follow = (y) => {
+    if (!fol) return STILL;
+    const yy = Math.min(Math.max(0, y), fol.hold);
+    const k = yy >= fol.to ? 1 : ease.inOut(yy / fol.to);
+    /* the page would carry the ball to docY - y; it is moved from there towards the collage, then held */
+    return { x: fol.dx * k, y: (fol.ty - fol.docY + yy) * k, s: lerp(fol.s0, 1, k) };
+  };
+  const followFrames = () => {
+    if (!fol) return [];
+    const at = (y) => { const f = follow(y); return { y, transform: `translate(${f.x.toFixed(2)}px,${f.y.toFixed(2)}px) scale(${f.s.toFixed(4)})` }; };
+    const out = [];
+    for (let i = 0; i <= 24; i++) out.push(at((fol.to * i) / 24));
+    out.push(at(fol.hold), { ...at(fol.hold), y: 1e9 });
+    return out;
+  };
+
   measure((s) => {
     const pr = pin.getBoundingClientRect(), st = stage.getBoundingClientRect();
     const w = pin.clientWidth, h = pin.offsetHeight, d = Math.min(2, devicePixelRatio || 1);
@@ -385,9 +477,12 @@ function initBall() {
       splats = 0; inkCv.hidden = true; inkOn = false; drawn = ""; S = 0;
     }
     pinLeft = pr.left;
+    const pinDoc = pr.top + s.y;
     minY = (parseFloat(getComputedStyle(root).getPropertyValue("--hdr")) || 72) + 16;
     R = Math.round(clamp(Math.min(st.width, st.height) * .34, 44, 200));
+    const rStage = R;
     home = { x: st.left - pr.left + st.width / 2, y: st.top - pr.top + st.height / 2 };
+    fol = null;
     /* on a phone the stage is below the first screen: the ball waits in the first screen instead, in the largest
        empty space on the right of the hero's words (as close to the headline's full stop as it can) */
     if (st.top - pr.top > s.vh * .7) {
@@ -415,20 +510,40 @@ function initBall() {
         }
         if (best) { R = best.r; home = { x: best.x, y: best.y }; }
       }
+      /* the collage further down is held at its sticky top while the page falls into the red: the scroll will
+         carry the ball there, from the moment the page moves until the last line of the copy has gone by */
+      const ticks = $(".ticks"), work = $("#work");
+      const to = Math.max(1, ticks ? docTop(ticks) + ticks.offsetHeight : s.vh);
+      const stickTop = parseFloat(getComputedStyle(stage).top) || s.vh * .2;
+      fol = {
+        to, hold: Math.max(to + 1, work ? docTop(work) : to + s.vh),
+        dx: st.left + st.width / 2 - (pinLeft + home.x), ty: stickTop + st.height / 2, docY: pinDoc + home.y,
+        s0: R / Math.max(R, rStage),
+      };
     }
+    /* drawn at the size it will reach, shown smaller while it is smaller: always sharp */
+    drawR = fol ? Math.max(R, rStage) : R;
+    heroPlan = { from: fol ? fol.to : null, rZoom: drawR };
+    /* the ball is followed until the red section has arrived (the zoom grows from it until then) */
+    { const work = $("#work"); visEnd = work ? docTop(work) + 2 : (fol ? fol.hold : s.vh * 1.6); }
     /* the ball's own canvas is only as big as the ball (stretched, with its shadow) and moves by transform */
-    const s2 = Math.ceil((R * 1.32 + 14) * 2);
+    const s2 = Math.ceil((drawR * 1.32 + 14) * 2);
     if (s2 !== S) {
       S = s2; cv.width = cv.height = Math.round(S * dpr); cv.style.width = cv.style.height = S + "px";
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0); drawn = "";
     }
+    if (sizeR !== drawR) { sizeR = drawR; grab.style.width = grab.style.height = drawR * 2 + "px"; physAt = ""; }
     if (!placed) { b.x = home.x; b.y = home.y; placed = true; }
     b.x = clamp(b.x, R, Math.max(R, W - R)); b.y = clamp(b.y, minY + R, Math.max(minY + R, H - R));
+    /* the scroll's part, on the compositor where the browser can (without it, the frame loop below draws it) */
+    const fr = followFrames();
+    scrub(cv, fr); scrub(grab, fr);
+    if (!fr.length || scrollTL) { cv.style.transform = ""; grab.style.transform = ""; folShown = ""; }
   });
 
   const at = (e) => { const r = pin.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top, t: e.timeStamp }; };
   grab.addEventListener("pointerdown", (e) => {
-    if (e.button) return;
+    if (e.button || !grabbable) return;
     const p = at(e);
     drag = { id: e.pointerId, ox: b.x - p.x, oy: b.y - p.y, tx: b.x, ty: b.y, hist: [p] };
     grab.setPointerCapture(e.pointerId); e.preventDefault(); wake();
@@ -454,7 +569,7 @@ function initBall() {
   grab.addEventListener("pointerup", release); grab.addEventListener("pointercancel", release);
   /* a press on empty paper kicks the ball towards it */
   pin.addEventListener("click", (e) => {
-    if (e.detail === 0 || e.target.closest("a,button,input,textarea,select,label,summary,.ball-grab")) return;
+    if (e.detail === 0 || !grabbable || e.target.closest("a,button,input,textarea,select,label,summary,.ball-grab")) return;
     if (getSelection && String(getSelection()).length) return;
     const p = at(e), dx = p.x - b.x, dy = p.y - b.y, d = Math.hypot(dx, dy) || 1, sp = clamp(d / 360, .5, 2.6);
     b.vx += (dx / d) * sp; b.vy += (dy / d) * sp; b.w += (dx / d) * .01; wake();
@@ -481,7 +596,7 @@ function initBall() {
 
   const draw = () => {
     ctx.clearRect(0, 0, S, S);
-    const g0 = b.grow, r = R * (g0 < 1 ? 1 - Math.pow(1 - g0, 3) * Math.cos(g0 * 4) : 1);
+    const g0 = b.grow, r = drawR * (g0 < 1 ? 1 - Math.pow(1 - g0, 3) * Math.cos(g0 * 4) : 1);
     if (r <= 0) return;
     const sp = Math.hypot(b.vx, b.vy), st = Math.min(.18, sp * .08), va = Math.atan2(b.vy, b.vx);
     ctx.save(); ctx.translate(S / 2, S / 2);
@@ -504,11 +619,14 @@ function initBall() {
   };
 
   frame({
-    read(s) { vis = s.y < s.vh * 1.6; if (vis) pinTop = pin.getBoundingClientRect().top; },
+    read(s) { vis = s.y < visEnd; if (vis) pinTop = pin.getBoundingClientRect().top; },
     write(s) {
       if (!vis || !W) { ballView = null; lastT = 0; return false; }
       const dt = lastT ? Math.min(40, s.t - lastT) : 16, f = dt / 16; lastT = s.t;
       if (b.grow < 1) b.grow = Math.min(1, b.grow + dt / 900);
+      /* once the scroll has taken the ball, it stops answering the finger: a swipe is for scrolling */
+      const free = !fol || s.y < 24;
+      if (free !== grabbable) { grabbable = free; grab.style.pointerEvents = free ? "" : "none"; if (!free) drag = null; }
       if (drag) {
         const nx = lerp(b.x, drag.tx, .5), ny = lerp(b.y, drag.ty, .5);
         b.vx = (nx - b.x) / dt; b.vy = (ny - b.y) / dt; b.x = nx; b.y = ny;
@@ -529,17 +647,25 @@ function initBall() {
       /* redraw only when the ball changed (the page scrolling under a resting ball changes nothing) */
       const look = `${b.a.toFixed(3)},${b.sq.toFixed(4)},${b.sqA.toFixed(2)},${b.grow},${S},${Math.atan2(b.vy, b.vx).toFixed(2)},${Math.min(.18, Math.hypot(b.vx, b.vy) * .08).toFixed(3)}`;
       if (look !== drawn) { drawn = look; draw(); }
-      /* the canvas and the round handle follow the ball; the pill says where it is */
-      if (sizeR !== R) { sizeR = R; grab.style.width = grab.style.height = R * 2 + "px"; }
-      const gt = `${(b.x).toFixed(1)},${(b.y).toFixed(1)}`;
-      if (gt !== grabAt) {
-        grabAt = gt;
-        cv.style.transform = `translate3d(${(b.x - S / 2).toFixed(1)}px,${(b.y - S / 2).toFixed(1)}px,0)`;
-        grab.style.transform = `translate3d(${(b.x - R).toFixed(1)}px,${(b.y - R).toFixed(1)}px,0)`;
+      /* the canvas and the round handle follow the physics; once the scroll starts carrying the ball, the physics
+         gives way, so a held ball sits exactly where the scroll puts it */
+      const taken = fol ? clamp(s.y / fol.to) : 0;
+      const px = lerp(b.x, home.x, taken), py = lerp(b.y, home.y, taken);
+      const pa = `${px.toFixed(1)},${py.toFixed(1)}`;
+      if (pa !== physAt) {
+        physAt = pa;
+        cv.style.translate = `${(px - S / 2).toFixed(1)}px ${(py - S / 2).toFixed(1)}px`;
+        grab.style.translate = `${(px - drawR).toFixed(1)}px ${(py - drawR).toFixed(1)}px`;
+      }
+      /* the scroll's part: on the compositor when it can be, here otherwise */
+      const fw = follow(s.y);
+      if (fol && !scrollTL) {
+        const v = `translate(${fw.x.toFixed(1)}px,${fw.y.toFixed(1)}px) scale(${fw.s.toFixed(4)})`;
+        if (v !== folShown) { folShown = v; cv.style.transform = v; grab.style.transform = v; }
       }
       const xy = String(Math.round(b.x)).padStart(4, "0") + String(Math.round(b.y)).padStart(4, "0");
       if (xy !== shown) { shown = xy; xEl.textContent = xy.slice(0, 4); yEl.textContent = xy.slice(4); }
-      ballView = { x: pinLeft + b.x, y: pinTop + b.y, r: R };
+      ballView = { x: pinLeft + px + fw.x, y: pinTop + py + fw.y, r: drawR * fw.s };
       const moving = !!drag || b.grow < 1 || Math.hypot(b.vx, b.vy) > .004 || Math.abs(b.sq) > .002 || Math.abs(b.sqv) > .002 ||
         Math.hypot(home.x - b.x, home.y - b.y) > .8 || Math.abs(b.w) > .0004;
       if (!moving) { b.vx = b.vy = 0; lastT = 0; }
@@ -619,7 +745,8 @@ function makeSlider(line, now, all, bar, prev, next) {
     bar.style.transform = `scaleX(${Math.max(.08, p)})`;
     /* the card at the left edge; at the very end, the last card */
     const atEnd = x >= max - 8, i = atEnd ? items.length - 1 : Math.min(items.length - 1, Math.round(x / step()));
-    now.textContent = pad(i + 1);
+    const n = pad(i + 1);
+    if (now.textContent !== n) { now.textContent = n; now.classList.remove("tick"); void now.offsetWidth; now.classList.add("tick"); }
     prev.disabled = x <= 8; next.disabled = atEnd;
   };
   const later = () => { if (!raf) raf = requestAnimationFrame(update); };
@@ -1047,22 +1174,41 @@ function initTraveler() {
 
   /* measured: where each stop is reached, and the sections where the dot turns yellow (on red) */
   let stops = [], workTop = 0, zoomEnd = 0, zoomStart = 0, zoomable = false, colorZones = [], railX = 0, anchorY = 0, showRail = true;
+  let pinH = 0, zoomAt = "", zs0 = 0, zs1 = 1;
   measure((s) => {
     anchorY = s.vh * ANCHOR;
     showRail = true;
     railX = parseFloat(getComputedStyle(root).getPropertyValue("--gutter")) || 16;
     railX = Math.max(s.vw >= 900 ? 14 : 8, railX / 2);
     const maxScroll = document.documentElement.scrollHeight - s.vh;
-    /* the hero holds still while its full stop grows, if it fits in the window */
+    /* The hero holds still while its full stop grows: on every screen. A hero taller than the window (a laptop with
+       a short screen) first scrolls until its bottom edge arrives, then holds (its sticky top is negative). */
     const hero = $(".hero"), pin = $(".hero-pin");
-    zoomable = !!(hero && pin && zoom && heroStop) && (pin.offsetHeight <= s.vh * 1.06 || s.vw < 960);
+    zoomable = !!(hero && pin && zoom && heroStop);
     root.classList.toggle("zoomable", zoomable);
-    /* On phones, wait until the checklist scrolls clear before starting the red wipe. */
-    const ticks = $(".ticks");
-    zoomStart = s.vh * .04;
-    if (s.vw < 960 && ticks) zoomStart = Math.max(zoomStart, docTop(ticks) + ticks.offsetHeight);
+    if (zoomable && s.vw >= 960) {
+      const ph = pin.offsetHeight;
+      if (Math.abs(ph - pinH) > 1) { pinH = ph; hero.style.setProperty("--pin-h", ph + "px"); remeasure(); }
+    }
+    /* On phones the ball first travels into the held collage (initBall): the page falls into it from there. */
+    zoomStart = heroPlan && heroPlan.from != null ? heroPlan.from : Math.max(0, pinH - s.vh) + s.vh * .04;
     zoomEnd = hero ? docTop(hero) + hero.offsetHeight - s.vh : 0;
     workTop = work ? docTop(work) : 0;
+    if (zoomable) {
+      /* The red circle is as big as it will ever need to be (twice the window's diagonal), so it is drawn once at full
+         sharpness and only ever shrunk; it starts as big as the ball, shaded like the ball, and melts into flat red. */
+      const diag = Math.hypot(s.vw, s.vh), zd = Math.ceil(diag * 2 + 40);
+      zoom.style.setProperty("--zd", zd + "px");
+      const r0 = heroPlan ? heroPlan.rZoom : (heroStop.getBoundingClientRect().width / 2 || 20);
+      zs0 = r0 / (zd / 2); zs1 = (diag + 8) / (zd / 2);
+      const span = Math.max(1, zoomEnd - zoomStart), fade = span * .05;
+      const sc = (q) => `scale(${lerp(zs0, zs1, Math.pow(clamp(q), 2.4)).toFixed(5)})`;
+      const fr = [{ y: zoomStart, opacity: 0, transform: sc(0) }, { y: zoomStart + fade, opacity: 1, transform: sc(fade / span) }];
+      for (let i = 1; i <= 24; i++) { const q = i / 24; if (span * q > fade) fr.push({ y: zoomStart + span * q, opacity: 1, transform: sc(q) }); }
+      fr.push({ y: workTop - 1, opacity: 1, transform: sc(1) }, { y: workTop, opacity: 0, transform: sc(1) }, { y: 1e9, opacity: 0, transform: sc(1) });
+      scrub(zoom, fr);
+      scrub(zoom, [{ y: zoomStart + fade, opacity: 0 }, { y: zoomStart + span * .42, opacity: 1 }, { y: 1e9, opacity: 1 }], "::after");
+    } else { scrub(zoom, []); scrub(zoom, [], "::after"); }
     const pinned = root.classList.contains("pin");
     let list = all.map((el) => {
       const r = el.getBoundingClientRect(), mid = r.top + r.height / 2;
@@ -1096,16 +1242,20 @@ function initTraveler() {
       /* 1. the zoom: while the hero holds still, its full stop grows until the window is red; the red section
          then slides in underneath, red on red, and takes over */
       const p = clamp((y - zoomStart) / Math.max(1, zoomEnd - zoomStart));
-      if (zoomable && heroR && p > 0 && y < workTop) {
-        /* The phone copy has scrolled clear; grow the wipe from the held collage. */
-        /* the page falls into the ball (without it, into the headline's full stop) */
-        const o = ballView || { x: heroR.left + heroR.width / 2, y: heroR.top + heroR.height / 2, r: heroR.width / 2 };
-        const ox = o.x, oy = o.y;
-        const far = Math.hypot(Math.max(ox, s.vw - ox), Math.max(oy, s.vh - oy));
-        const sc = lerp(o.r / 1000, far / 1000 + .01, Math.pow(p, 2.4));
-        zoom.style.transform = `translate3d(${ox}px,${oy}px,0) scale(${sc})`;
-        if (!zoomOn) { zoom.style.opacity = "1"; zoomOn = true; }
-      } else if (zoomOn) { zoom.style.opacity = "0"; zoomOn = false; }
+      if (zoomable && heroR && y > zoomStart - s.vh && y < workTop) {
+        /* the page falls into the ball (without it, into the headline's full stop): the circle is placed there */
+        const o = ballView || { x: heroR.left + heroR.width / 2, y: heroR.top + heroR.height / 2 };
+        const t = `${o.x.toFixed(1)}px ${o.y.toFixed(1)}px`;
+        if (t !== zoomAt) { zoomAt = t; zoom.style.translate = t; }
+        /* without ScrollTimeline the growth is drawn here, frame by frame */
+        if (!scrollTL) {
+          const fadeK = clamp(p / .05), on = p > 0;
+          zoom.style.transform = `scale(${lerp(zs0, zs1, Math.pow(p, 2.4)).toFixed(5)})`;
+          zoom.style.opacity = on ? String(fadeK) : "0";
+          zoom.style.setProperty("--flat", String(clamp((p - .05) / .37)));
+          zoomOn = on;
+        }
+      } else if (zoomOn && !scrollTL) { zoom.style.opacity = "0"; zoomOn = false; }
 
       /* 2. headings the dot has reached show their own full stop */
       stops.forEach((st, i) => st.el.classList.toggle("landed", i <= k));
@@ -1342,14 +1492,14 @@ function bugs() {
   const hint = () => (window.I18N.lang === "en" ? window.I18N.keys.EN.bugHint : window.I18N.keys.EL.bugHint);
   const reset = () => {
     found = new Set();
-    lines.forEach(({ li, orig }) => { li.classList.remove("fixed"); $("code", li).textContent = orig; $("button", li).disabled = false; });
+    lines.forEach(({ li, orig }) => { li.classList.remove("fixed"); $("code", li).textContent = orig; $("button", li).removeAttribute("aria-disabled"); });
     n.textContent = "0"; why.textContent = hint();
   };
   code.addEventListener("click", (e) => {
     const li = e.target.closest("li"); if (!li) return;
     if (!li.dataset.bug) { li.classList.remove("no"); void li.offsetWidth; li.classList.add("no"); why.textContent = T("bugNo"); return; }
     if (found.has(li.dataset.bug)) return;
-    found.add(li.dataset.bug); li.classList.add("fixed"); $("code", li).textContent = li.dataset.fix; $("button", li).disabled = true;
+    found.add(li.dataset.bug); li.classList.add("fixed"); $("code", li).textContent = li.dataset.fix; $("button", li).setAttribute("aria-disabled", "true");
     n.textContent = found.size; n.parentElement.classList.remove("pop"); void n.offsetWidth; n.parentElement.classList.add("pop");
     why.textContent = T("bug" + li.dataset.bug);
     const r = li.getBoundingClientRect(); burst(r.left + 60, r.top + r.height / 2, 12);
@@ -1467,14 +1617,18 @@ function initForm() {
   const rules = { name: (v) => v.trim().length > 1, email: (v) => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim()), msg: (v) => v.trim().length > 4 };
   const check = (n) => {
     const el = form.elements[n], ok = rules[n](el.value), f = el.closest(".field");
-    f.classList.toggle("bad", !ok); el.setAttribute("aria-invalid", String(!ok));
+    f.classList.toggle("bad", !ok); f.classList.toggle("good", ok); el.setAttribute("aria-invalid", String(!ok));
     if (!ok) el.setAttribute("aria-describedby", "e-" + n); else el.removeAttribute("aria-describedby");
     return ok;
   };
   Object.keys(rules).forEach((n) => {
     const el = form.elements[n];
     el.addEventListener("blur", () => { if (el.value) check(n); });
-    el.addEventListener("input", () => { if (el.closest(".field").classList.contains("bad")) check(n); });
+    el.addEventListener("input", () => {
+      const f = el.closest(".field");
+      if (f.classList.contains("bad")) check(n);
+      else if (f.classList.contains("good") && !rules[n](el.value)) f.classList.remove("good");
+    });
   });
   /* a quick reply writes the first line of the message (only into an empty or untouched message), shows itself as
      your answer in the conversation, and moves on to the next question that is still empty */
@@ -1497,7 +1651,11 @@ function initForm() {
   form.addEventListener("submit", (e) => {
     e.preventDefault();
     const bad = Object.keys(rules).filter((n) => !check(n));
-    if (bad.length) { form.elements[bad[0]].focus(); return; }
+    if (bad.length) {
+      bad.forEach((n) => { const f = form.elements[n].closest(".field"); f.classList.remove("nudge"); void f.offsetWidth; f.classList.add("nudge"); });
+      setTimeout(() => $$(".field.nudge", form).forEach((f) => f.classList.remove("nudge")), 500);
+      form.elements[bad[0]].focus(); return;
+    }
     const v = (n) => form.elements[n].value.trim();
     const subject = T("mailSubject") + " — " + v("name");
     body = [T("mailHello"), "", v("msg"), "", `${T("mailName")}: ${v("name")}`, `${T("mailEmail")}: ${v("email")}`].join("\n");
@@ -1553,6 +1711,7 @@ safe("beforeAfter", initBeforeAfter);
 safe("hello", initHello);
 safe("versions", initVersions);
 safe("flips", initFlips);
+safe("details", initDetails);
 safe("sparks", initSparks);
 safe("lab", initLab);
 safe("form", initForm);

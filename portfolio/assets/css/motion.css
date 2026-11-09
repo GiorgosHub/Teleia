@@ -105,8 +105,14 @@
 @keyframes blink{to{opacity:0}}
 .spark{position:fixed;z-index:900;width:8px;height:8px;margin:-4px 0 0 -4px;border-radius:50%;pointer-events:none}
 
-/* ---------- theme and language: a circle opens from the click (View Transitions) ---------- */
-::view-transition-old(root),::view-transition-new(root){animation:none;mix-blend-mode:normal}
+/* ---------- moving between the two pages (home and projects): the old page lifts away, the new one rises in ---------- */
+@view-transition{navigation:auto}
+::view-transition-old(root){animation:vtOut .28s cubic-bezier(.4,0,1,1) both}
+::view-transition-new(root){animation:vtIn .55s var(--ease) both}
+@keyframes vtOut{to{opacity:0;translate:0 -28px}}
+@keyframes vtIn{from{opacity:0;translate:0 44px}}
+/* theme and language: a circle opens from the click instead (site.js, circleSwap) */
+.vt-circle::view-transition-old(root),.vt-circle::view-transition-new(root){animation:none;mix-blend-mode:normal}
 
 /* ---------- printing: everything is simply there ---------- */
 @media print{

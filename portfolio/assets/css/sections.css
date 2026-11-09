@@ -25,24 +25,49 @@
 .brand-mark{width:34px;height:34px}
 .brand-mark rect{fill:var(--red);stroke:var(--line);stroke-width:2.5}
 .brand-mark path{fill:none;stroke:#FFF7EE;stroke-width:3.4;stroke-linecap:round;stroke-linejoin:round}
-.brand-mark circle{fill:var(--yel);stroke:#141414;stroke-width:1.6}
+.brand-mark circle{fill:var(--yel);stroke:#141414;stroke-width:1.6;transform-box:fill-box;transform-origin:50% 50%}
+/* the full stop of the logo hops when you point at it */
+@media (hover:hover){.brand:hover .brand-mark circle{animation:hop .6s var(--spring)}}
+.brand:active .brand-mark{scale:.92}
+.brand-mark{transition:scale var(--d2) var(--spring)}
+@keyframes hop{40%{translate:0 -5px;scale:1.25}}
 .brand-word b,.equals b,.intro-word b{color:var(--red-t)}
 .nav{display:flex;gap:2px;margin-inline:auto}
-.nav a{position:relative;padding:9px 14px;border-radius:999px;font-weight:700;font-size:var(--t-sm);text-decoration:none;transition:background-color var(--d1)}
-.nav a:hover{background:var(--paper-2)}
+.nav a{position:relative;padding:9px 14px;border-radius:999px;font-weight:700;font-size:var(--t-sm);text-decoration:none;
+  transition:background-color var(--d1),color var(--d1),scale var(--d2) var(--spring)}
+@media (hover:hover){.nav a:hover{background:var(--paper-2)}}
+.nav a:active{scale:.94;transition-duration:.05s}
 .nav a[aria-current=true]{background:var(--ink);color:var(--paper)}
 .hdr-tools{display:flex;align-items:center;gap:8px;margin-inline-start:auto}
-.lang{display:inline-flex;padding:3px;border:2px solid var(--line);border-radius:999px;background:var(--card)}
-.lang button{min-width:40px;height:34px;padding:0 10px;border:0;border-radius:999px;background:none;font-weight:800;font-size:.8rem}
-.lang button[aria-pressed=true]{background:var(--red);color:var(--on-red)}
-#theme .sun{display:none} :root[data-theme=dark] #theme .sun{display:inline} :root[data-theme=dark] #theme .moon{display:none}
+/* the chosen language sits on a red pill that slides across when you switch */
+.lang{position:relative;isolation:isolate;display:inline-grid;grid-template-columns:1fr 1fr;padding:3px;border:2px solid var(--line);border-radius:999px;background:var(--card)}
+.lang::before{content:"";position:absolute;z-index:-1;left:3px;top:3px;bottom:3px;width:calc(50% - 3px);border-radius:999px;background:var(--red)}
+.lang-anim .lang::before{transition:translate .5s var(--spring)}   /* (only after the first frame: a page that opens in English starts there) */
+:root[lang=en] .lang::before{translate:100% 0}
+.lang button{min-width:40px;height:34px;padding:0 10px;border:0;border-radius:999px;background:none;font-weight:800;font-size:.8rem;transition:color var(--d2),scale var(--d2) var(--spring)}
+.lang button[aria-pressed=true]{color:var(--on-red)}
+@media (hover:hover){.lang button[aria-pressed=false]:hover{color:var(--red-t)}}
+.lang button:active{scale:.9;transition-duration:.05s}
+/* the moon sets and the sun rises (and back) */
+#theme .moon,#theme .sun{transform-box:view-box;transform-origin:12px 12px;transition:opacity var(--d2) var(--ease),scale .5s var(--spring),rotate .5s var(--spring)}
+#theme .sun{opacity:0;scale:.3;rotate:-90deg}
+:root[data-theme=dark] #theme .sun{opacity:1;scale:1;rotate:0deg}
+:root[data-theme=dark] #theme .moon{opacity:0;scale:.3;rotate:90deg}
 .menu-btn{display:none}
+/* the two lines of the menu button fold into a cross while the menu is open */
+.menu-btn path{transform-box:view-box;transform-origin:12px 12px;transition:transform .45s var(--spring)}
+.menu-btn[aria-expanded=true] .mb1{transform:rotate(45deg) translateY(4px)}
+.menu-btn[aria-expanded=true] .mb2{transform:rotate(-45deg) translateY(-4px)}
 @media (max-width:959px){
   .nav{position:absolute;top:calc(100% + 10px);left:var(--gutter);right:var(--gutter);flex-direction:column;gap:4px;padding:10px;
     border:2px solid var(--line);border-radius:24px;background:var(--card);box-shadow:var(--sh);
     opacity:0;visibility:hidden;translate:0 -8px;transition:opacity var(--d2) var(--ease),translate var(--d2) var(--ease),visibility 0s var(--d2)}
   .nav.open{opacity:1;visibility:visible;translate:0 0;transition-delay:0s}
   .nav a{padding:14px 16px;font-size:var(--t-lg)}
+  /* the links follow the panel down, one after the other */
+  .nav a{opacity:0;translate:0 -10px;transition:opacity var(--d2) var(--ease),translate var(--d2) var(--ease),background-color var(--d1),color var(--d1),scale var(--d2) var(--spring)}
+  .nav.open a{opacity:1;translate:none;transition-delay:calc(var(--n,0) * 35ms + 40ms),calc(var(--n,0) * 35ms + 40ms),0s,0s,0s}
+  .nav a:nth-child(2){--n:1} .nav a:nth-child(3){--n:2} .nav a:nth-child(4){--n:3} .nav a:nth-child(5){--n:4} .nav a:nth-child(6){--n:5}
   .menu-btn{display:grid}
   .hdr-in{position:relative}
 }
@@ -65,10 +90,12 @@
 .hero-pin{position:relative;isolation:isolate;min-height:100svh;padding-top:calc(var(--hdr) + clamp(20px,4vh,56px));display:flex;flex-direction:column}
 .hero-backdrop{position:sticky;z-index:-1;top:0;flex:none;height:100svh;margin-top:calc(0px - var(--hdr) - clamp(20px,4vh,56px));margin-bottom:calc(var(--hdr) + clamp(20px,4vh,56px) - 100svh);overflow:hidden;pointer-events:none;background:var(--paper)}
 .hero-backdrop::after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,color-mix(in srgb,var(--paper) 48%,transparent),color-mix(in srgb,var(--paper) 32%,transparent))}
-.hero-background-video{position:absolute;inset:0;width:100%;height:100%;max-width:none;object-fit:cover;object-position:center;opacity:.68;filter:saturate(.78)}
-/* with motion, and when the hero fits the window: it holds still while its full stop grows over everything */
-.zoomable .hero{height:185svh;overflow:visible}
-.zoomable .hero-pin{position:sticky;top:0;overflow-x:clip}
+/* (its colours are already toned down in the file itself: a CSS filter on a playing video costs a full-screen pass every frame) */
+.hero-background-video{position:absolute;inset:0;width:100%;height:100%;max-width:none;object-fit:cover;object-position:center;opacity:.68}
+/* the hero holds still while its full stop grows over everything; a hero taller than the window (a short laptop
+   screen) first scrolls until its bottom edge arrives (site.js sets --pin-h to the hero's height) */
+.zoomable .hero{height:calc(max(var(--pin-h,100svh),100svh) + 85svh);overflow:visible}
+.zoomable .hero-pin{position:sticky;top:min(0px,calc(100svh - var(--pin-h,100svh)));overflow-x:clip}
 .hero-grid{flex:1;display:grid;grid-template-columns:minmax(0,1fr);gap:var(--s6);align-content:start}
 .hero-meta{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:var(--s5)}
 .duo{gap:4px} .duo span{margin-inline-start:6px}
@@ -80,7 +107,7 @@
 .hero-acts{display:flex;flex-wrap:wrap;gap:var(--s4);margin-top:var(--s6)}
 .ticks{display:flex;flex-wrap:wrap;gap:8px 20px;margin-top:var(--s5);font-size:var(--t-sm);font-weight:600;color:var(--ink-2)}
 .ticks li{display:inline-flex;align-items:center;gap:8px}
-.ticks li::before{content:"";width:16px;height:16px;border-radius:5px;background:var(--grn) no-repeat center/11px url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M2 6.5l2.6 2.5L10 3' fill='none' stroke='%23fff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")}
+.ticks li::before{content:"";width:16px;height:16px;border-radius:5px;background:var(--grn) url(../img/check.svg) no-repeat center/11px}
 /* the hero game: a pill that counts your throws and reads out where the ball is */
 .play{gap:8px}
 .play-dot{width:10px;height:10px;border-radius:50%;background:var(--red)}
@@ -92,8 +119,8 @@
    only its round handle answers the pointer */
 .ball-ink{position:absolute;inset:0;z-index:-1;width:100%;height:100%;max-width:none;pointer-events:none}
 .ball-ink[hidden]{display:none}
-.ball-cv{position:absolute;left:0;top:0;z-index:3;width:0;height:0;max-width:none;pointer-events:none;will-change:transform}
-.ball-grab{position:absolute;left:0;top:0;z-index:4;width:0;height:0;border-radius:50%;cursor:grab;touch-action:none;will-change:transform}
+.ball-cv{position:absolute;left:0;top:0;z-index:3;width:0;height:0;max-width:none;pointer-events:none;will-change:transform,translate}
+.ball-grab{position:absolute;left:0;top:0;z-index:4;width:0;height:0;border-radius:50%;cursor:grab;touch-action:none;will-change:transform,translate}
 .ball-grab:active{cursor:grabbing}
 /* the first word of the headline turns over: websites, web apps, AI assistants */
 .rot{display:block;overflow:clip;overflow-clip-margin:.12em;vertical-align:top;padding-bottom:.06em;margin-bottom:-.06em}
@@ -118,8 +145,11 @@
 .marquee-track i{width:.36em;height:.36em;border-radius:50%;background:var(--red)}
 
 /* ---------- the red section: you fell into the full stop ---------- */
-.zoom{position:fixed;left:0;top:0;z-index:3;width:2000px;height:2000px;margin:-1000px 0 0 -1000px;border-radius:50%;background:var(--red);pointer-events:none;
-  transform:scale(0);opacity:0;will-change:transform}
+.zoom{--zd:2000px;position:fixed;left:0;top:0;z-index:3;width:var(--zd);height:var(--zd);margin:calc(var(--zd) / -2) 0 0 calc(var(--zd) / -2);border-radius:50%;pointer-events:none;
+  /* it starts as the ball (the same shading) and melts into the flat red of the section it opens */
+  background:radial-gradient(circle at 31% 29%,#F36A5E 0,#C81E33 46%,#7A0B1B 100%);
+  transform:scale(0);opacity:0;will-change:transform,opacity;contain:strict}
+.zoom::after{content:"";position:absolute;inset:0;border-radius:inherit;background:var(--red);opacity:var(--flat,0)}
 .work{z-index:4;background:var(--red);color:var(--on-red)}
 .work .lead{color:color-mix(in srgb,var(--on-red) 82%,transparent)}
 .work .stop{background:var(--yel)}
@@ -129,13 +159,18 @@
 .work .slider-bar{background:color-mix(in srgb,var(--on-red) 30%,transparent)} .work .slider-bar i{background:var(--yel)}
 .work .slider-hint{color:var(--on-red)}
 .work .icon-btn{background:var(--yel);color:#141414;border-color:#141414;box-shadow:2px 2px 0 #141414}
+@media (hover:hover){.work .icon-btn:hover:not(:disabled){box-shadow:4px 4px 0 #141414}}
+.work .icon-btn:active:not(:disabled),.work .icon-btn:disabled{box-shadow:0 0 0 #141414}
 
 /* ---------- the projects page (erga.html): a red head with a way back and a jump to each project ---------- */
 .erga-head{padding-top:calc(var(--hdr) + var(--s8))}
 .back{display:inline-block;margin-bottom:var(--s5);font-weight:700;color:inherit;text-decoration:underline;text-underline-offset:.25em}
 .erga-jump{display:flex;flex-wrap:wrap;gap:10px;margin-top:var(--s5)}
 .erga-jump .chip{padding:8px 16px;font-size:var(--t-sm);color:var(--on-red);text-decoration:none;transition:background-color var(--d2),color var(--d2)}
-.erga-jump .chip:hover,.erga-jump .chip:focus-visible{background:var(--yel);border-color:var(--yel);color:#141414}
+@media (hover:hover){.erga-jump .chip:hover{background:var(--yel);border-color:var(--yel);color:#141414}}
+.erga-jump .chip:focus-visible,.erga-jump .chip:active{background:var(--yel);border-color:var(--yel);color:#141414}
+.erga-jump .chip{transition:background-color var(--d2),color var(--d2),scale var(--d2) var(--spring)}
+.erga-jump .chip:active{scale:.94;transition-duration:.05s}
 .erga-end{position:relative;z-index:4;text-align:center}
 .erga-acts{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin-top:var(--s6)}
 .deck{--edge:max(var(--gutter),(100% - 1280px) / 2);display:flex;gap:clamp(16px,2.4vw,32px);padding:18px var(--edge) 44px;overflow-x:auto;overscroll-behavior-x:contain;
@@ -147,7 +182,11 @@
 .card-in{display:grid;align-content:start;gap:14px;height:100%;padding:clamp(16px,2vw,26px);border:2px solid #141414;border-radius:var(--r-lg);background:var(--card);color:var(--ink);
   text-decoration:none;box-shadow:8px 8px 0 #141414;transform-style:preserve-3d;transition:box-shadow var(--d1),translate var(--d1) var(--ease)}
 .card:nth-child(odd) .card-in{rotate:-1deg} .card:nth-child(even) .card-in{rotate:1.2deg}
-.card-in:hover{box-shadow:13px 13px 0 #141414;translate:-3px -3px}
+@media (hover:hover){.card-in:hover{box-shadow:13px 13px 0 #141414;translate:-3px -3px}}
+.card-in:focus-visible{box-shadow:13px 13px 0 #141414;translate:-3px -3px}
+.card-in:active{box-shadow:3px 3px 0 #141414;translate:4px 4px;transition-duration:.06s}
+.card-shot img{transition:scale .6s var(--ease)}
+@media (hover:hover){.card-in:hover .card-shot img{scale:1.04}}
 .card-top{display:flex;align-items:center;gap:8px}
 .card-n{margin-inline-end:auto;font-weight:900;font-size:var(--t-xl);color:var(--red-t)}
 .card-shot{box-shadow:none;border-radius:var(--r)}
@@ -347,10 +386,16 @@
 .plus,.equals{font-weight:900;font-size:clamp(2rem,4vw,3.6rem);letter-spacing:-.04em}
 .person{position:relative;display:block;width:100%;max-width:440px;height:clamp(340px,34vw,400px);padding:0;border:0;background:none;text-align:start;perspective:1200px}
 .person-face{position:absolute;inset:0;display:flex;flex-direction:column;gap:var(--s3);padding:var(--s6);border:2px solid var(--line);border-radius:var(--r-lg);background:var(--card);box-shadow:var(--sh-lg);
-  backface-visibility:hidden;transition:transform .8s var(--ease)}
+  backface-visibility:hidden;transition:transform .8s var(--ease),scale var(--d2) var(--spring),box-shadow var(--d2) var(--ease)}
 .person-back{transform:rotateY(180deg);background:var(--ink);color:var(--paper);justify-content:center}
 .person[aria-pressed=true] .person-front{transform:rotateY(-180deg)}
 .person[aria-pressed=true] .person-back{transform:rotateY(0)}
+/* a hint that it turns: with a mouse it starts to lean away; a press pushes it into the paper */
+@media (hover:hover){
+  .person[aria-pressed=false]:hover .person-front{transform:rotateY(-14deg)} .person[aria-pressed=false]:hover .person-back{transform:rotateY(166deg)}
+  .person[aria-pressed=true]:hover .person-front{transform:rotateY(-166deg)} .person[aria-pressed=true]:hover .person-back{transform:rotateY(14deg)}
+}
+.person:active .person-face{scale:.97;box-shadow:var(--sh);transition-duration:.8s,.06s,.06s}
 .person-name{font-weight:900;font-size:var(--t-xl);letter-spacing:-.03em;line-height:1.1;margin-top:auto}
 .person-back .person-name{margin-top:0}
 .person-role{align-self:flex-start;padding:4px 12px;border-radius:999px;background:var(--red);color:var(--on-red);font-weight:800;font-size:var(--t-xs)}
@@ -368,7 +413,11 @@
 .slider-bar{width:clamp(64px,10vw,140px);height:3px;border-radius:3px;background:color-mix(in srgb,var(--line) 22%,transparent);overflow:hidden}
 .slider-bar i{display:block;height:100%;background:var(--red);transform-origin:0 50%;transform:scaleX(.08);transition:transform .3s var(--ease)}
 .slider-hint{font-weight:800;font-size:var(--t-xs);color:var(--mute);white-space:nowrap}
-.icon-btn:disabled{opacity:.35;cursor:default;box-shadow:none;translate:none}
+@media (hover:hover){[id$=Next]:hover:not(:disabled) svg{translate:3px 0} [id$=Prev]:hover:not(:disabled) svg{translate:-3px 0}}
+[id$=Next]:active:not(:disabled) svg{translate:5px 0} [id$=Prev]:active:not(:disabled) svg{translate:-5px 0}
+.slider-count b{display:inline-block}
+.slider-count b.tick{animation:countTick .35s var(--spring)}
+@keyframes countTick{from{translate:0 -.5em;opacity:0}}
 .story-line{display:flex;gap:var(--s5);margin-top:var(--s5);padding:24px 6px 28px;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x mandatory;scroll-padding-inline:6px;scrollbar-width:none;cursor:grab;
   background:linear-gradient(var(--line),var(--line)) 0 23px/100% 2px no-repeat local}
 .story-line::-webkit-scrollbar{display:none}
@@ -398,14 +447,20 @@
 .code{padding:var(--s3) 0;border-radius:var(--r);background:#141414;color:#F5F0E6;font:500 .86rem/1.7 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;overflow-x:auto}
 .code li{padding:0 16px;white-space:pre}
 .code li button{all:unset;display:block;width:100%;cursor:pointer;border-radius:6px;margin-inline:-6px;padding-inline:6px}
-.code li button:hover,.code li button:focus-visible{background:rgba(255,201,60,.18)}
+@media (hover:hover){.code li button:hover{background:rgba(255,201,60,.18)}}
+.code li button:focus-visible,.code li button:active{background:rgba(255,201,60,.18)}
 .code li button:focus-visible{outline:2px solid #FFC93C;outline-offset:0}
 .code li code{font:inherit}
-.code li.fixed{background:rgba(19,122,67,.35)}
+.code li.fixed{background:rgba(19,122,67,.35);animation:fixed .7s var(--ease)}
+@keyframes fixed{0%{background:rgba(255,201,60,.6)}}
 .code li.fixed button{cursor:default}
+.code li.fixed code{display:inline-block;animation:fixIn .5s var(--spring)}
+@keyframes fixIn{from{translate:10px 0;opacity:0}}
 .code li.no{animation:shake .4s}
 .bug-why{min-height:3em;font-size:var(--t-sm);font-weight:600}
-.pad{position:relative;height:220px;border:2px dashed var(--line);border-radius:var(--r);background:var(--paper);touch-action:none;cursor:crosshair}
+.pad{position:relative;height:220px;border:2px dashed var(--line);border-radius:var(--r);background:var(--paper);touch-action:none;cursor:crosshair;
+  -webkit-user-select:none;user-select:none;-webkit-touch-callout:none;transition:border-color var(--d2),border-style 0s}
+.pad:active{border-style:solid;border-color:var(--red-t)}
 .pad canvas{position:absolute;inset:0;width:100%;height:100%}
 .pad-hint{position:absolute;inset:0;display:grid;place-items:center;color:var(--mute);font-weight:700;pointer-events:none;transition:opacity var(--d2)}
 .pad.used .pad-hint{opacity:0}
@@ -427,8 +482,13 @@
 .qa summary{position:relative;display:block;padding:var(--s5) 56px var(--s5) 0;font-weight:800;font-size:var(--t-lg);letter-spacing:-.02em;cursor:pointer;list-style:none}
 .qa summary::-webkit-details-marker{display:none}
 .qa summary::after{content:"";position:absolute;right:6px;top:50%;width:32px;height:32px;margin-top:-16px;border:2px solid var(--line);border-radius:50%;
-  background:linear-gradient(var(--ink),var(--ink)) center/14px 2px no-repeat,linear-gradient(var(--ink),var(--ink)) center/2px 14px no-repeat;transition:rotate var(--d2) var(--ease),background-color var(--d2)}
-.qa details[open] summary::after{rotate:45deg;background-color:var(--yel)}
+  background:linear-gradient(var(--ink),var(--ink)) center/14px 2px no-repeat,linear-gradient(var(--ink),var(--ink)) center/2px 14px no-repeat;
+  transition:rotate .5s var(--spring),background-color var(--d2),scale var(--d2) var(--spring)}
+.qa details[open] summary::after,.qa details.opening summary::after{rotate:45deg;background-color:var(--yel)}
+.qa details.closing summary::after{rotate:0deg;background-color:transparent}
+.qa summary{transition:color var(--d1)}
+@media (hover:hover){.qa summary:hover{color:var(--red-t)} .qa summary:hover::after{scale:1.1}}
+.qa summary:active::after{scale:.88;transition-duration:.05s}
 .qa details p{padding:0 56px var(--s5) 0;color:var(--ink-2);max-width:62ch}
 
 /* ---------- contact (black paper) ---------- */
@@ -442,11 +502,15 @@
 .quick-services{margin-top:var(--s5)}
 .quick-label{margin:0 0 var(--s2);font-weight:800;color:var(--night-mute)}
 .quick-services-list{display:flex;flex-wrap:wrap;gap:8px}
-.quick-service{display:inline-flex;align-items:center;min-height:40px;padding:7px 13px;border:1.5px solid color-mix(in srgb,var(--night-ink) 48%,transparent);border-radius:999px;color:var(--night-ink);font-size:var(--t-sm);font-weight:700;text-decoration:none;transition:background-color var(--d1),color var(--d1),translate var(--d1)}
-.quick-service:hover{background:var(--yel);color:#141414;translate:0 -2px}
+.quick-service{display:inline-flex;align-items:center;min-height:40px;padding:7px 13px;border:1.5px solid color-mix(in srgb,var(--night-ink) 48%,transparent);border-radius:999px;color:var(--night-ink);font-size:var(--t-sm);font-weight:700;text-decoration:none;
+  transition:background-color var(--d1),color var(--d1),border-color var(--d1),translate var(--d2) var(--spring),scale var(--d2) var(--spring)}
+@media (hover:hover){.quick-service:hover{background:var(--yel);color:#141414;translate:0 -2px}}
+.quick-service:active{scale:.93;transition-duration:.05s}
 .quick-service:focus-visible{outline:3px solid var(--red-t);outline-offset:3px}
 .mail-line{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s4);margin-top:var(--s6)}
-.mail{font-weight:900;font-size:clamp(1.3rem,1rem + 1.6vw,2.2rem);letter-spacing:-.03em;text-decoration:underline;text-decoration-color:var(--red-t);text-decoration-thickness:3px;overflow-wrap:anywhere}
+.mail{font-weight:900;font-size:clamp(1.3rem,1rem + 1.6vw,2.2rem);letter-spacing:-.03em;text-decoration:underline;text-decoration-color:var(--red-t);text-decoration-thickness:3px;overflow-wrap:anywhere;
+  transition:text-decoration-thickness var(--d2) var(--ease),text-underline-offset var(--d2) var(--ease)}
+@media (hover:hover){.mail:hover{text-decoration-thickness:6px;text-underline-offset:.26em}}
 .how{display:grid;gap:var(--s4);margin-top:var(--s7);counter-reset:h}
 .how li{display:grid;grid-template-columns:auto 1fr;gap:2px var(--s4);counter-increment:h}
 .how li::before{content:counter(h);grid-row:span 2;display:grid;place-items:center;width:36px;height:36px;border-radius:50%;background:var(--yel);color:#141414;font-weight:900}
@@ -455,10 +519,18 @@
 .contact-form{padding:clamp(20px,3vw,40px);border:2px solid var(--line);border-radius:var(--r-lg);background:var(--card);box-shadow:8px 8px 0 var(--red)}
 .form-note{margin-top:var(--s4)}
 .ways{margin-top:var(--s5);padding-top:var(--s5);border-top:2px dashed var(--line);outline:0}
+.ways:not([hidden]){animation:waysIn .6s var(--ease)}
+.ways:not([hidden]) .way{animation:wayIn .55s var(--spring) both;animation-delay:calc(var(--n,0) * 60ms + 120ms)}
+.ways .way:nth-child(2){--n:1} .ways .way:nth-child(3){--n:2} .ways .way:nth-child(4){--n:3}
+@keyframes waysIn{from{opacity:0;translate:0 16px}}
+@keyframes wayIn{from{opacity:0;scale:.85;translate:0 10px}}
 .ways-title{font-weight:800;margin-bottom:var(--s4)}
 .ways-list{display:grid;grid-template-columns:1fr 1fr;gap:var(--s3);margin-bottom:var(--s4)}
-.way{display:flex;align-items:center;gap:10px;padding:12px 14px;border:2px solid var(--line);border-radius:14px;background:var(--paper-2);font-weight:800;text-decoration:none;text-align:start;box-shadow:var(--sh-sm);transition:translate var(--d1),box-shadow var(--d1)}
-.way:hover{translate:-2px -2px;box-shadow:var(--sh)}
+.way{display:flex;align-items:center;gap:10px;padding:12px 14px;border:2px solid var(--line);border-radius:14px;background:var(--paper-2);font-weight:800;text-decoration:none;text-align:start;box-shadow:var(--sh-sm);
+  transition:translate var(--d2) var(--spring),box-shadow var(--d1) var(--ease)}
+@media (hover:hover){.way:hover{translate:-2px -2px;box-shadow:var(--sh)}}
+.way:focus-visible{translate:-2px -2px;box-shadow:var(--sh)}
+.way:active{translate:2px 2px;box-shadow:0 0 0 var(--line);transition-duration:.05s}
 .way b{display:grid;place-items:center;width:28px;height:28px;border-radius:8px;background:var(--yel);color:#141414}
 
 /* ---------- footer ---------- */
@@ -467,10 +539,16 @@
 .ftr-word .stop{width:.2em;height:.2em}
 .ftr-cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:var(--s6);margin-top:var(--s7)}
 .ftr-cols div{display:grid;gap:8px;align-content:start}
-.ftr-cols a{text-decoration:none;font-weight:600} .ftr-cols a:hover{text-decoration:underline}
+.ftr-cols a{justify-self:start;text-decoration:none;font-weight:600;
+  background:linear-gradient(currentColor,currentColor) 0 100%/0 2px no-repeat;transition:background-size var(--d2) var(--ease)}
+@media (hover:hover){.ftr-cols a:hover{background-size:100% 2px}}
+.ftr-cols a:focus-visible,.ftr-cols a:active{background-size:100% 2px}
 .ftr-h{font-weight:900;font-size:var(--t-sm);color:var(--mute);margin-bottom:4px}
 .ftr-base{display:flex;flex-wrap:wrap;gap:var(--s3) var(--s6);justify-content:space-between;margin-top:var(--s7);padding-top:var(--s5);border-top:2px solid var(--line);font-size:var(--t-sm);color:var(--mute)}
 .to-top{font-weight:800;color:var(--ink)}
+.to-top::after{content:"↑";content:"↑" / "";display:inline-block;margin-inline-start:.3em;transition:translate var(--d2) var(--spring)}
+@media (hover:hover){.to-top:hover::after{translate:0 -4px}}
+.to-top:active::after{translate:0 -8px}
 .traveler[data-c=yel] i{background:var(--yel)}
 
 /* ---------- not found ---------- */
@@ -514,7 +592,9 @@
 .chat .field{justify-items:stretch}
 .chat .bubble-in{width:min(100%,92%);justify-self:end;border-radius:20px 20px 5px 20px}
 .chat .quick-services{margin:0 0 var(--s5)}
-.chat .quick-service.on{background:var(--yel);color:#141414;border-color:var(--yel)}
+.chat .quick-service.on{background:var(--yel);color:#141414;border-color:var(--yel);animation:chipOn .45s var(--spring)}
+@keyframes chipOn{40%{scale:1.1}}
+.contact{--ok:#5BD68F}
 
 /* ---------- huge outlined words that slide with the scroll ---------- */
 .kin{position:relative;z-index:4;overflow:hidden;padding:clamp(28px,5vw,72px) 0;background:var(--paper)}

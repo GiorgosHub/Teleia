@@ -1,0 +1,39 @@
+# teleia. — build and security check (tools/build.mjs). It builds the site exactly as Vercel will, then fails if a
+# security header was loosened, inline code or a dangerous API slipped in, a script or stylesheet lacks its
+# fingerprint, security.txt is about to expire, or a secret was committed. Vercel runs the same check before every
+# deployment, so a failing change never goes live.
+name: security
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    - cron: "23 5 * * 1"   # every Monday: catches a security.txt that is about to expire
+  workflow_dispatch:
+
+# no permissions by default; the job below may only read the code
+permissions: {}
+
+concurrency:
+  group: security-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: build and security check
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      # pinned to an exact commit, so a moved tag can never change what runs here (Dependabot proposes updates)
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Build and check
+        if: github.event_name != 'schedule'
+        run: node tools/build.mjs
+      - name: Build and check (weekly, strict about the security.txt date)
+        if: github.event_name == 'schedule'
+        run: node tools/build.mjs --strict

@@ -11,16 +11,22 @@
 <meta property="og:type" content="website">
 <meta property="og:title" data-ta="content:ogTitle" content="teleia. — Ιστοσελίδες μέχρι την τελευταία τελεία">
 <meta property="og:description" data-ta="content:ogDesc" content="Ιστοσελίδες και web εφαρμογές από τη Λάρισα. Δείτε τα έργα.">
-<meta property="og:image" content="assets/img/og.png">
+<meta property="og:url" content="https://teleia01.vercel.app/">
+<meta property="og:image" content="https://teleia01.vercel.app/assets/img/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="teleia. — Ιστοσελίδες μέχρι την τελευταία τελεία">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://teleia01.vercel.app/">
 <link rel="preload" href="assets/fonts/Inter-var.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="assets/css/tokens.css?v=20261029">
-<link rel="stylesheet" href="assets/css/base.css?v=20261104g">
-<link rel="stylesheet" href="assets/css/components.css?v=20261023">
-<link rel="stylesheet" href="assets/css/sections.css?v=20261104g">
-<link rel="stylesheet" href="assets/css/motion.css?v=20261104g">
-<script src="assets/js/boot.js?v=20261023"></script>
-<script src="assets/js/i18n.js?v=20261104g" defer></script>
-<script src="assets/js/site.js?v=20261104g" defer></script>
+<link rel="stylesheet" href="assets/css/tokens.css">
+<link rel="stylesheet" href="assets/css/base.css">
+<link rel="stylesheet" href="assets/css/components.css">
+<link rel="stylesheet" href="assets/css/sections.css">
+<link rel="stylesheet" href="assets/css/motion.css">
+<script src="assets/js/boot.js"></script>
+<script src="assets/js/i18n.js" defer></script>
+<script src="assets/js/site.js" defer></script>
 </head>
 <body>
 <!-- ============ the first second: a line is drawn, the full stop drops in (once per visit) ============ -->
@@ -59,7 +65,7 @@
         <button type="button" data-lang="el" aria-pressed="true">ΕΛ</button><button type="button" data-lang="en" aria-pressed="false">EN</button>
       </div>
       <button class="icon-btn menu-btn" type="button" id="menuBtn" aria-expanded="false" aria-controls="nav" data-ta="aria-label:menu" aria-label="Μενού">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h16M4 16h16"/></svg>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path class="mb1" d="M4 8h16"/><path class="mb2" d="M4 16h16"/></svg>
       </button>
     </div>
   </div>
@@ -72,7 +78,7 @@
    <div class="hero-pin">
     <div class="hero-backdrop" aria-hidden="true">
       <video class="hero-background-video" muted playsinline loop preload="metadata" poster="assets/video/hero-poster.jpg" tabindex="-1">
-        <source src="assets/video/hero.mp4?v=20261023d" type="video/mp4">
+        <source src="assets/video/hero.mp4?v=20261109" type="video/mp4">
       </video>
     </div>
     <div class="wrap hero-grid">
@@ -432,8 +438,8 @@
         <div class="ways" id="ways" tabindex="-1" hidden>
           <p class="ways-title" data-t="waysTitle">Το μήνυμα είναι έτοιμο. Από πού θέλετε να το στείλετε;</p>
           <div class="ways-list">
-            <a class="way" id="wGmail" href="https://mail.google.com/" target="_blank" rel="noopener"><b aria-hidden="true">G</b>Gmail</a>
-            <a class="way" id="wOutlook" href="https://outlook.live.com/" target="_blank" rel="noopener"><b aria-hidden="true">O</b>Outlook</a>
+            <a class="way" id="wGmail" href="https://mail.google.com/" target="_blank" rel="noopener noreferrer"><b aria-hidden="true">G</b>Gmail</a>
+            <a class="way" id="wOutlook" href="https://outlook.live.com/" target="_blank" rel="noopener noreferrer"><b aria-hidden="true">O</b>Outlook</a>
             <a class="way" id="wApp" href="mailto:tipsandgreeks@gmail.com"><b aria-hidden="true">@</b><span data-t="wApp">Εφαρμογή email</span></a>
             <button class="way" type="button" id="copyMsg"><b aria-hidden="true">⧉</b><span data-t="copyMsg">Αντιγραφή μηνύματος</span></button>
           </div>
@@ -450,7 +456,7 @@
     <p class="ftr-word" aria-hidden="true">teleia<span class="stop" data-stop="footer"></span></p>
     <div class="ftr-cols">
       <div><p class="ftr-h" data-t="fPage">Σελίδα</p><a href="#work" data-t="navWork">Έργα</a><a href="#process" data-t="navProcess">Πώς δουλεύουμε</a><a href="#lab" data-t="navLab">Εργαστήριο</a><a href="#team" data-t="navTeam">Εμείς</a><a href="#faq" data-t="fFaq">Ερωτήσεις</a></div>
-      <div><p class="ftr-h" data-t="navWork">Έργα</p><a href="https://www.giannotaspremiumautosalon.gr/" target="_blank" rel="noopener">Giannotas Premium Auto Salon ↗</a><a href="https://7o-epal-project.vercel.app/" target="_blank" rel="noopener">PROJECT 7ο ↗</a><a href="https://projectmirror.vercel.app/" target="_blank" rel="noopener">MIRROR ↗</a><a href="https://daywireproject.vercel.app/" target="_blank" rel="noopener">DAYWIRE ↗</a><a href="https://dubdeck.vercel.app/" target="_blank" rel="noopener">Dubdeck ↗</a></div>
+      <div><p class="ftr-h" data-t="navWork">Έργα</p><a href="https://www.giannotaspremiumautosalon.gr/" target="_blank" rel="noopener noreferrer">Giannotas Premium Auto Salon ↗</a><a href="https://7o-epal-project.vercel.app/" target="_blank" rel="noopener noreferrer">PROJECT 7ο ↗</a><a href="https://projectmirror.vercel.app/" target="_blank" rel="noopener noreferrer">MIRROR ↗</a><a href="https://daywireproject.vercel.app/" target="_blank" rel="noopener noreferrer">DAYWIRE ↗</a><a href="https://dubdeck.vercel.app/" target="_blank" rel="noopener noreferrer">Dubdeck ↗</a></div>
       <div><p class="ftr-h" data-t="navContact">Επικοινωνία</p><a href="mailto:tipsandgreeks@gmail.com">tipsandgreeks@gmail.com</a><span data-t="heroPlace">Λάρισα, Ελλάδα</span></div>
     </div>
     <div class="ftr-base">

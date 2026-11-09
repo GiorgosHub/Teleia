@@ -6,22 +6,35 @@
 .btn{--bg:var(--card);--fg:var(--ink);position:relative;display:inline-flex;align-items:center;justify-content:center;gap:.5em;
   min-height:52px;padding:14px 24px;border:2px solid var(--line);border-radius:999px;background:var(--bg);color:var(--fg);
   font-weight:800;font-size:var(--t-md);letter-spacing:-.01em;line-height:1.1;text-decoration:none;box-shadow:var(--sh);
-  transition:box-shadow var(--d1) var(--ease),background-color var(--d1),translate var(--d1) var(--ease)}
-.btn:hover{box-shadow:6px 6px 0 var(--line);translate:-2px -2px}
-.btn:active{box-shadow:0 0 0 var(--line);translate:4px 4px}
+  transition:box-shadow var(--d1) var(--ease),background-color var(--d1),color var(--d1),translate var(--d2) var(--spring)}
+/* a press is quick and lands on the shadow; the release springs back. Hover lifts only where a pointer hovers,
+   so a tap on a phone never leaves a button stuck in the air */
+@media (hover:hover){.btn:hover{box-shadow:6px 6px 0 var(--line);translate:-2px -2px}}
+.btn:focus-visible{box-shadow:6px 6px 0 var(--line);translate:-2px -2px}
+.btn:active{box-shadow:0 0 0 var(--line);translate:4px 4px;transition-duration:.05s}
 .btn-red{--bg:var(--red);--fg:var(--on-red)}
 .btn-yel{--bg:var(--yel);--fg:#141414}
 .btn-line{--bg:transparent}
 .btn-sm{min-height:40px;padding:8px 16px;font-size:var(--t-sm);box-shadow:var(--sh-sm)}
-.btn-sm:hover{box-shadow:var(--sh)}
+@media (hover:hover){.btn-sm:hover{box-shadow:var(--sh)}}
+.btn-sm:focus-visible{box-shadow:var(--sh)}
+.btn-sm:active{translate:2px 2px}
+/* a button that has just done its job says so for a moment (copy): a small check pops in */
+.btn.did::after{content:"";width:.9em;height:.5em;margin-inline-start:.1em;border:solid currentColor;border-width:0 0 2.5px 2.5px;
+  rotate:-45deg;translate:0 -.12em;animation:didIn .45s var(--spring)}
+@keyframes didIn{from{scale:0;opacity:0}}
 .btn-wide{width:100%}
 /* the magnet moves the whole button with `transform`; the hover lift uses `translate`, so they never fight */
 .magnet{will-change:transform}
 
 .icon-btn{display:grid;place-items:center;width:44px;height:44px;padding:0;border:2px solid var(--line);border-radius:50%;background:var(--card);box-shadow:var(--sh-sm);
-  transition:box-shadow var(--d1),translate var(--d1) var(--ease)}
-.icon-btn:hover{box-shadow:var(--sh);translate:-1px -1px}
-.icon-btn svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  transition:box-shadow var(--d1) var(--ease),translate var(--d2) var(--spring),opacity var(--d2) var(--ease)}
+@media (hover:hover){.icon-btn:hover:not(:disabled){box-shadow:var(--sh);translate:-1px -1px}}
+.icon-btn:active:not(:disabled){box-shadow:0 0 0 var(--line);translate:2px 2px;transition-duration:.05s}
+/* nothing more that way: the button sinks into the paper and fades */
+.icon-btn:disabled{opacity:.32;box-shadow:0 0 0 var(--line);translate:2px 2px;cursor:default}
+.icon-btn svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;
+  overflow:visible;transition:translate var(--d2) var(--spring),rotate var(--d2) var(--spring)}
 
 /* ---------- chips ---------- */
 .chip{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border:1.5px solid currentColor;border-radius:999px;font-size:var(--t-xs);font-weight:700;line-height:1.4;white-space:nowrap}
@@ -60,17 +73,26 @@
 .field{display:grid;gap:6px;margin-bottom:var(--s5)}
 .field label{font-weight:800;font-size:var(--t-sm)}
 .field input,.field textarea{width:100%;padding:14px 16px;border:2px solid var(--line);border-radius:14px;background:var(--card);box-shadow:var(--sh-sm);
-  transition:box-shadow var(--d1),border-color var(--d1)}
+  transition:box-shadow var(--d1) var(--ease),border-color var(--d1),translate var(--d2) var(--spring)}
 .field textarea{resize:vertical;min-height:140px}
-.field input:focus,.field textarea:focus{outline:0;box-shadow:var(--sh);border-color:var(--red-t)}
+.field input:focus,.field textarea:focus{outline:0;box-shadow:var(--sh);border-color:var(--red-t);translate:-1px -1px}
 .err{display:none;color:var(--red-t);font-size:var(--t-sm);font-weight:600}
-.field.bad .err{display:block}
+.field.bad .err{display:block;animation:errIn var(--d2) var(--ease)}
+@keyframes errIn{from{opacity:0;translate:0 -6px}}
 .field.bad input,.field.bad textarea{border-color:var(--red-t)}
+/* sent with a gap: the field shakes its head */
+.field.nudge input,.field.nudge textarea{animation:shake .42s var(--ease)}
+/* answered: the border turns green and a tick pops in at the end of the field */
+.field.good input,.field.good textarea{border-color:var(--ok,#5BD68F);padding-inline-end:46px;
+  background-image:url(../img/tick.svg);background-repeat:no-repeat;background-position:right 16px center;background-size:18px;animation:tickIn .5s var(--spring)}
+.field.good textarea{background-position:right 16px top 16px}
+@keyframes tickIn{from{background-size:0}}
 
-/* ---------- toast ---------- */
-.toast{position:fixed;left:50%;bottom:24px;z-index:700;margin:0;padding:12px 20px;border:2px solid var(--line);border-radius:999px;background:var(--ink);color:var(--paper);font-weight:700;box-shadow:var(--sh);
-  translate:-50% 20px;opacity:0;pointer-events:none;transition:opacity var(--d2) var(--ease),translate var(--d2) var(--ease)}
-.toast.on{opacity:1;translate:-50% 0}
+/* ---------- toast: a yellow note, readable on the cream paper and on the black contact section alike ---------- */
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));z-index:700;width:max-content;max-width:min(560px,calc(100vw - 32px));margin:0;padding:12px 20px;
+  border:2px solid #141414;border-radius:26px;background:var(--yel);color:#141414;font-weight:800;text-align:center;box-shadow:4px 4px 0 #141414;
+  translate:-50% 24px;scale:.9;opacity:0;pointer-events:none;transition:opacity var(--d2) var(--ease),translate var(--d2) var(--spring),scale var(--d2) var(--spring)}
+.toast.on{opacity:1;translate:-50% 0;scale:1}
 
 /* ---------- the pointer: a ring that grows over things you can press and says what a press does ---------- */
 .cursor{position:fixed;left:0;top:0;z-index:800;width:0;height:0;pointer-events:none;opacity:0;transition:opacity var(--d2)}

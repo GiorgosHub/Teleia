@@ -16,6 +16,8 @@ img{height:auto}
 a{color:inherit;text-decoration-thickness:.08em;text-underline-offset:.18em}
 button,input,textarea,select{font:inherit;color:inherit}
 button{cursor:pointer}
+/* the grey flash phones put on a tapped link is replaced by each control's own press */
+a,button,summary,label,input,textarea,[data-cursor]{-webkit-tap-highlight-color:transparent}
 h1,h2,h3,h4,p,figure,blockquote,dl,dd{margin:0}
 ul,ol{margin:0;padding:0;list-style:none}
 :focus-visible{outline:3px solid var(--red-t);outline-offset:3px;border-radius:8px}
@@ -46,4 +48,6 @@ p{text-wrap:pretty}
 .skip{position:fixed;left:12px;top:-80px;z-index:600;padding:12px 18px;border:2px solid var(--line);border-radius:12px;background:var(--yel);color:#141414;font-weight:800;text-decoration:none;box-shadow:var(--sh)}
 .skip:focus{top:12px}
 /* English chosen: the page waits a moment for the English texts, so the Greek never flashes */
-.i18n-wait body{visibility:hidden}
+.i18n-wait body{visibility:hidden;animation:i18nSafety 0s 1.2s forwards}
+/* a safety net: if the texts never arrive (a script blocked or offline), the page shows anyway after a moment */
+@keyframes i18nSafety{to{visibility:visible}}

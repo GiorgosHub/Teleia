@@ -1,0 +1,4 @@
+# what tools/build.mjs publishes (built again on every deploy)
+portfolio/dist/
+.vercel/
+node_modules/
