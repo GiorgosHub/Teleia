@@ -1610,7 +1610,7 @@ function initLab() { bugs(); draw(); terminal(); meter(); }
 /* ===== features/form.js ===== */
 /* The form: checked as you go, then written as an email. Nothing is stored or sent from the page: the visitor
    chooses Gmail, Outlook, their own email app, or copying the text. */
-const EMAIL = "tipsandgreeks@gmail.com";
+const EMAIL = "teleia01gr@gmail.com";
 
 function initForm() {
   const form = $("#form"); if (!form) return;
