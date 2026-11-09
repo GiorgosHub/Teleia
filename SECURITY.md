@@ -6,8 +6,8 @@ teleia. is the website of George Sabanis and Asteris Pitas: https://teleia01.ver
 
 If you find a security problem, please tell us privately first:
 
-- **GitHub:** [report a vulnerability](https://github.com/GiorgosHub/teleia/security/advisories/new) (private to us), or
-- **Email:** tipsandgreeks@gmail.com, with "Security" in the subject.
+- **Email:** tipsandgreeks@gmail.com, with "Security" in the subject, or
+- **GitHub:** the private "Report a vulnerability" form in this repository's Security tab.
 
 Please include the page or URL, what you did, what happened and, if you can, the browser you used. Greek or English
 is fine. We will reply as soon as we can, tell you what we will do about it, and credit you when it is fixed (if you
@@ -33,8 +33,8 @@ A summary; details are in [portfolio/README.md](portfolio/README.md#security).
   policy), so injected scripts and HTML do not run.
 - Every script and stylesheet carries a fingerprint (Subresource Integrity), enforced by the Integrity-Policy header.
 - Cross-origin isolation (COOP, COEP, CORP), no framing, HSTS with preload, a closed Permissions-Policy.
-- An edge firewall on Vercel: probes for admin pages and secret files are blocked, only GET and HEAD are allowed (plus
-  the reporting endpoint), and the endpoint is rate-limited.
+- An edge firewall on Vercel: probes for admin pages and secret files are blocked (and their sender for an hour), only
+  GET and HEAD are allowed (plus POST to the reporting endpoint), and the endpoint is rate-limited.
 - `tools/build.mjs` checks all of this before every deployment and on every push; a failing check stops the deploy.
 
 `/.well-known/security.txt` on the site points here.

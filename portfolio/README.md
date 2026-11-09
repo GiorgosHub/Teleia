@@ -174,9 +174,19 @@ to protect is the page itself, its visitors and the way it is built. The layers,
   `security.txt` and the whole repository for secrets. Vercel runs it as the build command: if a check fails, the
   deployment fails and the site stays on its last good version.
 - GitHub runs the same check on every push and pull request and every Monday (`.github/workflows/security.yml`,
-  read-only, its action pinned to an exact commit), plus CodeQL code scanning, secret scanning with push protection,
-  and Dependabot for the pinned action. `main` cannot be force-pushed or deleted.
+  read-only, its action pinned to an exact commit). Secret scanning with push protection is on, and Dependabot proposes
+  updates for the pinned action (`.github/dependabot.yml`).
 - How to report a problem: `SECURITY.md` at the root of the repository and `/.well-known/security.txt`.
+
+**Once, by the owner, in the repository's settings on GitHub** (they cannot be set from the code):
+1. *Settings → Rules → Rulesets → New branch ruleset:* name it "Protect main", target the default branch, tick
+   "Restrict deletions" and "Block force pushes", set it to Active.
+2. *Settings → Advanced Security:* turn on "Private vulnerability reporting", "Dependabot alerts", "Dependabot
+   security updates", and CodeQL analysis with "Set up → Default".
+3. *Settings → Actions → General → Workflow permissions:* choose "Read repository contents and packages
+   permissions" and untick "Allow GitHub Actions to create and approve pull requests".
+4. *Your GitHub and Vercel accounts:* two-factor authentication on both (a passkey or an authenticator app, not SMS).
+   Whoever controls these accounts controls the site, so this matters more than any header.
 
 ## Put it online
 On vercel.com: import the repository, root directory `portfolio`, framework "Other". The build command and the output
